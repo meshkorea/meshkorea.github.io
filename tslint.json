@@ -1,0 +1,27 @@
+{
+  "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "no-submodule-imports": [
+      true,
+      "lib",
+      "api",
+      "firebase",
+      "app",
+      "contexts",
+      "sanitize.css",
+      "components",
+      "react-dates",
+      "file-loader",
+      "file-saver",
+      "decimal.js",
+      "lodash-es"
+    ],
+    "ordered-imports": false,
+    "interface-name": false,
+    "jsx-boolean-value": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false,
+    "no-implicit-dependencies": false,
+    "trailing-comma": [true, { "multiline": "always", "singleline": "never", "esSpecCompliant": true }]
+  }
+}
