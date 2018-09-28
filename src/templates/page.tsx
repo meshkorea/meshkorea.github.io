@@ -21,22 +21,25 @@ interface PageTemplateProps {
       html: string;
       excerpt: string;
       frontmatter: {
+        tags?: string;
         title: string;
       };
     };
   };
 }
 
-const PageTemplate: React.SFC<PageTemplateProps> = ({ data }) => (
-  <IndexLayout>
-    <Page>
-      <Container>
-        <h1>{data.markdownRemark.frontmatter.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-      </Container>
-    </Page>
-  </IndexLayout>
-);
+const PageTemplate: React.SFC<PageTemplateProps> = ({ data }) => {
+  return (
+    <IndexLayout>
+      <Page>
+        <Container>
+          <h1>{data.markdownRemark.frontmatter.title}</h1>
+          <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
+        </Container>
+      </Page>
+    </IndexLayout>
+  );
+};
 
 export default PageTemplate;
 
@@ -57,6 +60,7 @@ export const query = graphql`
       excerpt
       frontmatter {
         title
+        tags
       }
     }
   }

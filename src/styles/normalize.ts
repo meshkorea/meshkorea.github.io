@@ -24,14 +24,14 @@ injectGlobal`
     overflow-x: hidden;
     overflow-y: scroll;
     font-family: ${fonts.sansSerif};
-    color: ${colors.black};
+    color: ${colors.gray100};
     background-color: ${colors.white};
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
   }
 
   a {
-    color: ${colors.brand};
+    color: ${colors.primary100};
     text-decoration: none;
 
     &:hover,
@@ -88,7 +88,7 @@ injectGlobal`
   h1, h2, h3, h4, h5, h6 {
     margin-top: 1.414rem;
     margin-bottom: .5rem;
-    color: ${colors.black};
+    color: inherit;
     font-weight: 600;
     line-height: ${dimensions.lineHeight.heading};
     text-rendering: optimizeLegibility;
@@ -117,7 +117,7 @@ injectGlobal`
   }
 
   strong {
-    color: ${colors.black};
+    color: inherit;
   }
 
   ul,

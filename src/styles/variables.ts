@@ -3,6 +3,8 @@
 export const colors = {
   primary100: "#003894",
   gray100: "#4B5058",
+  gray80: "#7A7F86",
+  gray50: "#A9ADB2",
   gray15: "#E2E4EB",
   gray10: "#EFF0F5",
 
@@ -29,7 +31,8 @@ export const fonts = {
   sansSerif:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif',
   serif: 'Georgia, "Times New Roman", Times, serif',
-  monospace: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, monospace',
+  monospace:
+    'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, monospace',
 };
 
 export const breakpoints = {
@@ -62,8 +65,4 @@ export const dimensions = {
     heading: 1.2,
   },
   containerPadding: 1.5,
-};
-
-export const heights = {
-  header: 60,
 };

@@ -26,6 +26,7 @@
   "dependencies": {
     "babel-plugin-styled-components": "^1.7.1",
     "classnames": "^2.2.6",
+    "color": "^3.0.0",
     "emotion": "^9.2.9",
     "emotion-server": "^9.2.9",
     "gatsby": "^2.0.3",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.6",
+    "@types/color": "^3.0.0",
     "@types/node": "^10.10.1",
     "@types/react": "^16.4.14",
     "@types/react-dom": "^16.0.7",

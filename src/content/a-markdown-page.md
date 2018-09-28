@@ -1,6 +1,10 @@
 ---
 layout: page
 title: "Example Markdown page"
+tags: "example"
+date: "2018-09-28"
+author: "Lorem Kim"
+authorDesc: "플랫폼셀에서 무언가를 하고있습니다."
 ---
 
 Now we're writing in Markdown! Pretty nice, huh?

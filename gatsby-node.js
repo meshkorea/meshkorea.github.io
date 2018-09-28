@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const path = require('path');
+const path = require("path");
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
@@ -11,28 +11,28 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
   // trip up. An empty string is still required in replacement to `null`.
 
   switch (node.internal.type) {
-    case 'MarkdownRemark': {
+    case "MarkdownRemark": {
       const { permalink, layout } = node.frontmatter;
       const { relativePath } = getNode(node.parent);
 
       let slug = permalink;
 
       if (!slug) {
-        slug = `/${relativePath.replace('.md', '')}/`;
+        slug = `/${relativePath.replace(".md", "")}/`;
       }
 
       // Used to generate URL to view this content.
       createNodeField({
         node,
-        name: 'slug',
-        value: slug || '',
+        name: "slug",
+        value: slug || "",
       });
 
       // Used to determine a page layout.
       createNodeField({
         node,
-        name: 'layout',
-        value: layout || '',
+        name: "layout",
+        value: layout || "",
       });
     }
   }
@@ -43,12 +43,19 @@ exports.createPages = async ({ graphql, actions }) => {
 
   const allMarkdown = await graphql(`
     {
-      allMarkdownRemark(limit: 1000) {
+      allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }, limit: 1000) {
         edges {
           node {
             fields {
               layout
               slug
+            }
+            frontmatter {
+              date
+              tags
+              title
+              author
+              authorDesc
             }
           }
         }
@@ -75,7 +82,7 @@ exports.createPages = async ({ graphql, actions }) => {
       // template.
       //
       // Note that the template has to exist first, or else the build will fail.
-      component: path.resolve(`./src/templates/${layout || 'page'}.tsx`),
+      component: path.resolve(`./src/templates/${layout || "page"}.tsx`),
       context: {
         // Data passed to context is available in page queries as GraphQL variables.
         slug,
