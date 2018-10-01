@@ -13,6 +13,8 @@ module.exports = {
     },
   },
   plugins: [
+    "gatsby-plugin-sharp",
+    "gatsby-transformer-sharp",
     {
       resolve: "gatsby-source-filesystem",
       options: {
@@ -25,9 +27,17 @@ module.exports = {
       options: {
         plugins: [
           {
+            resolve: "gatsby-remark-images",
+            options: {
+              maxWidth: 940,
+              wrapperStyle:
+                "margin-left: -70px; margin-right: -70px; text-align: center;",
+            },
+          },
+          {
             resolve: "gatsby-remark-responsive-iframe",
             options: {
-              wrapperStyle: "margin-bottom: 1rem",
+              wrapperStyle: "margin: 1.5em -70px",
             },
           },
           "gatsby-remark-prismjs",
@@ -53,8 +63,6 @@ module.exports = {
     },
     "gatsby-plugin-emotion",
     "gatsby-plugin-typescript",
-    "gatsby-plugin-sharp",
-    "gatsby-transformer-sharp",
     "gatsby-plugin-react-helmet",
   ],
 };

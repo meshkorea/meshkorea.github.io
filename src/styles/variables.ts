@@ -7,6 +7,7 @@ export const colors = {
   gray50: "#A9ADB2",
   gray15: "#E2E4EB",
   gray10: "#EFF0F5",
+  gray5: "#F7F8FC",
 
   lilac: "#9d7cbf",
   accent: "#ffb238",
@@ -45,7 +46,7 @@ export const breakpoints = {
 
 export const widths = {
   md: 720,
-  lg: 960,
+  lg: 940,
   xl: 1140,
 };
 
@@ -61,8 +62,7 @@ export const dimensions = {
     h4: 1.25,
   },
   lineHeight: {
-    regular: 1.45,
+    regular: 1.5,
     heading: 1.2,
   },
-  containerPadding: 1.5,
 };

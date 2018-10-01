@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "react-emotion";
 import { Link } from "gatsby";
 
-import { dimensions, colors } from "../styles/variables";
+import { colors, widths } from "../styles/variables";
 import Container from "./Container";
 import Icon from "./Icon";
 
@@ -22,7 +22,7 @@ const StyledHeader = styled.header`
   right: 0;
   z-index: 100;
   height: 240px;
-  padding: 100px ${dimensions.containerPadding}rem 0;
+  padding: 100px 0 0;
   color: ${colors.gray100};
   border-bottom: 1px solid ${colors.gray15};
   background-color: ${colors.gray10};
@@ -68,7 +68,7 @@ const SmallTitle = styled.h1`
 const RecruitLinks = styled.div`
   position: fixed;
   top: 26px;
-  width: 960px;
+  width: ${widths.lg}px;
   text-align: right;
   color: ${colors.primary100};
 
@@ -167,7 +167,13 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
   };
 
   public componentDidMount() {
+    this.handleOnScroll();
     window.addEventListener("scroll", this.handleOnScroll);
+  }
+
+  public componentWillUnmount() {
+    this.handleOnScroll();
+    window.removeEventListener("scroll", this.handleOnScroll);
   }
 
   public render() {
@@ -189,7 +195,10 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
             <a href="https://github.com/meshkorea" target="_blank">
               <Icon name="GITHUB" />
             </a>
-            <RecruitLink href="#" target="_blank">
+            <RecruitLink
+              href="https://www.wanted.co.kr/company/676"
+              target="_blank"
+            >
               지금 지원하러 가기
             </RecruitLink>
           </RecruitLinks>

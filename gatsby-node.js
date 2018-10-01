@@ -12,13 +12,13 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 
   switch (node.internal.type) {
     case "MarkdownRemark": {
-      const { permalink, layout } = node.frontmatter;
+      const { permalink, layout, titleImage } = node.frontmatter;
       const { relativePath } = getNode(node.parent);
 
       let slug = permalink;
 
       if (!slug) {
-        slug = `/${relativePath.replace(".md", "")}/`;
+        slug = `/${relativePath.replace(/(\.md|\/index\.md)/, "")}/`;
       }
 
       // Used to generate URL to view this content.
@@ -43,7 +43,10 @@ exports.createPages = async ({ graphql, actions }) => {
 
   const allMarkdown = await graphql(`
     {
-      allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }, limit: 1000) {
+      allMarkdownRemark(
+        sort: { fields: [frontmatter___date], order: DESC }
+        limit: 1000
+      ) {
         edges {
           node {
             fields {
