@@ -29,7 +29,7 @@
     "color": "^3.0.0",
     "emotion": "^9.2.9",
     "emotion-server": "^9.2.9",
-    "gatsby": "^2.0.3",
+    "gatsby": "^2.0.13",
     "gatsby-image": "^2.0.12",
     "gatsby-plugin-canonical-urls": "^2.0.5",
     "gatsby-plugin-emotion": "^2.0.5",

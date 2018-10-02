@@ -50,7 +50,7 @@ titleImage: "./title.png"
 
 API를 부를 때 Redux-saga의 역할은 도드라진다. Flux 아키텍쳐는 액션이 실행되지 않으면 데이터의 변화 자체가 일어날 수 없다. 하지만 API 요청의 응답이 언제 도착할 지 누가 알겠는가? 도착한다면 누가 액션을 실행시켜줘야 한단 말인가? 원래라면 뷰가 이벤트를 통해 호출하는 것이 액션인데, API 응답에서 뷰가 끼어들 공간이 없다. 이럴 때, 액션을 실행시켜주는 것이 바로 saga의 역할이다. 이를 도식화하면 아래와 같다.
 
-![Complete Architecture](https://d26dzxoao6i3hh.cloudfront.net/items/2D1q431Z2V013X3y1k0D/saga.png?v=cebb3058)
+![Complete Architecture](./saga.png)
 
 ### React-intl
 우리의 목표는 글로벌 대응이다. 한글을 컴포넌트에 박아넣으면 언제 다 수정할 것인가? 따라서 모든 텍스트는 다른 파일에 객체 형태로 넣을 필요가 있고, 그걸 로케일 설정에 따라 적절하게 렌더링해야 한다. 그 역할을 React-intl이 한다.

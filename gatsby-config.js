@@ -27,14 +27,6 @@ module.exports = {
       options: {
         plugins: [
           {
-            resolve: "gatsby-remark-images",
-            options: {
-              maxWidth: 940,
-              wrapperStyle:
-                "margin-left: -70px; margin-right: -70px; text-align: center;",
-            },
-          },
-          {
             resolve: "gatsby-remark-responsive-iframe",
             options: {
               wrapperStyle: "margin: 1.5em -70px",
@@ -46,9 +38,11 @@ module.exports = {
           {
             resolve: "gatsby-remark-images",
             options: {
-              maxWidth: 1140,
+              maxWidth: 940,
               quality: 90,
               linkImagesToOriginal: false,
+              wrapperStyle:
+                "margin-left: -70px !important; margin-right: -70px !important; text-align: center;",
             },
           },
         ],

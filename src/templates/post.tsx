@@ -27,7 +27,7 @@ const PostTitleContainer = styled(Container)`
   flex-direction: column-reverse;
   justify-content: flex-start;
   height: 100%;
-  padding-bottom: 20px;
+  padding: 0 70px 20px;
 `;
 
 const PostWrapper = styled.div`
