@@ -174,9 +174,9 @@ class PageTemplate extends React.PureComponent<
     );
   }
 
-  private handleOnScroll() {
+  private handleOnScroll = () => {
     this.setState({ pageTop: window.scrollY });
-  }
+  };
 }
 
 export default PageTemplate;
