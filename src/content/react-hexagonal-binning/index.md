@@ -10,8 +10,6 @@ titleImage: "./title.png"
 
 > 위치기반 데이터를 시각화 할때 기본 분포도 보다 더 좋은 방법은 없을까?
 
-![alt](/content/images/2016/09/logo-1.png)
-
 ## 목차
 1.  [결과물](#end-product)
 2.  [포스트의 목적](#objective)

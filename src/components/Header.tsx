@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "react-emotion";
 import { Link } from "gatsby";
 
-import { colors, widths } from "../styles/variables";
+import { colors } from "../styles/variables";
 import Container from "./Container";
 import Icon from "./Icon";
 
@@ -41,23 +41,16 @@ const Title = styled.h1`
   letter-spacing: -0.015em;
 `;
 
-const SmallTitle = styled.h1`
-  z-index: 105;
-  position: fixed;
-  top: 0;
-  margin: 0;
-  width: 300px;
-  height: 70px;
-  padding-top: 33px;
-  font-size: 1.125rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: ${(props: TitleProps) =>
-    props.show ? colors.gray100 : colors.gray10};
-  background-color: ${colors.gray10};
-  transition: color 0.5s;
+const SmallTitleContainer = styled(Container)`
+  display: flex;
+`;
 
-  > i {
+const SmallTitle = styled.h1`
+  padding-top: 7px;
+  font-size: inherit;
+  flex: 1;
+
+  i {
     margin-right: 14px;
     > svg {
       transition: fill 0.5s;
@@ -65,10 +58,26 @@ const SmallTitle = styled.h1`
   }
 `;
 
-const RecruitLinks = styled.div`
+const SmallTitleBox = styled.div`
+  z-index: 105;
   position: fixed;
-  top: 26px;
-  width: ${widths.lg}px;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  height: 70px;
+  padding-top: 26px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: ${(props: TitleProps) =>
+    props.show ? colors.gray100 : colors.gray10};
+  background-color: ${colors.gray10};
+  transition: color 0.5s;
+`;
+
+const RecruitLinks = styled.div`
+  font-size: 1rem;
   text-align: right;
   color: ${colors.primary100};
 
@@ -184,6 +193,32 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
     const folded = !this.props.home || this.state.isFolded;
     return (
       <StyledHeader folded={folded}>
+        <SmallTitleBox show={folded}>
+          <SmallTitleContainer>
+            <SmallTitle>
+              <Icon
+                name="LOGO"
+                width={26}
+                height={30}
+                viewboxLeft={20.8}
+                viewboxTop={24}
+                color={folded ? colors.primary100 : colors.gray10}
+              />
+              <HomepageLink to="/">Mesh Korea Makers Blog</HomepageLink>
+            </SmallTitle>
+            <RecruitLinks>
+              <a href="https://github.com/meshkorea" target="_blank">
+                <Icon name="GITHUB" />
+              </a>
+              <RecruitLink
+                href="https://www.wanted.co.kr/company/676"
+                target="_blank"
+              >
+                지금 지원하러 가기
+              </RecruitLink>
+            </RecruitLinks>
+          </SmallTitleContainer>
+        </SmallTitleBox>
         <Container>
           <Logo>
             <Icon
@@ -196,28 +231,6 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
           <Title>
             <HomepageLink to="/">Makers Blog</HomepageLink>
           </Title>
-          <RecruitLinks>
-            <a href="https://github.com/meshkorea" target="_blank">
-              <Icon name="GITHUB" />
-            </a>
-            <RecruitLink
-              href="https://www.wanted.co.kr/company/676"
-              target="_blank"
-            >
-              지금 지원하러 가기
-            </RecruitLink>
-          </RecruitLinks>
-          <SmallTitle show={folded}>
-            <Icon
-              name="LOGO"
-              width={26}
-              height={30}
-              viewboxLeft={20.8}
-              viewboxTop={24}
-              color={folded ? colors.primary100 : colors.gray10}
-            />
-            <HomepageLink to="/">Mesh Korea Makers Blog</HomepageLink>
-          </SmallTitle>
           <TagAndSearch>
             <TagList>
               <TagItem>#lorem_ipsum</TagItem>

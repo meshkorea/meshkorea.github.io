@@ -6,6 +6,7 @@ import Page from "../components/Page";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
 import { colors } from "../styles/variables";
+import { render } from "react-dom";
 
 interface PostTitleProps {
   titleImage?: string;
@@ -120,36 +121,63 @@ interface PageTemplateProps {
   };
 }
 
-const PageTemplate: React.SFC<PageTemplateProps> = ({ data }) => {
-  const tags = (data.markdownRemark.frontmatter.tags || "")
-    .split(",")
-    .map(x => x.trim());
+interface PageTemplateState {
+  pageTop: number;
+}
 
-  return (
-    <IndexLayout>
-      <Page>
-        <PostHeading
-          titleImage={
-            data.markdownRemark.frontmatter.titleImage.childImageSharp.original
-              .src
-          }
-        >
-          <PostTitleContainer>
-            <PostTitle>{data.markdownRemark.frontmatter.title}</PostTitle>
-            <div>{tags.map(x => `#${x}`)}</div>
-          </PostTitleContainer>
-        </PostHeading>
-        <Container>
-          <PostWrapper>
-            <div
-              dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }}
-            />
-          </PostWrapper>
-        </Container>
-      </Page>
-    </IndexLayout>
-  );
-};
+class PageTemplate extends React.PureComponent<
+  PageTemplateProps,
+  PageTemplateState
+> {
+  public readonly state: PageTemplateState = {
+    pageTop: 0,
+  };
+
+  public componentDidMount() {
+    this.handleOnScroll();
+    window.addEventListener("scroll", this.handleOnScroll);
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("scroll", this.handleOnScroll);
+  }
+
+  public render() {
+    const { data } = this.props;
+    const tags = (data.markdownRemark.frontmatter.tags || "")
+      .split(",")
+      .map(x => x.trim());
+
+    return (
+      <IndexLayout>
+        <Page>
+          <PostHeading
+            titleImage={
+              data.markdownRemark.frontmatter.titleImage.childImageSharp
+                .original.src
+            }
+          >
+            <PostTitleContainer>
+              <PostTitle>{data.markdownRemark.frontmatter.title}</PostTitle>
+              <div>{tags.map(x => `#${x}`)}</div>
+            </PostTitleContainer>
+          </PostHeading>
+          <Container>
+            <PostWrapper>
+              <div
+                dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }}
+              />
+            </PostWrapper>
+          </Container>
+        </Page>
+      </IndexLayout>
+    );
+  }
+
+  private handleOnScroll() {
+    this.setState({ pageTop: window.scrollY });
+  }
+}
 
 export default PageTemplate;
 
