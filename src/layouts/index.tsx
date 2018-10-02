@@ -38,17 +38,24 @@ class IndexLayout extends React.Component {
   }
 
   private renderPage = (data: StaticQueryProps) => {
+    const isHome = window.location.pathname === "/";
     return (
       <LayoutRoot>
         <Helmet
           title={data.site.siteMetadata.title}
           meta={[
-            { name: "description", content: data.site.siteMetadata.description },
-            { name: "keywords", content: "gatsbyjs, gatsby, javascript, sample, something" },
+            {
+              name: "description",
+              content: data.site.siteMetadata.description,
+            },
+            {
+              name: "keywords",
+              content: "gatsbyjs, gatsby, javascript, sample, something",
+            },
           ]}
         />
-        <Header title={data.site.siteMetadata.title} />
-        <LayoutMain>{this.props.children}</LayoutMain>
+        <Header home={isHome} title={data.site.siteMetadata.title} />
+        <LayoutMain home={isHome}>{this.props.children}</LayoutMain>
       </LayoutRoot>
     );
   };

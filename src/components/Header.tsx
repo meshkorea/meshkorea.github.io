@@ -155,6 +155,7 @@ const SearchInput = styled.input`
 
 interface HeaderProps {
   title: string;
+  home?: boolean;
 }
 
 interface HeaderState {
@@ -167,18 +168,22 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
   };
 
   public componentDidMount() {
-    this.handleOnScroll();
-    window.addEventListener("scroll", this.handleOnScroll);
+    if (this.props.home) {
+      this.handleOnScroll();
+      window.addEventListener("scroll", this.handleOnScroll);
+    }
   }
 
   public componentWillUnmount() {
-    this.handleOnScroll();
-    window.removeEventListener("scroll", this.handleOnScroll);
+    if (this.props.home) {
+      window.removeEventListener("scroll", this.handleOnScroll);
+    }
   }
 
   public render() {
+    const folded = !this.props.home || this.state.isFolded;
     return (
-      <StyledHeader folded={this.state.isFolded}>
+      <StyledHeader folded={folded}>
         <Container>
           <Logo>
             <Icon
@@ -202,14 +207,14 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
               지금 지원하러 가기
             </RecruitLink>
           </RecruitLinks>
-          <SmallTitle show={this.state.isFolded}>
+          <SmallTitle show={folded}>
             <Icon
               name="LOGO"
               width={26}
               height={30}
               viewboxLeft={20.8}
               viewboxTop={24}
-              color={this.state.isFolded ? colors.primary100 : colors.gray10}
+              color={folded ? colors.primary100 : colors.gray10}
             />
             <HomepageLink to="/">Mesh Korea Makers Blog</HomepageLink>
           </SmallTitle>
