@@ -1,3 +1,4 @@
+import * as React from "react";
 import styled from "react-emotion";
 import { Link } from "gatsby";
 
@@ -11,14 +12,26 @@ export const NavigationWrapper = styled.nav`
   border-top: 1px solid ${colors.gray40};
 `;
 
-export const NavigationLink = styled(Link)`
-  display: block;
-  float: ${(props: { prev: boolean }) => (props.prev ? "left" : "right")};
-  padding: 5px 0;
-  color: inherit;
-  transition: color 0.5s;
-
-  &:hover {
-    color: ${colors.gray100};
+const NavigationLinkWrapper = styled.span`
+  a {
+    display: block;
+    float: ${(props: { prev?: boolean }) => (props.prev ? "left" : "right")};
+    padding: 5px 0;
+    color: inherit;
+    transition: color 0.5s;
+    &:hover {
+      color: ${colors.gray100};
+    }
   }
 `;
+
+interface NavigationLinkProps extends React.HTMLProps<HTMLSpanElement> {
+  prev?: boolean;
+  to: string;
+}
+
+export const NavigationLink = ({ prev, to, children }: NavigationLinkProps) => (
+  <NavigationLinkWrapper prev={prev}>
+    <Link to={to}>{children}</Link>
+  </NavigationLinkWrapper>
+);

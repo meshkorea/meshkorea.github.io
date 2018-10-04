@@ -153,7 +153,7 @@ exports.createPages = async ({ graphql, actions }) => {
     [],
   );
   uniqueTags.forEach(tag => {
-    const tagPath = `/tags/${tag}`;
+    const tagPath = `tags/${tag}`;
     createPaginatedPages({
       edges: allMarkdown.data.allMarkdownRemark.edges,
       createPage: createPage,

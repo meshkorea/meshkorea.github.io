@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled, { keyframes } from "react-emotion";
+import styled from "react-emotion";
 import { Link } from "gatsby";
 
 import { colors } from "../styles/variables";
@@ -68,6 +68,10 @@ const SmallTitle = styled.h1`
         props.show ? "fill 0.5s ease-in" : "fill 0.2s ease-out"};
     }
   }
+
+  @media (max-width: 61.25em) {
+    display: none;
+  }
 `;
 
 const SmallTitleBox = styled.div`
@@ -83,6 +87,12 @@ const SmallTitleBox = styled.div`
   font-weight: 700;
   line-height: 1.2;
   background-color: ${colors.gray10};
+
+  @media (max-width: 61.25em) {
+    height: 44px;
+    padding-top: 0;
+    left: 50px;
+  }
 `;
 
 const RecruitLinks = styled.div`
@@ -112,10 +122,18 @@ const RecruitLinks = styled.div`
 const RecruitLink = styled.a`
   margin-left: 12px;
   padding-top: 5px !important;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   font-weight: 600;
   border: 1px solid ${colors.primary100};
+
+  @media (max-width: 61.25em) {
+    border: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-weight: 400;
+    color: ${colors.gray90};
+  }
 `;
 
 const HomepageLink = styled(Link)`
@@ -199,6 +217,12 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
   }
 
   public render() {
+    let isMobile = false;
+    try {
+      isMobile = window.innerWidth < 980;
+    } catch (e) {
+      // do nothing
+    }
     const folded = !this.props.home || this.state.isFolded;
     return (
       <StyledHeader folded={folded}>

@@ -1,7 +1,8 @@
 import * as React from "react";
-import List from "./list";
 
 import { CreatedPageProps } from "../utils/list";
+
+import List from "./list";
 
 const Pages: React.SFC<CreatedPageProps> = props => {
   return (

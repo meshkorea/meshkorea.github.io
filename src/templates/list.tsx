@@ -6,6 +6,8 @@ import AuthorInfo, {
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
+import Icon from "../components/Icon";
+import { NavigationWrapper, NavigationLink } from "../components/Navigation";
 import Page from "../components/Page";
 import Container from "../components/Container";
 import PostList, {
@@ -16,54 +18,11 @@ import PostList, {
   TagList,
 } from "../components/PostList";
 import IndexLayout from "../layouts";
+import { CreatedPageProps } from "../utils/list";
 import { transformTags } from "../utils/tag";
 
-interface ListProps {
+interface ListProps extends CreatedPageProps {
   pageTitle: string;
-  pathContext: {
-    additionalContext: {
-      totalItems: number;
-      tagName?: string;
-      searchQuery?: string;
-    };
-    first: boolean;
-    last: boolean;
-    index: number;
-    pageCount: number;
-    pathPrefix: string;
-    group: Array<{
-      node: {
-        excerpt: string;
-        fields: {
-          slug: string;
-        };
-        frontmatter: {
-          date: string;
-          title: string;
-          author: {
-            id: string;
-            name: string;
-            bio: string;
-            avatar: {
-              children: Array<{
-                fixed: {
-                  src: string;
-                };
-              }>;
-            };
-          };
-          titleImage: {
-            childImageSharp: {
-              resize: {
-                src: string;
-              };
-            };
-          };
-          tags?: string;
-        };
-      };
-    }>;
-  };
 }
 
 const List: React.SFC<ListProps> = ({ pageTitle, pathContext }) => {
@@ -109,7 +68,36 @@ const List: React.SFC<ListProps> = ({ pageTitle, pathContext }) => {
               </ListItem>
             ))}
           </PostList>
-          <div>Navigation goes here</div>
+          {(!pathContext.first || !pathContext.last) && (
+            <NavigationWrapper>
+              {!pathContext.last && (
+                <NavigationLink
+                  prev
+                  to={`/${pathContext.pathPrefix}/${pathContext.index + 1}`}
+                >
+                  <Icon name="CARET_SMALL_LEFT" width={16} height={12} />
+                  Older
+                </NavigationLink>
+              )}
+              {!pathContext.first && (
+                <NavigationLink
+                  to={
+                    pathContext.index > 2
+                      ? `/${pathContext.pathPrefix}/${pathContext.index - 1}`
+                      : `/${pathContext.pathPrefix}`
+                  }
+                >
+                  Newer
+                  <Icon
+                    name="CARET_SMALL_RIGHT"
+                    width={16}
+                    height={12}
+                    offsetLeft={-4}
+                  />
+                </NavigationLink>
+              )}
+            </NavigationWrapper>
+          )}
         </Container>
       </Page>
     </IndexLayout>
