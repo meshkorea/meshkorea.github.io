@@ -9,7 +9,7 @@ import AuthorInfo, {
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
-import Icon, { IconInterface } from "../components/Icon";
+import Icon from "../components/Icon";
 import Page from "../components/Page";
 import PostHeading from "../components/PostHeading";
 import Container from "../components/Container";
@@ -18,14 +18,10 @@ import { fadeIn, articleStyle } from "../styles/mixins";
 import { colors } from "../styles/variables";
 
 interface SeeAlsoItem {
-  icon: keyof IconInterface;
+  icon: "APP_STORE" | "GITHUB" | "PLAY_STORE" | "WEB";
   uri: string;
   label: string;
 }
-
-const PostContainer = styled(Container)`
-  position: relative;
-`;
 
 const PostWrapper = styled.article`
   font-size: 1.25rem;
@@ -317,7 +313,7 @@ class PageTemplate extends React.PureComponent<
             title={post.frontmatter.title}
             tags={post.frontmatter.tags}
           />
-          <PostContainer>
+          <Container>
             <Location>
               {({ location }) => (
                 <ShareSheet fixed={this.state.shareSheetFixed}>
@@ -366,7 +362,7 @@ class PageTemplate extends React.PureComponent<
               </TOCWrapper>
               <Article dangerouslySetInnerHTML={{ __html: post.html }} />
             </PostWrapper>
-          </PostContainer>
+          </Container>
         </Page>
       </IndexLayout>
     );
