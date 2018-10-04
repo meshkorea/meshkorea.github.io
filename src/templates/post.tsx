@@ -33,7 +33,7 @@ interface ShareSheetProps {
 
 const ShareSheet = styled.aside`
   position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
-  top: ${(props: ShareSheetProps) => (props.fixed ? "156px" : "0")};
+  top: ${(props: ShareSheetProps) => (props.fixed ? "131px" : "auto")};
   right: 50%;
   font-size: 0.75rem;
   font-weight: 500;
@@ -103,7 +103,7 @@ const ShareSheetTitles = styled.h5`
 
 const TOCWrapper = styled.nav`
   position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
-  top: ${(props: ShareSheetProps) => (props.fixed ? "150px" : "auto")};
+  top: ${(props: ShareSheetProps) => (props.fixed ? "125px" : "auto")};
   margin-top: 0.15em;
   width: 30px;
   line-height: 1.5rem;
@@ -327,9 +327,9 @@ class PageTemplate extends React.PureComponent<
                   >
                     <Icon name="TWITTER" />
                   </TwitterShareButton>
-                  {seeAlso.length && (
+                  {seeAlso.length ? (
                     <ShareSheetTitles>See also</ShareSheetTitles>
-                  )}
+                  ) : null}
                   {seeAlso.map(x => (
                     <a
                       key={x.icon}
@@ -370,15 +370,15 @@ class PageTemplate extends React.PureComponent<
 
   private handleOnScroll = () => {
     const calculateFloatingElements = () => {
-      if (window.scrollY > 360 && !this.state.shareSheetFixed) {
+      if (window.scrollY > 335 && !this.state.shareSheetFixed) {
         this.setState({ shareSheetFixed: true });
-      } else if (window.scrollY < 360 && this.state.shareSheetFixed) {
+      } else if (window.scrollY < 335 && this.state.shareSheetFixed) {
         this.setState({ shareSheetFixed: false });
       }
 
-      if (window.scrollY > 501 && !this.state.tocFixed) {
+      if (window.scrollY > 476 && !this.state.tocFixed) {
         this.setState({ tocFixed: true });
-      } else if (window.scrollY < 501 && this.state.tocFixed) {
+      } else if (window.scrollY < 476 && this.state.tocFixed) {
         this.setState({ tocFixed: false });
       }
     };

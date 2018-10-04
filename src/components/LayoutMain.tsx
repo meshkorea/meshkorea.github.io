@@ -5,7 +5,7 @@ const StyledLayoutMain = styled.main`
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding-top: ${(props: LayoutMainProps) => (props.home ? "240px" : "115px")};
+  padding-top: ${(props: LayoutMainProps) => (props.home ? "215px" : "90px")};
 `;
 
 interface LayoutMainProps {

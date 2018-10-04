@@ -142,6 +142,31 @@ exports.createPages = async ({ graphql, actions }) => {
     },
   });
 
+  const tags = [];
+  allMarkdown.data.allMarkdownRemark.edges.forEach(edge => {
+    if (edge.node.frontmatter.tags) {
+      tags.push(edge.node.frontmatter.tags.split(",").map(x => x.trim()));
+    }
+  });
+  const uniqueTags = tags.reduce(
+    (prev, tag) => (prev.find(x => x === tag) ? prev : prev.concat(tag)),
+    [],
+  );
+  uniqueTags.forEach(tag => {
+    const tagPath = `/tags/${tag}`;
+    createPaginatedPages({
+      edges: allMarkdown.data.allMarkdownRemark.edges,
+      createPage: createPage,
+      pageTemplate: "./src/templates/tags.tsx",
+      pathPrefix: tagPath,
+      pageLength: 15,
+      context: {
+        totalItems: allMarkdown.data.allMarkdownRemark.edges.length,
+        tagName: tag,
+      },
+    });
+  });
+
   allMarkdown.data.allMarkdownRemark.edges.forEach(({ node }) => {
     const { slug, layout } = node.fields;
 

@@ -6,6 +6,9 @@ tags: "web"
 author: 윤현규
 authorDesc:
 titleImage: "./title.png"
+github: https://github.com/meshkorea/hexbin-demo
+link: https://meshkorea.github.io/hexbin-demo
+linkDesc: 라이브 데모 페이지 확인하기
 ---
 
 > 위치기반 데이터를 시각화 할때 기본 분포도 보다 더 좋은 방법은 없을까?

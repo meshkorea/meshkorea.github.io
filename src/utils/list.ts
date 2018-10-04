@@ -1,7 +1,4 @@
-import * as React from "react";
-import List from "./list";
-
-interface PagesProps {
+export interface CreatedPageProps {
   pathContext: {
     additionalContext: {
       totalItems: number;
@@ -47,16 +44,3 @@ interface PagesProps {
     }>;
   };
 }
-
-const Pages: React.SFC<PagesProps> = props => {
-  return (
-    <List
-      pageTitle={`Page ${props.pathContext.index} of ${
-        props.pathContext.pageCount
-      }`}
-      {...props}
-    />
-  );
-};
-
-export default Pages;

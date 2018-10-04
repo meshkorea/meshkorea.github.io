@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled from "react-emotion";
+import styled, { keyframes } from "react-emotion";
 import { Link } from "gatsby";
 
 import { colors } from "../styles/variables";
@@ -21,8 +21,8 @@ const StyledHeader = styled.header`
   left: 0;
   right: 0;
   z-index: 100;
-  height: 240px;
-  padding: 100px 0 0;
+  height: 215px;
+  padding: 110px 0 0;
   color: ${colors.gray100};
   border-bottom: 1px solid ${colors.gray15};
   background-color: ${colors.gray10};
@@ -43,17 +43,29 @@ const Title = styled.h1`
 
 const SmallTitleContainer = styled(Container)`
   display: flex;
+
+  > a {
+    flex: 1;
+    color: inherit;
+  }
 `;
 
 const SmallTitle = styled.h1`
-  padding-top: 7px;
+  padding-top: 5px;
   font-size: inherit;
-  flex: 1;
+  cursor: ${(props: TitleProps) => (props.show ? "pointer" : "default")};
+
+  .link-text {
+    opacity: ${(props: TitleProps) => (props.show ? 1 : 0)};
+    transition: ${(props: TitleProps) =>
+      props.show ? "opacity 0.5s ease-in" : "opacity 0.2s ease-out"};
+  }
 
   i {
     margin-right: 14px;
     > svg {
-      transition: fill 0.5s;
+      transition: ${(props: TitleProps) =>
+        props.show ? "fill 0.5s ease-in" : "fill 0.2s ease-out"};
     }
   }
 `;
@@ -65,15 +77,12 @@ const SmallTitleBox = styled.div`
   left: 0;
   right: 0;
   margin: 0;
-  height: 70px;
+  height: 75px;
   padding-top: 26px;
   font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.2;
-  color: ${(props: TitleProps) =>
-    props.show ? colors.gray100 : colors.gray10};
   background-color: ${colors.gray10};
-  transition: color 0.5s;
 `;
 
 const RecruitLinks = styled.div`
@@ -118,49 +127,49 @@ const HomepageLink = styled(Link)`
   }
 `;
 
-const TagAndSearch = styled.div`
-  display: flex;
-  margin-top: 19px;
-`;
+// const TagAndSearch = styled.div`
+//   display: flex;
+//   margin-top: 19px;
+// `;
 
-const TagList = styled.ul`
-  flex: 1;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  list-style-image: none;
-  font-weight: 500;
-  color: ${colors.gray80};
-`;
+// const TagList = styled.ul`
+//   flex: 1;
+//   margin: 0;
+//   padding: 0;
+//   list-style: none;
+//   list-style-image: none;
+//   font-weight: 500;
+//   color: ${colors.gray80};
+// `;
 
-const TagItem = styled.li`
-  display: inline-block;
-  margin-right: 20px;
-`;
+// const TagItem = styled.li`
+//   display: inline-block;
+//   margin-right: 20px;
+// `;
 
-const Search = styled.div`
-  position: relative;
-`;
+// const Search = styled.div`
+//   position: relative;
+// `;
 
-const SearchLabel = styled.label`
-  position: absolute;
-  top: 6px;
-  left: 11px;
-  line-height: 16px;
-  color: ${colors.gray50};
-`;
+// const SearchLabel = styled.label`
+//   position: absolute;
+//   top: 6px;
+//   left: 11px;
+//   line-height: 16px;
+//   color: ${colors.gray50};
+// `;
 
-const SearchInput = styled.input`
-  width: 200px;
-  height: 28px;
-  padding-left: 36px;
-  border: 0;
-  border-radius: 14px;
+// const SearchInput = styled.input`
+//   width: 200px;
+//   height: 28px;
+//   padding-left: 36px;
+//   border: 0;
+//   border-radius: 14px;
 
-  &:focus {
-    outline: none;
-  }
-`;
+//   &:focus {
+//     outline: none;
+//   }
+// `;
 
 interface HeaderProps {
   title: string;
@@ -193,19 +202,21 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
     const folded = !this.props.home || this.state.isFolded;
     return (
       <StyledHeader folded={folded}>
-        <SmallTitleBox show={folded}>
+        <SmallTitleBox>
           <SmallTitleContainer>
-            <SmallTitle>
-              <Icon
-                name="LOGO"
-                width={26}
-                height={30}
-                viewboxLeft={20.8}
-                viewboxTop={24}
-                color={folded ? colors.primary100 : colors.gray10}
-              />
-              <HomepageLink to="/">Mesh Korea Makers Blog</HomepageLink>
-            </SmallTitle>
+            <Link to="/">
+              <SmallTitle show={folded}>
+                <Icon
+                  name="LOGO"
+                  width={26}
+                  height={30}
+                  viewboxLeft={20.8}
+                  viewboxTop={24}
+                  color={folded ? colors.primary100 : colors.gray10}
+                />
+                <span className="link-text">Mesh Korea Makers Blog</span>
+              </SmallTitle>
+            </Link>
             <RecruitLinks>
               <a href="https://github.com/meshkorea" target="_blank">
                 <Icon name="GITHUB" />
@@ -231,7 +242,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
           <Title>
             <HomepageLink to="/">Makers Blog</HomepageLink>
           </Title>
-          <TagAndSearch>
+          {/* <TagAndSearch>
             <TagList>
               <TagItem>#lorem_ipsum</TagItem>
               <TagItem>#dolor</TagItem>
@@ -246,7 +257,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
               </SearchLabel>
               <SearchInput />
             </Search>
-          </TagAndSearch>
+          </TagAndSearch> */}
         </Container>
       </StyledHeader>
     );
