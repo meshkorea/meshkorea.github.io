@@ -2,13 +2,13 @@
 layout: post
 title: "VROONG TMS 매니저웹 폴더 구조 변천사"
 date: "2017-07-07"
-tags: "web"
-author: "최태건"
+tags: web, react
+author: 최태건
 authorDesc: "플랫폼셀에서 웹 프론트엔드 개발을 담당하고 있습니다"
 titleImage: "./title.png"
 ---
 
-<p style="color: #8e8e8e">이 글의 내용은 메쉬코리아 x 레이니스트 기술교류 세미나에서 같은 주제로 발표되었습니다. 아래 영상에서 프레젠테이션과 함께 확인하실 수 있습니다.</p>
+이 글의 내용은 메쉬코리아 x 레이니스트 기술교류 세미나에서 같은 주제로 발표되었습니다. 아래 영상에서 프레젠테이션과 함께 확인하실 수 있습니다.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/gvWbVkT_d7Q" frameborder="0" allowfullscreen></iframe>
 

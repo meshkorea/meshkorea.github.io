@@ -12,6 +12,9 @@ module.exports = {
       email: "makers@meshkorea.net",
     },
   },
+  mapping: {
+    "MarkdownRemark.frontmatter.author": `AuthorYaml`,
+  },
   plugins: [
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
@@ -35,6 +38,7 @@ module.exports = {
           "gatsby-remark-prismjs",
           "gatsby-remark-copy-linked-files",
           "gatsby-remark-smartypants",
+          "gatsby-remark-autolink-headers",
           {
             resolve: "gatsby-remark-images",
             options: {
@@ -49,6 +53,7 @@ module.exports = {
       },
     },
     "gatsby-transformer-json",
+    "gatsby-transformer-yaml",
     {
       resolve: "gatsby-plugin-canonical-urls",
       options: {

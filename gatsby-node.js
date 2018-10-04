@@ -1,6 +1,7 @@
 "use strict";
 
 const path = require("path");
+const createPaginatedPages = require("gatsby-paginate");
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
@@ -12,7 +13,7 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 
   switch (node.internal.type) {
     case "MarkdownRemark": {
-      const { permalink, layout, titleImage } = node.frontmatter;
+      const { permalink, layout } = node.frontmatter;
       const { relativePath } = getNode(node.parent);
 
       let slug = permalink;
@@ -49,6 +50,7 @@ exports.createPages = async ({ graphql, actions }) => {
       ) {
         edges {
           node {
+            excerpt(truncate: true, pruneLength: 160)
             fields {
               layout
               slug
@@ -57,8 +59,28 @@ exports.createPages = async ({ graphql, actions }) => {
               date
               tags
               title
-              author
+              author {
+                id
+                name
+                bio
+                avatar {
+                  children {
+                    ... on ImageSharp {
+                      fixed(width: 96, height: 96, quality: 85) {
+                        src
+                      }
+                    }
+                  }
+                }
+              }
               authorDesc
+              titleImage {
+                childImageSharp {
+                  resize(width: 600) {
+                    src
+                  }
+                }
+              }
             }
           }
         }
@@ -71,23 +93,24 @@ exports.createPages = async ({ graphql, actions }) => {
     throw new Error(allMarkdown.errors);
   }
 
+  createPaginatedPages({
+    edges: allMarkdown.data.allMarkdownRemark.edges,
+    createPage: createPage,
+    pageTemplate: "./src/templates/pages.tsx",
+    pathPrefix: "pages",
+    pageLength: 10,
+    context: {
+      totalItems: allMarkdown.data.allMarkdownRemark.edges.length,
+    },
+  });
+
   allMarkdown.data.allMarkdownRemark.edges.forEach(({ node }) => {
     const { slug, layout } = node.fields;
 
     createPage({
       path: slug,
-      // This will automatically resolve the template to a corresponding
-      // `layout` frontmatter in the Markdown.
-      //
-      // Feel free to set any `layout` as you'd like in the frontmatter, as
-      // long as the corresponding template file exists in src/templates.
-      // If no template is set, it will fall back to the default `page`
-      // template.
-      //
-      // Note that the template has to exist first, or else the build will fail.
-      component: path.resolve(`./src/templates/${layout || "page"}.tsx`),
+      component: path.resolve(`./src/templates/${layout || "post"}.tsx`),
       context: {
-        // Data passed to context is available in page queries as GraphQL variables.
         slug,
       },
     });

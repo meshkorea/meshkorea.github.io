@@ -36,7 +36,7 @@ injectGlobal`
 
     &:hover,
     &:focus {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 
@@ -89,7 +89,7 @@ injectGlobal`
     margin-top: 1.414rem;
     margin-bottom: .5rem;
     color: inherit;
-    font-weight: 600;
+    font-weight: 700;
     line-height: ${dimensions.lineHeight.heading};
     text-rendering: optimizeLegibility;
   }

@@ -3,20 +3,12 @@ layout: post
 title: "React, Google Maps, D3 를 이용한 Hexagonal Binning 기법"
 date: "2016-09-26"
 tags: "web"
-author: "윤현규"
+author: 윤현규
 authorDesc:
 titleImage: "./title.png"
 ---
 
 > 위치기반 데이터를 시각화 할때 기본 분포도 보다 더 좋은 방법은 없을까?
-
-## 목차
-1.  [결과물](#end-product)
-2.  [포스트의 목적](#objective)
-3.  [요리 재료 소개](#core-library)
-4.  [조리하기](#walkthrough)
-5.  [마치며](#closing)
-6.  [License](#license)
 
 <a name="end-product"></a>
 ## 1. 결과물

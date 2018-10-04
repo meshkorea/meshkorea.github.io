@@ -7,8 +7,12 @@ import Icon from "./Icon";
 import Container from "./Container";
 
 const Wrapper = styled.footer`
-  padding-top: 2.187rem;
   padding-bottom: 1.187rem;
+`;
+
+const FooterContainer = styled(Container)`
+  border-top: 1px solid ${colors.gray15};
+  padding-top: 2.187rem;
 `;
 
 const CompanyLogo = styled.div`
@@ -22,7 +26,7 @@ const CompanyDesc = styled.div`
 
 const Footer = () => (
   <Wrapper>
-    <Container>
+    <FooterContainer>
       <CompanyLogo>
         <Icon name="LOGO" width={133} height={24} color={colors.primary100} />
       </CompanyLogo>
@@ -40,7 +44,7 @@ const Footer = () => (
           </a>
         </p>
       </CompanyDesc>
-    </Container>
+    </FooterContainer>
   </Wrapper>
 );
 

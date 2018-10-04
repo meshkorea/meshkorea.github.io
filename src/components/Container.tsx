@@ -5,7 +5,6 @@ import { widths } from "../styles/variables";
 import { getEmSize } from "../styles/mixins";
 
 const StyledContainer = styled.div`
-  position: relative;
   margin-left: auto;
   margin-right: auto;
   width: auto;
