@@ -6,6 +6,8 @@ tags: web, react
 author: 최태건
 authorDesc: "플랫폼셀에서 웹 프론트엔드 개발을 담당하고 있습니다"
 titleImage: "./title.png"
+link: https://youtu.be/gvWbVkT_d7Q
+linkDesc: YouTube 동영상
 ---
 
 이 글의 내용은 메쉬코리아 x 레이니스트 기술교류 세미나에서 같은 주제로 발표되었습니다. 아래 영상에서 프레젠테이션과 함께 확인하실 수 있습니다.

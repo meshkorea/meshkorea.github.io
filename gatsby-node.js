@@ -13,7 +13,15 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 
   switch (node.internal.type) {
     case "MarkdownRemark": {
-      const { permalink, layout } = node.frontmatter;
+      const {
+        permalink,
+        layout,
+        github,
+        playstore,
+        appstore,
+        link,
+        linkDesc,
+      } = node.frontmatter;
       const { relativePath } = getNode(node.parent);
 
       let slug = permalink;
@@ -34,6 +42,36 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
         node,
         name: "layout",
         value: layout || "",
+      });
+
+      createNodeField({
+        node,
+        name: "github",
+        value: github || "",
+      });
+
+      createNodeField({
+        node,
+        name: "playstore",
+        value: playstore || "",
+      });
+
+      createNodeField({
+        node,
+        name: "appstore",
+        value: appstore || "",
+      });
+
+      createNodeField({
+        node,
+        name: "link",
+        value: link || "",
+      });
+
+      createNodeField({
+        node,
+        name: "linkDesc",
+        value: linkDesc || "",
       });
     }
   }

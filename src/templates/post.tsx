@@ -1,53 +1,113 @@
 import * as React from "react";
+import { FacebookShareButton, TwitterShareButton } from "react-share";
 import styled from "react-emotion";
 import { graphql } from "gatsby";
+import { Location } from "@reach/router";
 
 import AuthorInfo, {
   AuthorAvatar as PostAuthorAvatar,
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
-import Icon from "../components/Icon";
+import Icon, { IconInterface } from "../components/Icon";
 import Page from "../components/Page";
+import PostHeading from "../components/PostHeading";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
-import { fadeIn } from "../styles/mixins";
+import { fadeIn, articleStyle } from "../styles/mixins";
 import { colors } from "../styles/variables";
 
-interface PostTitleProps {
-  titleImage?: string;
+interface SeeAlsoItem {
+  icon: keyof IconInterface;
+  uri: string;
+  label: string;
 }
 
-const PostHeading = styled.div`
-  height: 360px;
-  font-size: 1.125em;
-  color: ${colors.white};
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  background-position: 50% 50%;
-  background-size: cover;
-  background-image: ${(props: PostTitleProps) =>
-    props.titleImage ? `url(${props.titleImage})` : "none"};
-`;
-
-const PostTitleContainer = styled(Container)`
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-start;
-  height: 100%;
-  padding: 0 70px 20px;
+const PostContainer = styled(Container)`
+  position: relative;
 `;
 
 const PostWrapper = styled.article`
   font-size: 1.25rem;
 `;
 
-const PostTitle = styled.h1`
-  margin: 0;
-  word-break: keep-all;
+interface ShareSheetProps {
+  fixed: boolean;
+}
+
+const ShareSheet = styled.aside`
+  position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
+  top: ${(props: ShareSheetProps) => (props.fixed ? "156px" : "0")};
+  right: 50%;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: right;
+  color: ${colors.gray60};
+  transform: translateX(470px);
+
+  a,
+  .SocialMediaShareButton {
+    position: relative;
+    display: block;
+    margin-left: auto;
+    margin-bottom: 0.625rem;
+    width: 24px;
+    color: ${colors.gray40};
+    cursor: pointer;
+    transition: color 0.5s;
+
+    &:hover {
+      color: ${colors.gray60};
+    }
+
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  a {
+    &:hover::before {
+      position: absolute;
+      top: 0.5rem;
+      right: 26px;
+      width: 0;
+      height: 0;
+      content: attr(title);
+      color: rgba(0, 0, 0, 0);
+      overflow: hidden;
+      border-left: 4px solid rgba(0, 0, 0, 0.5);
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+    }
+
+    &:hover::after {
+      position: absolute;
+      top: 0.125rem;
+      right: 30px;
+      content: attr(title);
+      padding: 0 10px;
+      font-size: 1.167em;
+      white-space: nowrap;
+      color: #fff;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+`;
+
+const ShareSheetTitles = styled.h5`
+  margin: 1rem 0 5px;
+  font-size: 1em;
+  font-weight: inherit;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
 `;
 
 const TOCWrapper = styled.nav`
-  position: absolute;
+  position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
+  top: ${(props: ShareSheetProps) => (props.fixed ? "150px" : "auto")};
   margin-top: 0.15em;
   width: 30px;
   line-height: 1.5rem;
@@ -116,58 +176,7 @@ const TOC = styled.div`
 `;
 
 const Article = styled.article`
-  padding: 0 70px;
-
-  > * {
-    margin: 1.5em 0;
-  }
-
-  .image-wrapper {
-    margin-left: -70px;
-    margin-right: -70px;
-    text-align: center;
-
-    > * {
-      max-width: 940px;
-    }
-  }
-
-  .image-caption {
-    margin-top: 0.75em;
-    font-size: 0.833em;
-    text-align: center;
-    color: ${colors.gray80};
-  }
-
-  > p {
-    line-height: 1.56;
-  }
-
-  pre,
-  code,
-  kbd,
-  samp {
-    padding: 0.125em 0.3125em;
-    white-space: pre-wrap;
-    font-size: 0.889rem;
-    background: ${colors.gray5};
-    border-radius: 3px;
-  }
-
-  pre {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-  }
-
-  pre code {
-    background: none;
-    padding: 0;
-  }
-
-  a:hover,
-  a:active {
-    text-decoration: underline;
-  }
+  ${articleStyle} padding: 0 70px;
 `;
 
 const PostAuthorInfo = styled(AuthorInfo)`
@@ -203,6 +212,13 @@ interface PageTemplateProps {
       html: string;
       excerpt: string;
       tableOfContents: string;
+      fields: {
+        github?: string;
+        playstore?: string;
+        appstore?: string;
+        link?: string;
+        linkDesc?: string;
+      };
       frontmatter: {
         author: {
           id: string;
@@ -222,7 +238,7 @@ interface PageTemplateProps {
         title: string;
         titleImage: {
           childImageSharp: {
-            original: {
+            resize: {
               src: string;
             };
           };
@@ -233,7 +249,8 @@ interface PageTemplateProps {
 }
 
 interface PageTemplateState {
-  pageTop: number;
+  shareSheetFixed: boolean;
+  tocFixed: boolean;
 }
 
 class PageTemplate extends React.PureComponent<
@@ -241,36 +258,95 @@ class PageTemplate extends React.PureComponent<
   PageTemplateState
 > {
   public readonly state: PageTemplateState = {
-    pageTop: 0,
+    shareSheetFixed: false,
+    tocFixed: false,
   };
+
+  private offsets: number[] = [];
 
   public componentDidMount() {
     this.handleOnScroll();
     window.addEventListener("scroll", this.handleOnScroll);
+    this.calculateOffsets();
+    window.addEventListener("resize", this.calculateOffsets);
   }
 
   public componentWillUnmount() {
     window.removeEventListener("scroll", this.handleOnScroll);
+    window.removeEventListener("resize", this.calculateOffsets);
   }
 
   public render() {
     const post = this.props.data.markdownRemark;
-    const tags = (post.frontmatter.tags || "").split(",").map(x => x.trim());
+    const seeAlso = [
+      post.fields.github
+        ? {
+            icon: "GITHUB",
+            label: "GitHub 저장소 바로가기",
+            uri: post.fields.github,
+          }
+        : undefined,
+      post.fields.playstore
+        ? {
+            icon: "PLAY_STORE",
+            label: "Play Store 바로가기",
+            uri: post.fields.playstore,
+          }
+        : undefined,
+      post.fields.appstore
+        ? {
+            icon: "APP_STORE",
+            label: "App Store 바로가기",
+            uri: post.fields.appstore,
+          }
+        : undefined,
+      post.fields.link
+        ? {
+            icon: "WEB",
+            label: post.fields.linkDesc || "관련 링크",
+            uri: post.fields.link,
+          }
+        : undefined,
+    ].filter(x => x) as SeeAlsoItem[];
 
     return (
       <IndexLayout>
         <Page>
           <PostHeading
-            titleImage={
-              post.frontmatter.titleImage.childImageSharp.original.src
-            }
-          >
-            <PostTitleContainer>
-              <PostTitle>{post.frontmatter.title}</PostTitle>
-              <div>{tags.map(x => `#${x}`)}</div>
-            </PostTitleContainer>
-          </PostHeading>
-          <Container>
+            titleImage={post.frontmatter.titleImage.childImageSharp.resize.src}
+            title={post.frontmatter.title}
+            tags={post.frontmatter.tags}
+          />
+          <PostContainer>
+            <Location>
+              {({ location }) => (
+                <ShareSheet fixed={this.state.shareSheetFixed}>
+                  <ShareSheetTitles>Share</ShareSheetTitles>
+                  <FacebookShareButton url={location.href}>
+                    <Icon name="FACEBOOK" />
+                  </FacebookShareButton>
+                  <TwitterShareButton
+                    title="Twitter로 공유"
+                    url={location.href}
+                  >
+                    <Icon name="TWITTER" />
+                  </TwitterShareButton>
+                  {seeAlso.length && (
+                    <ShareSheetTitles>See also</ShareSheetTitles>
+                  )}
+                  {seeAlso.map(x => (
+                    <a
+                      key={x.icon}
+                      href={x!.uri}
+                      target="_blank"
+                      title={x.label}
+                    >
+                      <Icon name={x!.icon} />
+                    </a>
+                  ))}
+                </ShareSheet>
+              )}
+            </Location>
             <PostAuthorInfo>
               <PostAuthorAvatar
                 src={post.frontmatter.author.avatar.children[0].fixed.src}
@@ -279,8 +355,8 @@ class PageTemplate extends React.PureComponent<
               <PostAuthorDesc>{post.frontmatter.author.bio}</PostAuthorDesc>
               <PostDate>{post.frontmatter.date}</PostDate>
             </PostAuthorInfo>
-            <PostWrapper>
-              <TOCWrapper>
+            <PostWrapper id="article">
+              <TOCWrapper fixed={this.state.tocFixed}>
                 <Icon name="TOC" />
                 <TOC
                   dangerouslySetInnerHTML={{
@@ -290,14 +366,46 @@ class PageTemplate extends React.PureComponent<
               </TOCWrapper>
               <Article dangerouslySetInnerHTML={{ __html: post.html }} />
             </PostWrapper>
-          </Container>
+          </PostContainer>
         </Page>
       </IndexLayout>
     );
   }
 
   private handleOnScroll = () => {
-    this.setState({ pageTop: window.scrollY });
+    const calculateFloatingElements = () => {
+      if (window.scrollY > 360 && !this.state.shareSheetFixed) {
+        this.setState({ shareSheetFixed: true });
+      } else if (window.scrollY < 360 && this.state.shareSheetFixed) {
+        this.setState({ shareSheetFixed: false });
+      }
+
+      if (window.scrollY > 501 && !this.state.tocFixed) {
+        this.setState({ tocFixed: true });
+      } else if (window.scrollY < 501 && this.state.tocFixed) {
+        this.setState({ tocFixed: false });
+      }
+    };
+
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(() => {
+        calculateFloatingElements();
+      });
+    } else {
+      calculateFloatingElements();
+    }
+  };
+
+  private calculateOffsets = () => {
+    const articleContainer = document.getElementById("article")!;
+    const wideElements = articleContainer.querySelectorAll(
+      ".gatsby-resp-image-wrapper, .gatsby-resp-iframe-wrapper, .image-wrapper",
+    );
+    wideElements.forEach(x => {
+      const element = x as HTMLElement;
+      this.offsets.push(element.offsetTop);
+      this.offsets.push(element.offsetTop + element.offsetHeight);
+    });
   };
 }
 
@@ -315,6 +423,13 @@ export const query = graphql`
       html
       excerpt
       tableOfContents
+      fields {
+        github
+        playstore
+        appstore
+        link
+        linkDesc
+      }
       frontmatter {
         author {
           id
@@ -335,7 +450,7 @@ export const query = graphql`
         tags
         titleImage {
           childImageSharp {
-            original {
+            resize(width: 1920) {
               src
             }
           }
