@@ -39,7 +39,7 @@ const ShareSheet = styled.aside`
   font-weight: 500;
   text-align: right;
   color: ${colors.gray60};
-  transform: translateX(470px);
+  transform: translateX(490px);
 
   a,
   .SocialMediaShareButton {
@@ -88,6 +88,10 @@ const ShareSheet = styled.aside`
       border-radius: 5px;
       background: rgba(0, 0, 0, 0.5);
     }
+  }
+
+  @media (max-width: 61.25em) {
+    display: none;
   }
 `;
 
