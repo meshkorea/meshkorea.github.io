@@ -42,10 +42,6 @@ export const articleStyle = css`
     margin-left: -70px;
     margin-right: -70px;
     text-align: center;
-
-    > * {
-      max-width: 940px;
-    }
   }
 
   .image-caption {

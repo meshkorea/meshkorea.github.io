@@ -46,7 +46,7 @@ module.exports = {
               quality: 90,
               linkImagesToOriginal: false,
               wrapperStyle:
-                "margin-left: -70px; margin-right: -70px; text-align: center;",
+                "margin-left: -70px; margin-right: -70px; text-align: center",
             },
           },
         ],
