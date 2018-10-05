@@ -107,8 +107,13 @@ const PostTitleContainer = styled(Container)`
 `;
 
 const PostTitle = styled.h1`
+  font-size: 2.5rem;
   margin: 0;
   word-break: keep-all;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    font-size: 2rem;
+  }
 `;
 
 class PostHeading extends React.PureComponent<
