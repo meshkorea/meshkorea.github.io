@@ -30,10 +30,12 @@ const StyledHeader = styled.header`
   background-color: ${colors.gray10};
 
   @media (max-width: ${getEmSize(breakpoints.sm)}em) {
-    top: ${(props: StyledHeaderProps) => (props.folded ? "-51px" : "0")};
-    height: ${(props: StyledHeaderProps) => (props.folded ? "97px" : "100px")};
-    padding-top: 58px;
-    transition: height 0.3s;
+    position: fixed;
+    top: 0;
+    height: ${(props: StyledHeaderProps) => (props.folded ? "45px" : "100px")};
+    padding-top: ${(props: StyledHeaderProps) =>
+      props.folded ? "7px" : "58px"};
+    transition: height 0.3s, padding-top 0.3s;
   }
 `;
 
@@ -74,7 +76,6 @@ const SmallTitleContainer = styled(Container)`
   display: flex;
 
   > a {
-    flex: 1;
     color: inherit;
   }
 `;
@@ -286,6 +287,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
                 <span className="link-text">Mesh Korea Makers Blog</span>
               </SmallTitle>
             </Link>
+            <div style={{ flex: 1 }} />
             <RecruitLinks>
               <a href="https://github.com/meshkorea" target="_blank">
                 <Icon name="GITHUB" />
