@@ -43,20 +43,49 @@ class IndexLayout extends React.Component {
     <Location>
       {({ location }) => (
         <LayoutRoot>
-          <Helmet
-            title={data.site.siteMetadata.title}
-            meta={[
-              {
-                name: "description",
-                content: data.site.siteMetadata.description,
-              },
-              {
-                name: "keywords",
-                content:
-                  "Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, PO, Product Owner, 기획, 디자인, 개발, QA, 서버, 프론트엔드, 안드로이드, 웹, AWS, 머신러닝",
-              },
-            ]}
-          />
+          <Helmet>
+            <title>{data.site.siteMetadata.title}</title>
+            <meta
+              name="description"
+              content={data.site.siteMetadata.description}
+            />
+            <meta
+              name="keywords"
+              content="Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, PO, Product Owner, 기획, 디자인, 개발, QA, 서버, 프론트엔드, 안드로이드, 웹, AWS, 머신러닝"
+            />
+            <meta property="og:title" content="Mesh Korea Makers Blog" />
+            <meta
+              property="og:description"
+              content={data.site.siteMetadata.description}
+            />
+            <meta property="og:type" content="website" />
+            <meta property="og:image" content="/og-image.jpg" />
+            <link
+              rel="apple-touch-icon"
+              sizes="180x180"
+              href="/apple-touch-icon-180x180.png"
+            />
+            <link
+              rel="icon"
+              type="image/png"
+              href="/favicon.png"
+              sizes="1024x1024"
+            />
+            <link
+              rel="icon"
+              type="image/png"
+              href="/favicon-32x32.png"
+              sizes="32x32"
+            />
+            <link
+              rel="icon"
+              type="image/png"
+              href="/favicon-16x16.png"
+              sizes="16x16"
+            />
+            <link rel="mask-icon" href="/mask-icon.svg" color="#1b3993" />
+            <link rel="shortcut icon" href="/favicon.ico" />
+          </Helmet>
 
           <Header
             home={location.pathname === "/"}
