@@ -1,13 +1,13 @@
 {
-  "name": "gatsby-starter-typescript-plus",
-  "description": "A starter kit for TypeScript-based Gatsby projects with sensible defaults.",
+  "name": "meshkorea.github.io",
+  "description": "Mesh Korea Makers Blog",
   "version": "1.0.0",
   "private": true,
-  "author": "Resi Respati <resir014@gmail.com>",
+  "author": "Tae-geon Choi <taegeon.choi@meshkorea.net>",
   "keywords": [
     "gatsby"
   ],
-  "license": "MIT",
+  "license": "UNLICENSED",
   "main": "n/a",
   "scripts": {
     "build": "gatsby build",
