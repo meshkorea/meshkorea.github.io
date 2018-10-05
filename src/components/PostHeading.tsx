@@ -78,7 +78,8 @@ class PostHeading extends React.PureComponent<
       <Wrapper
         titleImage={titleImage}
         style={{
-          backgroundPosition: `50% ${50 - (this.state.pageTop / 600) * 8}%`,
+          backgroundPosition: `50% ${50 -
+            Math.max(this.state.pageTop, 0) / 20}%`,
         }}
       >
         <PostTitleContainer>

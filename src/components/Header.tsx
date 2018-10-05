@@ -2,7 +2,9 @@ import * as React from "react";
 import styled from "react-emotion";
 import { Link } from "gatsby";
 
-import { colors } from "../styles/variables";
+import { colors, breakpoints } from "../styles/variables";
+import { getEmSize } from "../styles/mixins";
+
 import Container from "./Container";
 import Icon from "./Icon";
 
@@ -26,11 +28,30 @@ const StyledHeader = styled.header`
   color: ${colors.gray100};
   border-bottom: 1px solid ${colors.gray15};
   background-color: ${colors.gray10};
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    top: ${(props: StyledHeaderProps) => (props.folded ? "-51px" : "0")};
+    height: ${(props: StyledHeaderProps) => (props.folded ? "97px" : "100px")};
+    padding-top: 58px;
+    transition: height 0.3s;
+  }
 `;
 
 const Logo = styled.div`
   width: 133px;
   height: 24px;
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    display: inline-block;
+    width: 26px;
+    height: 30px;
+    overflow: hidden;
+
+    > i > svg {
+      width: 166px;
+      height: 30px;
+    }
+  }
 `;
 
 const Title = styled.h1`
@@ -39,6 +60,14 @@ const Title = styled.h1`
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.015em;
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    display: inline-block;
+    margin: 0 0 0 14px;
+    font-size: 1.125rem;
+    line-height: 30px;
+    vertical-align: top;
+  }
 `;
 
 const SmallTitleContainer = styled(Container)`
@@ -53,9 +82,14 @@ const SmallTitleContainer = styled(Container)`
 const SmallTitle = styled.h1`
   padding-top: 5px;
   font-size: inherit;
+  color: ${(props: TitleProps) =>
+    props.show ? colors.primary100 : colors.gray10};
   cursor: ${(props: TitleProps) => (props.show ? "pointer" : "default")};
+  transition: ${(props: TitleProps) =>
+    props.show ? "color 0.5s ease-in" : "color 0.2s ease-out"};
 
   .link-text {
+    color: ${colors.gray100};
     opacity: ${(props: TitleProps) => (props.show ? 1 : 0)};
     transition: ${(props: TitleProps) =>
       props.show ? "opacity 0.5s ease-in" : "opacity 0.2s ease-out"};
@@ -63,13 +97,9 @@ const SmallTitle = styled.h1`
 
   i {
     margin-right: 14px;
-    > svg {
-      transition: ${(props: TitleProps) =>
-        props.show ? "fill 0.5s ease-in" : "fill 0.2s ease-out"};
-    }
   }
 
-  @media (max-width: 61.25em) {
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
     display: none;
   }
 `;
@@ -88,7 +118,7 @@ const SmallTitleBox = styled.div`
   line-height: 1.2;
   background-color: ${colors.gray10};
 
-  @media (max-width: 61.25em) {
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
     height: 44px;
     padding-top: 0;
     left: 50px;
@@ -116,6 +146,18 @@ const RecruitLinks = styled.div`
       text-decoration: none;
       background: ${colors.primary100};
     }
+
+    @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+      color: ${colors.gray90};
+      margin: 4px 0;
+      border-radius: 5px;
+
+      &:hover,
+      &:focus {
+        color: ${colors.gray100};
+        background: ${colors.gray15};
+      }
+    }
   }
 `;
 
@@ -127,12 +169,15 @@ const RecruitLink = styled.a`
   font-weight: 600;
   border: 1px solid ${colors.primary100};
 
-  @media (max-width: 61.25em) {
-    border: none;
-    padding-left: 1rem;
-    padding-right: 1rem;
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    margin-left: 0.6rem;
+    margin-right: -0.625rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    line-height: 26px;
     font-weight: 400;
     color: ${colors.gray90};
+    border: none;
   }
 `;
 
@@ -196,11 +241,13 @@ interface HeaderProps {
 
 interface HeaderState {
   isFolded: boolean;
+  isMobile: boolean;
 }
 
 class Header extends React.PureComponent<HeaderProps, HeaderState> {
   public readonly state: HeaderState = {
     isFolded: false,
+    isMobile: false,
   };
 
   public componentDidMount() {
@@ -208,22 +255,21 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
       this.handleOnScroll();
       window.addEventListener("scroll", this.handleOnScroll);
     }
+
+    this.handleOnResize();
+    window.addEventListener("resize", this.handleOnResize);
   }
 
   public componentWillUnmount() {
     if (this.props.home) {
       window.removeEventListener("scroll", this.handleOnScroll);
     }
+    window.removeEventListener("resize", this.handleOnResize);
   }
 
   public render() {
-    let isMobile = false;
-    try {
-      isMobile = window.innerWidth < 980;
-    } catch (e) {
-      // do nothing
-    }
-    const folded = !this.props.home || this.state.isFolded;
+    const folded =
+      this.state.isFolded || (!this.state.isMobile && !this.props.home);
     return (
       <StyledHeader folded={folded}>
         <SmallTitleBox>
@@ -236,7 +282,6 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
                   height={30}
                   viewboxLeft={20.8}
                   viewboxTop={24}
-                  color={folded ? colors.primary100 : colors.gray10}
                 />
                 <span className="link-text">Mesh Korea Makers Blog</span>
               </SmallTitle>
@@ -255,17 +300,20 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
           </SmallTitleContainer>
         </SmallTitleBox>
         <Container>
-          <Logo>
-            <Icon
-              name="LOGO"
-              width={133}
-              height={24}
-              color={colors.primary100}
-            />
-          </Logo>
-          <Title>
-            <HomepageLink to="/">Makers Blog</HomepageLink>
-          </Title>
+          <HomepageLink to="/">
+            <Logo>
+              <Icon
+                name="LOGO"
+                width={133}
+                height={24}
+                color={colors.primary100}
+              />
+            </Logo>
+            <Title>
+              {this.state.isMobile && "Mesh Korea "}
+              Makers Blog
+            </Title>
+          </HomepageLink>
           {/* <TagAndSearch>
             <TagList>
               <TagItem>#lorem_ipsum</TagItem>
@@ -288,10 +336,46 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
   }
 
   private handleOnScroll = () => {
-    if (!this.state.isFolded && window.scrollY > 125) {
-      this.setState({ isFolded: true });
-    } else if (this.state.isFolded && window.scrollY < 125) {
-      this.setState({ isFolded: false });
+    const eventHandler = () => {
+      const threshold = this.state.isMobile ? 51 : 125;
+      if (!this.state.isFolded && window.scrollY > threshold) {
+        this.setState({ isFolded: true });
+      } else if (this.state.isFolded && window.scrollY < threshold) {
+        this.setState({ isFolded: false });
+      }
+    };
+
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(() => {
+        eventHandler();
+      });
+    } else {
+      eventHandler();
+    }
+  };
+
+  private handleOnResize = () => {
+    const eventHandler = () => {
+      const isMobile = window.innerWidth < breakpoints.sm;
+      if (this.state.isMobile !== isMobile) {
+        this.setState({ isMobile }, () => {
+          if (isMobile) {
+            this.handleOnScroll();
+            window.addEventListener("scroll", this.handleOnScroll);
+          } else {
+            this.handleOnScroll();
+            window.removeEventListener("scroll", this.handleOnScroll);
+          }
+        });
+      }
+    };
+
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(() => {
+        eventHandler();
+      });
+    } else {
+      eventHandler();
     }
   };
 }

@@ -14,8 +14,8 @@ import Page from "../components/Page";
 import PostHeading from "../components/PostHeading";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
-import { fadeIn, articleStyle } from "../styles/mixins";
-import { colors } from "../styles/variables";
+import { getEmSize, fadeIn, articleStyle } from "../styles/mixins";
+import { colors, breakpoints } from "../styles/variables";
 
 interface SeeAlsoItem {
   icon: "APP_STORE" | "GITHUB" | "PLAY_STORE" | "WEB";
@@ -39,7 +39,7 @@ const ShareSheet = styled.aside`
   font-weight: 500;
   text-align: right;
   color: ${colors.gray60};
-  transform: translateX(490px);
+  transform: translateX(470px);
 
   a,
   .SocialMediaShareButton {
@@ -90,7 +90,7 @@ const ShareSheet = styled.aside`
     }
   }
 
-  @media (max-width: 61.25em) {
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
     display: none;
   }
 `;
@@ -106,23 +106,31 @@ const ShareSheetTitles = styled.h5`
 `;
 
 const TOCWrapper = styled.nav`
-  position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
-  top: ${(props: ShareSheetProps) => (props.fixed ? "125px" : "auto")};
-  margin-top: 0.15em;
-  width: 30px;
-  line-height: 1.5rem;
   color: ${colors.gray40};
   transition: color 0.5s;
 
   &:hover {
     color: ${colors.gray80};
   }
+
+  > i {
+    position: ${(props: ShareSheetProps) =>
+      props.fixed ? "fixed" : "absolute"};
+    top: ${(props: ShareSheetProps) => (props.fixed ? "125px" : "auto")};
+    margin-top: 0.15em;
+    width: 30px;
+    line-height: 1.5rem;
+  }
+
+  > div {
+    position: ${(props: ShareSheetProps) =>
+      props.fixed ? "fixed" : "absolute"};
+    top: ${(props: ShareSheetProps) => (props.fixed ? "115px" : "auto")};
+    margin-left: 30px;
+  }
 `;
 
 const TOC = styled.div`
-  position: absolute;
-  top: -0.75em;
-  left: 30px;
   z-index: 50;
   font-size: 1rem;
 
@@ -380,9 +388,9 @@ class PageTemplate extends React.PureComponent<
         this.setState({ shareSheetFixed: false });
       }
 
-      if (window.scrollY > 476 && !this.state.tocFixed) {
+      if (window.scrollY > 506 && !this.state.tocFixed) {
         this.setState({ tocFixed: true });
-      } else if (window.scrollY < 476 && this.state.tocFixed) {
+      } else if (window.scrollY < 506 && this.state.tocFixed) {
         this.setState({ tocFixed: false });
       }
     };

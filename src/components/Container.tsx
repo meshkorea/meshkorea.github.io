@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "react-emotion";
 
-import { widths } from "../styles/variables";
+import { breakpoints, widths } from "../styles/variables";
 import { getEmSize } from "../styles/mixins";
 
 const StyledContainer = styled.div`
@@ -9,6 +9,12 @@ const StyledContainer = styled.div`
   margin-right: auto;
   width: auto;
   max-width: ${getEmSize(widths.lg)}rem;
+  padding: 0 20px;
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 interface ContainerProps {

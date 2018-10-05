@@ -56,7 +56,12 @@ export const articleStyle = css`
   }
 
   > p {
-    line-height: 1.56;
+    line-height: 1.75;
+  }
+
+  li > p,
+  li > ul {
+    margin-bottom: 0;
   }
 
   pre,
@@ -68,6 +73,11 @@ export const articleStyle = css`
     font-size: 0.889rem;
     background: ${colors.gray5};
     border-radius: 3px;
+  }
+
+  p > code,
+  li > code {
+    vertical-align: 1px;
   }
 
   pre {

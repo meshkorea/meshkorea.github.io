@@ -84,7 +84,7 @@ const RecentPageContainer = styled(Container)`
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 20px 0;
+  padding: 20px;
 `;
 
 const BackgroundContainer = styled.div`

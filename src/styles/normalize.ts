@@ -43,7 +43,6 @@ injectGlobal`
   img {
     max-width: 100%;
     object-fit: contain;
-    position: relative;
   }
 
   figure {
