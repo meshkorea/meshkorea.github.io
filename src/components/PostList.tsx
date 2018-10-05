@@ -83,6 +83,7 @@ const ListItemImgWrapper = styled.figure`
 const Img = styled.div`
   width: 100%;
   height: 100%;
+  background-color: ${colors.gray40};
   background-position: 50% 50%;
   background-size: cover;
   background-image: ${(props: BackgroundFigureProps) =>
