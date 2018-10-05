@@ -1,7 +1,8 @@
 import * as React from "react";
 import styled from "react-emotion";
 
-import { colors } from "../styles/variables";
+import { breakpoints, colors } from "../styles/variables";
+import { getEmSize } from "../styles/mixins";
 
 import Icon from "./Icon";
 import Container from "./Container";
@@ -18,10 +19,20 @@ const FooterContainer = styled(Container)`
 const CompanyLogo = styled.div`
   float: left;
   width: 160px;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    float: none;
+    width: auto;
+  }
 `;
 
 const CompanyDesc = styled.div`
   margin-left: 160px;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-left: 0;
+    margin-top: 1.5rem;
+  }
 `;
 
 const Footer = () => (
