@@ -30,12 +30,16 @@ const StyledHeader = styled.header`
   background-color: ${colors.gray10};
 
   @media (max-width: ${getEmSize(breakpoints.sm)}em) {
-    position: fixed;
-    top: 0;
-    height: ${(props: StyledHeaderProps) => (props.folded ? "45px" : "100px")};
-    padding-top: ${(props: StyledHeaderProps) =>
-      props.folded ? "7px" : "58px"};
-    transition: height 0.3s, padding-top 0.3s;
+    top: ${(props: StyledHeaderProps) => (props.folded ? "-51px" : "0")};
+    height: ${(props: StyledHeaderProps) => (props.folded ? "96px" : "100px")};
+    padding-top: 58px;
+    transition: height 0.3s;
+  }
+`;
+
+const LogoContainer = styled.div`
+  @media (min-width: ${getEmSize(breakpoints.sm)}em) {
+    display: ${(props: StyledHeaderProps) => (props.folded ? "none" : "block")};
   }
 `;
 
@@ -272,7 +276,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
     const folded =
       this.state.isFolded || (!this.state.isMobile && !this.props.home);
     return (
-      <StyledHeader folded={folded}>
+      <>
         <SmallTitleBox>
           <SmallTitleContainer>
             <Link to="/">
@@ -301,22 +305,25 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
             </RecruitLinks>
           </SmallTitleContainer>
         </SmallTitleBox>
-        <Container>
-          <HomepageLink to="/">
-            <Logo>
-              <Icon
-                name="LOGO"
-                width={133}
-                height={24}
-                color={colors.primary100}
-              />
-            </Logo>
-            <Title>
-              {this.state.isMobile && "Mesh Korea "}
-              Makers Blog
-            </Title>
-          </HomepageLink>
-          {/* <TagAndSearch>
+        <StyledHeader folded={folded}>
+          <Container>
+            <LogoContainer folded={folded}>
+              <HomepageLink to="/">
+                <Logo>
+                  <Icon
+                    name="LOGO"
+                    width={133}
+                    height={24}
+                    color={colors.primary100}
+                  />
+                </Logo>
+                <Title>
+                  {this.state.isMobile && "Mesh Korea "}
+                  Makers Blog
+                </Title>
+              </HomepageLink>
+            </LogoContainer>
+            {/* <TagAndSearch>
             <TagList>
               <TagItem>#lorem_ipsum</TagItem>
               <TagItem>#dolor</TagItem>
@@ -332,8 +339,9 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
               <SearchInput />
             </Search>
           </TagAndSearch> */}
-        </Container>
-      </StyledHeader>
+          </Container>
+        </StyledHeader>
+      </>
     );
   }
 

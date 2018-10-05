@@ -74,6 +74,7 @@ export const articleStyle = css`
   p > code,
   li > code {
     vertical-align: 1px;
+    word-break: break-word;
   }
 
   pre {

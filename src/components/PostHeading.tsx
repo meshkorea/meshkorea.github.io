@@ -73,9 +73,6 @@ const PostTitleContainer = styled(Container)`
     z-index: 1000;
     height: 44px;
     padding: 0 16px 0 56px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     color: ${colors.gray90};
     text-shadow: none;
     background: ${colors.gray5};
@@ -83,6 +80,9 @@ const PostTitleContainer = styled(Container)`
     > h1 {
       font-size: 1rem;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     > div {
