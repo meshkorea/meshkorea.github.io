@@ -13,8 +13,8 @@ import Page from "../components/Page";
 import { TagList } from "../components/PostList";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
-import { clearfix } from "../styles/mixins";
-import { colors } from "../styles/variables";
+import { clearfix, getEmSize } from "../styles/mixins";
+import { breakpoints, colors } from "../styles/variables";
 import { transformTags } from "../utils/tag";
 
 interface IndexPageProps {
@@ -77,6 +77,14 @@ const RecentPageWrapper = styled.div`
   color: ${colors.white};
   word-break: keep-all;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    height: 360px;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    height: 480px;
+  }
 `;
 
 const RecentPageContainer = styled(Container)`
@@ -121,10 +129,18 @@ const RecentTitle = styled.h2`
     font-size: 1rem;
     top: -1.2rem;
   }
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    font-size: 2rem;
+
+    > sup {
+      top: -0.8rem;
+    }
+  }
 `;
 
 const RecentExcerpt = styled.summary`
-  width: 620px;
+  max-width: 620px;
 `;
 
 const PostList = styled.ul`
@@ -132,6 +148,10 @@ const PostList = styled.ul`
   padding: 0;
   list-style: none;
   list-style-image: none;
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    margin-top: 30px;
+  }
 `;
 
 const ListItem = styled.li`
@@ -142,6 +162,18 @@ const ListItem = styled.li`
 
   a {
     color: inherit;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    margin-left: 0;
+    margin-right: 0;
+    width: 50%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    width: 100%;
   }
 `;
 

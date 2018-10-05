@@ -1,8 +1,8 @@
 import * as React from "react";
 import styled from "react-emotion";
 
-import { clearfix } from "../styles/mixins";
-import { colors } from "../styles/variables";
+import { clearfix, getEmSize } from "../styles/mixins";
+import { colors, breakpoints } from "../styles/variables";
 
 interface BackgroundFigureProps {
   src?: string;
@@ -27,12 +27,14 @@ export const ListDesc = styled.strong`
 
 export const ListItem = styled.li`
   ${clearfix} margin: 0 0 40px;
+  border-top: 1px solid ${colors.gray10};
+  padding-top: 1rem;
 
   a {
     color: inherit;
 
     &:hover h3 {
-      text-decoration: underline;
+      color: ${colors.primary100};
     }
   }
 
@@ -42,16 +44,40 @@ export const ListItem = styled.li`
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    color: ${colors.primary100};
+    color: ${colors.gray100};
+    transition: color 0.5s;
+
+    @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+      white-space: initial;
+    }
   }
 `;
 
 const ListItemImgWrapper = styled.figure`
   float: right;
-  margin: 0 0 0 80px;
+  margin: 0.5rem 0 0 80px;
   width: 240px;
   height: 160px;
   overflow: hidden;
+
+  @media (max-width: ${getEmSize(
+      breakpoints.md,
+    )}em) and (max-width: ${getEmSize(breakpoints.lg)}em) {
+    margin-left: 40px;
+  }
+
+  @media (max-width: ${getEmSize(
+      breakpoints.sm,
+    )}em) and (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-left: 20px;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    float: none;
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
 `;
 
 const Img = styled.div`

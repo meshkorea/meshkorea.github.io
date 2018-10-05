@@ -33,6 +33,10 @@ const CompanyDesc = styled.div`
     margin-left: 0;
     margin-top: 1.5rem;
   }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    font-size: 0.875rem;
+  }
 `;
 
 const Footer = () => (

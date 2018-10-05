@@ -32,10 +32,6 @@ const NotFoundPage = styled(Page)`
 
 const NotFoundContainer = styled(Container)`
   width: 100%;
-
-  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
-    font-size: 0.875rem;
-  }
 `;
 
 const NotFoundTitle = styled.h1`
@@ -45,13 +41,17 @@ const NotFoundTitle = styled.h1`
 `;
 
 const NotFoundDesc = styled.p`
-  margin-bottom: 6.25em;
+  margin-bottom: 6.25rem;
   font-size: 2.25em;
   color: ${colors.gray60};
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    margin-bottom: 3rem;
+  }
 `;
 
 const NotFoundGuideTitle = styled.dt`
-  margin-top: 1.875em;
+  margin-top: 1.875rem;
   font-size: 1.25em;
 
   > i {
@@ -60,7 +60,7 @@ const NotFoundGuideTitle = styled.dt`
 `;
 
 const NotFoundGuideDesc = styled.dd`
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
   margin-left: 34px;
   margin-bottom: 0;
 

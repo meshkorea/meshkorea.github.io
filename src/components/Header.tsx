@@ -356,15 +356,14 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
 
   private handleOnResize = () => {
     const eventHandler = () => {
-      const isMobile = window.innerWidth < breakpoints.sm;
+      const isMobile = window.innerWidth <= breakpoints.sm;
       if (this.state.isMobile !== isMobile) {
         this.setState({ isMobile }, () => {
-          if (isMobile) {
-            this.handleOnScroll();
-            window.addEventListener("scroll", this.handleOnScroll);
-          } else {
-            this.handleOnScroll();
+          this.handleOnScroll();
+          if (!isMobile && !this.props.home) {
             window.removeEventListener("scroll", this.handleOnScroll);
+          } else {
+            window.addEventListener("scroll", this.handleOnScroll);
           }
         });
       }

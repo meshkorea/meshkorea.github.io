@@ -25,7 +25,7 @@ injectGlobal`
     overflow-y: scroll;
     font-family: ${fonts.sansSerif};
     color: ${colors.gray100};
-    background-color: ${colors.white};
+    background-color: ${colors.gray10};
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
   }

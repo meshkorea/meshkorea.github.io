@@ -5,7 +5,7 @@ import { graphql } from "gatsby";
 import { Location } from "@reach/router";
 
 import AuthorInfo, {
-  AuthorAvatar as PostAuthorAvatar,
+  AuthorAvatar,
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
@@ -25,6 +25,18 @@ interface SeeAlsoItem {
 
 const PostWrapper = styled.article`
   font-size: 1.25rem;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-left: 0;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    font-size: 1.125rem;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.xs)}em) {
+    font-size: 1rem;
+  }
 `;
 
 interface ShareSheetProps {
@@ -128,6 +140,35 @@ const TOCWrapper = styled.nav`
     top: ${(props: ShareSheetProps) => (props.fixed ? "115px" : "auto")};
     margin-left: 30px;
   }
+
+  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
+    display: ${(props: ShareSheetProps) => (props.fixed ? "block" : "none")};
+
+    > i {
+      display: block;
+      top: 44px;
+      left: 0;
+      margin-top: 0;
+      width: 56px;
+      height: 50px;
+      z-index: 1100;
+      padding: 10px 36px 10px 16px;
+    }
+
+    > div {
+      top: 89px;
+      left: 0;
+      right: 0;
+      margin-left: 0;
+
+      > ul {
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+        border-bottom: 1px solid ${colors.gray15};
+      }
+    }
+  }
 `;
 
 const TOC = styled.div`
@@ -185,23 +226,92 @@ const TOC = styled.div`
 
 const Article = styled.article`
   ${articleStyle} padding: 0 70px;
+
+  @media (min-width: ${getEmSize(
+      breakpoints.xs,
+    )}em) and (max-width: ${getEmSize(breakpoints.md)}em) {
+    padding-left: 40px;
+    padding-right: 40px;
+
+    .gatsby-resp-iframe-wrapper,
+    .gatsby-resp-image-wrapper,
+    .image-wrapper {
+      margin-left: -60px !important;
+      margin-right: -60px !important;
+    }
+  }
+
+  @media (min-width: ${getEmSize(
+      breakpoints.xs,
+    )}em) and (max-width: ${getEmSize(breakpoints.sm)}em) {
+    .gatsby-resp-iframe-wrapper,
+    .gatsby-resp-image-wrapper,
+    .image-wrapper {
+      margin-left: -56px !important;
+      margin-right: -56px !important;
+    }
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.xs)}em) {
+    padding-left: 0;
+    padding-right: 0;
+
+    .gatsby-resp-iframe-wrapper,
+    .gatsby-resp-image-wrapper,
+    .image-wrapper {
+      margin-left: -16px !important;
+      margin-right: -16px !important;
+    }
+  }
+`;
+
+const PostAuthorAvatar = styled(AuthorAvatar)`
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    float: none;
+    margin-bottom: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
 `;
 
 const PostAuthorInfo = styled(AuthorInfo)`
   margin-top: 40px;
+
+  @media (min-width: ${getEmSize(
+      breakpoints.xs,
+    )}em) and (max-width: ${getEmSize(breakpoints.md)}em) {
+    padding-left: 40px;
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.xs)}em) {
+    padding-left: 0;
+  }
 `;
+
 const PostAuthorName = styled(AuthorName)`
   margin-top: 2px;
   margin-left: 70px;
   font-size: 1.125rem;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-left: 0;
+  }
 `;
+
 const PostAuthorDesc = styled(AuthorDesc)`
   margin-left: 70px;
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-left: 0;
+  }
 `;
 
 const PostDate = styled(PostAuthorDesc)`
-  margin-top: 18px;
+  margin-top: 1.125rem;
   margin-bottom: 1.5rem;
+
+  @media (max-width: ${getEmSize(breakpoints.md)}em) {
+    margin-top: 0;
+  }
 `;
 
 interface PageTemplateProps {
@@ -388,8 +498,13 @@ class PageTemplate extends React.PureComponent<
         this.setState({ shareSheetFixed: false });
       }
 
-      if (window.scrollY > 506 && !this.state.tocFixed) {
-        this.setState({ tocFixed: true });
+      if (
+        (window.innerWidth <= breakpoints.sm && window.scrollY > 414) ||
+        window.scrollY > 506
+      ) {
+        if (!this.state.tocFixed) {
+          this.setState({ tocFixed: true });
+        }
       } else if (window.scrollY < 506 && this.state.tocFixed) {
         this.setState({ tocFixed: false });
       }

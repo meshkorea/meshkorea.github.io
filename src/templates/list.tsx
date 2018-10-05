@@ -49,10 +49,10 @@ const List: React.SFC<ListProps> = ({ pageTitle, pathContext }) => {
             {posts.map(({ node }) => (
               <ListItem key={node.fields.slug}>
                 <Link to={node.fields.slug}>
+                  <h3>{node.frontmatter.title}</h3>
                   <ListItemImg
                     src={node.frontmatter.titleImage.childImageSharp.resize.src}
                   />
-                  <h3>{node.frontmatter.title}</h3>
                   <TagList>
                     {transformTags(node.frontmatter.tags, true)}
                   </TagList>
