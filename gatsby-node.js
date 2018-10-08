@@ -154,17 +154,27 @@ exports.createPages = async ({ graphql, actions }) => {
   );
   uniqueTags.forEach(tag => {
     const tagPath = `tags/${tag}`;
-    createPaginatedPages({
-      edges: allMarkdown.data.allMarkdownRemark.edges,
-      createPage: createPage,
-      pageTemplate: "./src/templates/tags.tsx",
-      pathPrefix: tagPath,
-      pageLength: 15,
-      context: {
-        totalItems: allMarkdown.data.allMarkdownRemark.edges.length,
-        tagName: tag,
-      },
-    });
+    const matchedPosts = allMarkdown.data.allMarkdownRemark.edges.filter(
+      edge =>
+        edge.node.frontmatter.tags &&
+        edge.node.frontmatter.tags
+          .split(",")
+          .map(x => x.trim())
+          .find(tagInPost => tagInPost === tag),
+    );
+    if (matchedPosts.length) {
+      createPaginatedPages({
+        edges: matchedPosts,
+        createPage: createPage,
+        pageTemplate: "./src/templates/tags.tsx",
+        pathPrefix: tagPath,
+        pageLength: 15,
+        context: {
+          totalItems: matchedPosts.length,
+          tagName: tag,
+        },
+      });
+    }
   });
 
   allMarkdown.data.allMarkdownRemark.edges.forEach(({ node }) => {
