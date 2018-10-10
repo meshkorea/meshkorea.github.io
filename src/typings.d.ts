@@ -13,3 +13,7 @@ declare module "*.module.css" {
   const cssModule: CSSModule;
   export = cssModule;
 }
+
+declare module "gatsby-plugin-google-analytics" {
+  const OutboundLink: React.ComponentType<React.HTMLProps<HTMLAnchorElement>>;
+}

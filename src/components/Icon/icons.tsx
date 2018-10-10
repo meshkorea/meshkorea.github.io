@@ -94,8 +94,16 @@ const Icons: IconInterface = {
   TOC: (
     <>
       <rect x="3" y="11" width="18" height="2" rx="1" ry="1" />
-      <rect x="3" y="17" width="13" height="2" rx="1" ry="1" />
-      <rect x="3" y="5" width="13" height="2" rx="1" ry="1" />
+      <rect
+        className="short"
+        x="3"
+        y="17"
+        width="13"
+        height="2"
+        rx="1"
+        ry="1"
+      />
+      <rect className="short" x="3" y="5" width="13" height="2" rx="1" ry="1" />
     </>
   ),
   TWITTER: (

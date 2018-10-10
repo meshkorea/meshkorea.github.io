@@ -13,7 +13,6 @@ linkDesc: 라이브 데모 페이지 확인하기
 
 > 위치기반 데이터를 시각화 할때 기본 분포도 보다 더 좋은 방법은 없을까?
 
-<a name="end-product"></a>
 ## 1. 결과물
 
 <div class="image-wrapper"><img src="https://cloud.githubusercontent.com/assets/16535279/18374131/2d32e36a-7685-11e6-9722-71217bc1b69d.gif"/></div>
@@ -23,7 +22,6 @@ linkDesc: 라이브 데모 페이지 확인하기
 -   [라이브 데모 페이지](https://meshkorea.github.io/hexbin-demo/)
 -   [라이브 데모의 소스 코드](https://github.com/meshkorea/hexbin-demo)
 
-<a name="objective"></a>
 ## 2. 포스트의 목적
 
 비즈니스 인텔리전스(Business Intelligence 또는 BI)란 원시 데이터를 수집하여 의미 있는 정보로 가공하여 사업적인 의사결정에 도움을 주는 시스템입니다.
@@ -34,7 +32,6 @@ linkDesc: 라이브 데모 페이지 확인하기
 
 그리고 프로젝트 스캐폴딩(Scaffolding)을 위해 [`create-react-app`](https://github.com/facebookincubator/create-react-app)이라는 React 프로젝트 스타터 킷을 이용했습니다. React 프로젝트 해 보신 분은 아시겠지만, webpack, babel, eslint 등등 진입장벽이 꽤 높습니다. 이 프로젝트에 적용한 스타터 킷을 이용하면 명령 한 줄(`$ create-react-app my-app && cd my-app`)로 프로젝트 뼈대 구조를 빠르게 생성할 수 있습니다. 파워유저라면 `$ npm run eject` 명령을 이용하여 자신만의 보일러플레이트(Boilerplate)를 만들 수도 있습니다.
 
-<a name="core-library"></a>
 ## 3. 요리 재료 소개
 
 ### 3.1. React
@@ -56,7 +53,6 @@ Google Maps 는 다들 아시죠? 위치 기반 서비스를 개발할 수 있�
 >
 > 반대로 React가 DOM에 접근하는 방법입니다. React의 강력한 DOM 제어 능력을 살리고 D3는 데이터 가공에만 사용하는 방법입니다. 이 프로젝트 및 (주)메쉬코리아가 사용하는 방법입니다. `<svg>` 태그를 포함한 대부분의 태그들을 [React (Virtual) DOM](https://facebook.github.io/react/docs/tags-and-attributes.html)으로 조작할 수 있습니다.
 
-<a name="walkthrough"></a>
 ## 4. 조리하기
 
 육각통 기법을 사용하는 방법을 소스코드를 보며 천천히 하나씩 짚어보겠습니다.
@@ -69,7 +65,6 @@ Google Maps 는 다들 아시죠? 위치 기반 서비스를 개발할 수 있�
     -  [4.3.3. Hexbin 컴포넌트](#walkthrough-0303)
     -  [4.3.4. Hexagon 컴포넌트](#walkthrough-0304)
 
-<a name="walkthrough-01"></a>
 ### 4.1. 육각통 기법이란?
 
 육각통 기법은 기본 분포도(distribution map)와 많이 다르지 않습니다.
@@ -83,7 +78,6 @@ Google Maps 는 다들 아시죠? 위치 기반 서비스를 개발할 수 있�
 <div class="image-wrapper"><img src="https://cloud.githubusercontent.com/assets/16535279/17885277/80bb9efe-6957-11e6-874f-c51e5b80a3e3.png"/></div>
 <p class="image-caption"> 데이터 포인트의 개수에 따라 그에 맞는 색상을 적용합니다.</p>
 
-<a name="walkthrough-02"></a>
 ### 4.2. 데이터
 
 모든 시각화의 시작은 데이터입니다.
@@ -106,14 +100,12 @@ const multipleLocations = [
 
 라이브 데모 프로젝트에서는 위치 데이터를 [JSON 파일](https://github.com/meshkorea/hexbin-demo/blob/master/src/data/generated-data.json)로 사용합니다. `webpack`의 `json-loader`를 이용해서 데이터 파일을 프로젝트로 가져옵니다([코드](https://github.com/meshkorea/hexbin-demo/blob/master/src/App.js#L8)). 실무 프로젝트에선 서버에서 비동기 방식으로 불러오겠죠?
 
-<a name="walkthrough-03"></a>
 ### 4.3. 컴포넌트 구조
 
 이 프로젝트의 진입점인 [index.js](https://github.com/meshkorea/hexbin-demo/blob/master/src/index.js)는 최상위 컴포넌트인 `App` 컴포넌트를 불러옵니다([코드](https://github.com/meshkorea/hexbin-demo/blob/master/src/index.js#L6-L9)).
 
 <div class="image-wrapper"><img src="https://cloud.githubusercontent.com/assets/16535279/17917353/9fcda3b0-69f6-11e6-8bbd-23667efb9393.png"/></div>
 
-<a name="walkthrough-0301"></a>
 #### 4.3.1. App 컴포넌트
 
 `App` 컴포넌트부터 차례대로 살펴 보겠습니다. `App` 컴포넌트는 `react-google-map`에서 제공하는 `GoogleMapLoader` 컴포넌트를 임포트 합니다.
@@ -148,7 +140,6 @@ class App extends Component {
 
 `fakeStoreLatLngData`는 위치 데이터를 배열로 가지고 있는 [`generated-data.json`](https://github.com/meshkorea/hexbin-demo/blob/master/src/data/generated-data.json) 파일을 `JSON.parse()` 를 통해 자바스크립트 배열로 가공해줍니다 (이 부분을 `webpack` 의 `json-loader` 가 합니다).
 
-<a name="walkthrough-0302"></a>
 #### 4.3.2. GoogleMapLoader와 GoogleMap 컴포넌트
 
 `App` 컴포넌트에서 임포트된 `GoogleMapLoader` 컴포넌트와 `GoogleMap` 컴포넌트를 조금 더 자세히 살펴보겠습니다.
@@ -263,7 +254,6 @@ class App extends Component {
 -   `data`: 위치 데이터 배열
 -   `colorRange`: 상대적 밀집도를 표현할 색상 범위
 
-<a name="walkthrough-0303"></a>
 #### 4.3.3. Hexbin 컴포넌트
 
 이제 `Hexbin` 컴포넌트를 자세히 들여다 볼까요? `Hexbin` 컴포넌트는 위치 데이터 배열을 받아 육각통 기법으로 시각화합니다.
@@ -481,7 +471,6 @@ makeNewHexagons() {
 
 `render()` 함수가 다음으로 만드는 변수는 `colorScale`이고, 육각통을 그릴때 필요한 색상을 계산하는 함수입니다. `makeNewColorScale()`함수는 `d3-hexbin` 으로 만든 육각통 배열을 넘겨주면 `d3-scale` 과 `d3-interpolate` 를 사용하여 각 육각통의 상대적 밀집도를 색상으로 표현할수 있는 스케일 함수를 반환합니다. 이제 육각통들을 그릴 준비가 끝났습니다. `react-google-maps` 가 제공하는 `OverlayView` 컴포넌트에 다음 소개할 `Hexagon`컴포넌트를 넣어줍니다. 여기서 `OverlayView` 컴포넌트의 `position` 속성은 위경도를 요구하기때문에 각 육각형통의 중앙포인트를 다시 위경도로 바꿔줍니다.
 
-<a name="walkthrough-0304"></a>
 #### 4.3.4. Hexagon 컴포넌트
 
 `Hexagon` 컴포넌트는 프리젠테이션 컴포넌트입니다. `Hexbin` 컴포넌트에서 육각통을 그릴 때 사용하는 컴포넌트입니다.
@@ -544,12 +533,10 @@ export default Hexagon;
 
 <div class="image-wrapper"><img src="/content/images/2016/09/transform.png"/></div>
 
-<a name="closing"></a>
 ## 5. 마치며
 
 ES2015 문법과 React 코드가 낯설지 않다면, 라이브 데모 소스 코드를 이해하시는데 큰 무리는 없을 겁니다. [4. 조리하기](#walkthrough) 섹션을 참고하면서 스스로 소스 코드를 읽어 보실 것을 권장합니다. 긴 글 읽어주셔서 고맙습니다.
 
-<a name="license"></a>
 ## 6. License
 * MIT License
 * Sample JSON data created with [JSON GENERATOR](http://www.json-generator.com)

@@ -93,5 +93,6 @@ module.exports = {
         respectDNT: true,
       },
     },
+    "gatsby-plugin-no-sourcemaps",
   ],
 };

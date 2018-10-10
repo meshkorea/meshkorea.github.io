@@ -25,10 +25,17 @@ export const resetUl = css`
 
 export const fadeIn = keyframes`
   0% {
+    display: none;
+    opacity: 0;
+  }
+
+  1% {
+    display: block;
     opacity: 0;
   }
 
   100% {
+    display: block;
     opacity: 1;
   }
 `;
@@ -90,5 +97,16 @@ export const articleStyle = css`
   a:hover,
   a:active {
     text-decoration: underline;
+  }
+
+  a.anchor {
+    margin-left: -1.5rem;
+    padding-right: 0.5rem;
+    line-height: 1.1;
+    color: ${colors.gray60};
+
+    > svg {
+      fill: ${colors.gray60};
+    }
   }
 `;

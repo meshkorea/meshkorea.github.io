@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "react-emotion";
 import { Link } from "gatsby";
+import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import { colors, breakpoints } from "../styles/variables";
 import { getEmSize } from "../styles/mixins";
@@ -166,7 +167,7 @@ const RecruitLinks = styled.div`
   }
 `;
 
-const RecruitLink = styled.a`
+const RecruitLink = styled(OutboundLink)`
   margin-left: 12px;
   padding-top: 5px !important;
   padding-left: 1.25rem;
@@ -293,9 +294,9 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
             </Link>
             <div style={{ flex: 1 }} />
             <RecruitLinks>
-              <a href="https://github.com/meshkorea" target="_blank">
+              <OutboundLink href="https://github.com/meshkorea" target="_blank">
                 <Icon name="GITHUB" />
-              </a>
+              </OutboundLink>
               <RecruitLink
                 href="https://www.wanted.co.kr/company/676"
                 target="_blank"

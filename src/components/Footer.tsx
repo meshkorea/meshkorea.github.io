@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "react-emotion";
+import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import { breakpoints, colors } from "../styles/variables";
 import { getEmSize } from "../styles/mixins";
@@ -53,10 +54,13 @@ const Footer = () => (
           물류플랫폼을 함께 만들어갈 능력있는 사람들과 함께할 사람들을 찾습니다.
         </p>
         <p>
-          <a href="https://www.wanted.co.kr/company/676" target="_blank">
+          <OutboundLink
+            href="https://www.wanted.co.kr/company/676"
+            target="_blank"
+          >
             지금 지원하러 가기&nbsp;
             <Icon width={16} height={16} name="CARET_RIGHT" />
-          </a>
+          </OutboundLink>
         </p>
       </CompanyDesc>
     </FooterContainer>

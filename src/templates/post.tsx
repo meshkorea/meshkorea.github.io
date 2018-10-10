@@ -3,6 +3,7 @@ import { FacebookShareButton, TwitterShareButton } from "react-share";
 import styled from "react-emotion";
 import { graphql } from "gatsby";
 import { Location } from "@reach/router";
+import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import AuthorInfo, {
   AuthorAvatar,
@@ -11,11 +12,13 @@ import AuthorInfo, {
 } from "../components/AuthorInfo";
 import Icon from "../components/Icon";
 import Page from "../components/Page";
+import TOC from "../components/TOC";
 import PostHeading from "../components/PostHeading";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
-import { getEmSize, fadeIn, articleStyle } from "../styles/mixins";
+import { getEmSize, articleStyle } from "../styles/mixins";
 import { colors, breakpoints } from "../styles/variables";
+import Helmet from "react-helmet";
 
 interface SeeAlsoItem {
   icon: "APP_STORE" | "GITHUB" | "PLAY_STORE" | "WEB";
@@ -114,113 +117,6 @@ const ShareSheetTitles = styled.h5`
 
   &:first-of-type {
     margin-top: 0;
-  }
-`;
-
-const TOCWrapper = styled.nav`
-  color: ${colors.gray40};
-  transition: color 0.5s;
-
-  &:hover {
-    color: ${colors.gray80};
-  }
-
-  > i {
-    position: ${(props: ShareSheetProps) =>
-      props.fixed ? "fixed" : "absolute"};
-    top: ${(props: ShareSheetProps) => (props.fixed ? "125px" : "auto")};
-    margin-top: 0.15em;
-    width: 30px;
-    line-height: 1.5rem;
-  }
-
-  > div {
-    position: ${(props: ShareSheetProps) =>
-      props.fixed ? "fixed" : "absolute"};
-    top: ${(props: ShareSheetProps) => (props.fixed ? "115px" : "auto")};
-    margin-left: 30px;
-  }
-
-  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
-    display: ${(props: ShareSheetProps) => (props.fixed ? "block" : "none")};
-
-    > i {
-      display: block;
-      top: 44px;
-      left: 0;
-      margin-top: 0;
-      width: 56px;
-      height: 50px;
-      z-index: 1100;
-      padding: 10px 36px 10px 16px;
-    }
-
-    > div {
-      top: 89px;
-      left: 0;
-      right: 0;
-      margin-left: 0;
-
-      > ul {
-        width: 100%;
-        box-shadow: none;
-        border-radius: 0;
-        border-bottom: 1px solid ${colors.gray15};
-      }
-    }
-  }
-`;
-
-const TOC = styled.div`
-  z-index: 50;
-  font-size: 1rem;
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    list-style-image: none;
-
-    p {
-      margin: 0;
-    }
-
-    a {
-      display: block;
-      margin-left: -0.5rem;
-      margin-right: -0.5rem;
-      padding: 0.3rem 0.5rem;
-      border-radius: 0.5rem;
-      transition: background-color 0.5s;
-
-      &:hover {
-        background-color: ${colors.gray10};
-      }
-    }
-
-    &:not(:first-child) {
-      padding-left: 1rem;
-    }
-  }
-
-  > ul {
-    width: 240px;
-    max-height: 360px;
-    overflow-y: auto;
-    padding: 0.5rem 1rem;
-    display: none;
-    background: ${colors.white};
-    border-radius: 10px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-  }
-
-  li {
-  }
-
-  nav:hover & ul,
-  nav &:hover ul {
-    display: block;
-    animation: ${fadeIn} 0.5s;
   }
 `;
 
@@ -429,6 +325,26 @@ class PageTemplate extends React.PureComponent<
 
     return (
       <IndexLayout>
+        <Helmet>
+          <title>
+            {post.frontmatter.title}
+            :: Mesh Korea Makers Blog
+          </title>
+          <meta name="description" content={post.excerpt} />
+          <meta
+            name="keywords"
+            content={`Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog${
+              post.frontmatter.tags ? `, ${post.frontmatter.tags}` : ""
+            }`}
+          />
+          <meta property="og:title" content="Mesh Korea Makers Blog" />
+          <meta property="og:description" content={post.excerpt} />
+          <meta property="og:type" content="article" />
+          <meta
+            property="og:image"
+            content={post.frontmatter.titleImage.childImageSharp.resize.src}
+          />
+        </Helmet>
         <Page>
           <PostHeading
             titleImage={post.frontmatter.titleImage.childImageSharp.resize.src}
@@ -453,14 +369,14 @@ class PageTemplate extends React.PureComponent<
                     <ShareSheetTitles>See also</ShareSheetTitles>
                   ) : null}
                   {seeAlso.map(x => (
-                    <a
+                    <OutboundLink
                       key={x.icon}
                       href={x!.uri}
                       target="_blank"
                       title={x.label}
                     >
                       <Icon name={x!.icon} />
-                    </a>
+                    </OutboundLink>
                   ))}
                 </ShareSheet>
               )}
@@ -474,14 +390,10 @@ class PageTemplate extends React.PureComponent<
               <PostDate>{post.frontmatter.date}</PostDate>
             </PostAuthorInfo>
             <PostWrapper id="article">
-              <TOCWrapper fixed={this.state.tocFixed}>
-                <Icon name="TOC" />
-                <TOC
-                  dangerouslySetInnerHTML={{
-                    __html: post.tableOfContents,
-                  }}
-                />
-              </TOCWrapper>
+              <TOC
+                fixed={this.state.tocFixed}
+                generatedTOC={post.tableOfContents}
+              />
               <Article dangerouslySetInnerHTML={{ __html: post.html }} />
             </PostWrapper>
           </Container>
