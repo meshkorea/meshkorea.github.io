@@ -59,7 +59,10 @@ class IndexLayout extends React.Component {
               content={data.site.siteMetadata.description}
             />
             <meta property="og:type" content="website" />
-            <meta property="og:image" content="/og-image.jpg" />
+            <meta
+              property="og:image"
+              content="https://meshkorea.github.io/og-image.jpg"
+            />
             <link
               rel="apple-touch-icon"
               sizes="180x180"

@@ -337,12 +337,18 @@ class PageTemplate extends React.PureComponent<
               post.frontmatter.tags ? `, ${post.frontmatter.tags}` : ""
             }`}
           />
-          <meta property="og:title" content="Mesh Korea Makers Blog" />
+          <meta
+            property="og:title"
+            content={`${post.frontmatter.title}
+            :: Mesh Korea Makers Blog`}
+          />
           <meta property="og:description" content={post.excerpt} />
           <meta property="og:type" content="article" />
           <meta
             property="og:image"
-            content={post.frontmatter.titleImage.childImageSharp.resize.src}
+            content={`https://meshkorea.github.io${
+              post.frontmatter.titleImage.childImageSharp.resize.src
+            }`}
           />
         </Helmet>
         <Page>
