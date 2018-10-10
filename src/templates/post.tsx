@@ -227,6 +227,7 @@ interface PageTemplateProps {
       excerpt: string;
       tableOfContents: string;
       fields: {
+        slug: string;
         github?: string;
         playstore?: string;
         appstore?: string;
@@ -336,6 +337,10 @@ class PageTemplate extends React.PureComponent<
             content={`Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog${
               post.frontmatter.tags ? `, ${post.frontmatter.tags}` : ""
             }`}
+          />
+          <meta
+            property="og:url"
+            content={`https://meshkorea.github.io${post.fields.slug}`}
           />
           <meta
             property="og:title"
@@ -465,6 +470,7 @@ export const query = graphql`
       excerpt
       tableOfContents
       fields {
+        slug
         github
         playstore
         appstore
