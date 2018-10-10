@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "react-emotion";
+import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import Icon from "../components/Icon";
 import Page from "../components/Page";
@@ -90,9 +91,12 @@ const NotFound = () => (
         <NotFoundGuideDesc>
           짝짝짝, 직업적으로 올바른 자세입니다! 지금 이 상쾌한 기분으로&nbsp;
           <strong>
-            <a href="https://www.wanted.co.kr/company/676" target="_blank">
+            <OutboundLink
+              href="https://www.wanted.co.kr/company/676"
+              target="_blank"
+            >
               지금 지원하러 가기
-            </a>
+            </OutboundLink>
           </strong>
           &nbsp;버튼을 눌러보시는 게 어떨까요?
         </NotFoundGuideDesc>
