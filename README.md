@@ -74,9 +74,11 @@ playstore: (play store 앱 페이지 링크, optional)
 
 **git이 컴퓨터에 반드시 설치돼있어야 하며, [node.js가 설치](https://nodejs.org/en/)돼있어야 합니다.** node.js는 공식 패키지 외에도 homebrew 등으로 설치하셔도 무관합니다.
 
-1. 이 블로그의 소스코드를 체크아웃합니다.
+1. 이 블로그의 소스코드를 `dev` 브랜치로 체크아웃합니다.
     ```bash
     $ git clone git@github.com:meshkorea/meshkorea.github.io.git
+    $ cd meshkorea.github.io/
+    $ git checkout dev
     ```
     * 가급적이면 소스코드 폴더를 [Visual Studio Code](https://code.visualstudio.com)로 여시는 것을 추천드립니다.
 2. 글을 `content`에 추가합니다.
