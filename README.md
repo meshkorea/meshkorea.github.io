@@ -79,11 +79,16 @@ playstore: (play store 앱 페이지 링크, optional)
     $ git clone git@github.com:meshkorea/meshkorea.github.io.git
     ```
     * 가급적이면 소스코드 폴더를 [Visual Studio Code](https://code.visualstudio.com)로 여시는 것을 추천드립니다.
-2. 글을 `content`에 추가합니다.
+2. `dev` 브랜치를 체크아웃하신 뒤, 새 브랜치를 분리합니다. 새 브랜치명은 가급적 포스트 슬러그로 지정합니다.
+    ```bash
+    (source_code_root)$ git checkout dev
+    (source_code_root)$ git checkout -b (post-slug)
+    ```
+3. 글을 `content`에 추가합니다.
     1. 소스코드 하위의 `src/content` 폴더 하위에 새로운 폴더를 추가합니다.
     2. 이 때, 폴더명이 글의 주소가 됩니다. (ex. 폴더명이 `a-new-folder`일 경우 `https://meshkorea.github.io/a-new-folder`로 접속 가능)
     3. 이 폴더에 위에서 만든 폴더의 내용물을 복사해 넣습니다.
-3. (글을 처음 작성하시는 경우) 저자 등록하기
+4. (글을 처음 작성하시는 경우) 저자 등록하기
     1. 소스코드 하위의 `src/content/avatars` 폴더에 자신의 사진(정사각형)을 추가합니다.
     2. 소스코드 하위의 `src/content/author.yaml`을 엽니다.
     3. 다음의 형식으로 맨 아래에 저자 정보를 입력합니다.
@@ -93,7 +98,7 @@ playstore: (play store 앱 페이지 링크, optional)
       avatar: avatars/(추가한 파일명) (없을 경우 avatars/picture.sample.png)
       bio: (한줄 자기소개)
     ```
-4. 코드를 빌드해보고 글이 잘 추가되었나 확인해봅니다.
+5. 코드를 빌드해보고 글이 잘 추가되었나 확인해봅니다.
     1. 코드를 빌드하기 전에 코드 빌드에 필요한 dependencies를 설치해야 합니다. [yarn을 설치](https://yarnpkg.com/en/docs/install)합니다.
     2. yarn으로 의존성이 있는 패키지를 설치하고, 소스 코드를 빌드합니다.
     ```bash
@@ -101,19 +106,20 @@ playstore: (play store 앱 페이지 링크, optional)
     ```
     3. 설치가 완료된 후 빌드 및 개발서버가 [http://localhost:8000](http://localhost:8000)에 실행됩니다. 웹 브라우저에서 확인합니다.
     4. 이상이 있는 경우, 문제가 있는 부분을 수정합니다.<br>이상이 없는 경우, 개발서버를 종료(`ctrl` + `c`)한 후 다음 단계를 수행합니다.
-5. 이제 글을 발행할 준비가 완료되었으니, 소스코드를 커밋합니다.
+6. 이제 글을 발행할 준비가 완료되었으니, 소스코드를 커밋하고 브랜치를 발행합니다.
     ```bash
     (source_code_root)$ git add *
     (source_code_root)$ git commit -am "Add a new post: (post-title)"
-    (source_code_root)$ git push
-    ```
-6. 글을 발행합니다.
-    ```bash
-    (source_code_root)$ yarn deploy
+    (source_code_root)$ git push -u origin head
     ```
 7. [Pull Request를 생성합니다.](https://github.com/meshkorea/meshkorea.github.io/pulls)<br>
-    `master` 베이스로 &lt;- `gh-pages` 브랜치를 머지하면 됩니다.<br>이때 PR Description에 `@mindfull`을 태그하거나 리뷰 검토 대상자로 지정해 플랫폼셀 최태건에게 알려주세요.
-8. 수고 많으셨습니다.
+    `dev` 베이스로 &lt;- **2**에서 새로 만든 브랜치를 머지하면 됩니다.<br>이때 PR Description에 `@mindfull`을 태그하거나 리뷰 검토 대상자로 지정해 플랫폼셀 최태건에게 알려주세요.
+8. PR이 완료되면 다음 방법으로 deploy됩니다. (직접 하진 않으셔도 됩니다.)
+    ```bash
+    (source_code_root)$ git checkout dev && git pull
+    (source_code_root)$ yarn deploy
+    ```
+9. 수고 많으셨습니다.
 
 #### 2. 커맨드 라인에 익숙하지 않으신가요?
 
