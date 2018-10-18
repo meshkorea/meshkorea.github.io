@@ -6,6 +6,8 @@ tags: react, typescript, google api, canvas
 author: 강민경
 titleImage: "./header.png"
 github: https://github.com/ClareKang/react-ts-canvas-photo-upload
+link: http://www.clarekang.me/react-ts-canvas-photo-upload
+linkDesc: 라이브 데모 페이지 확인하기
 ---
 
 #### 들어가기에 앞서
