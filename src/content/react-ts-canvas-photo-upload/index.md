@@ -17,7 +17,7 @@ linkDesc: 라이브 데모 페이지 확인하기
 * 얼굴이 하나만 인식될 것
 * 얼굴이 너무 작거나 너무 크지 않을 것
 * 얼굴이 화면의 정중앙에 놓일 것
-얼굴 인식 및 검사는 Google Cloud Vision API를 활용합니다. 이 기술을 적용해야 하는 회사 프로덕트는 React에 TypeScript가 적용되어 있기 때문에 예제도 해당 부분을 반영해서 작성합니다. 또한, PostCSS 대신 Styled-Components를 활용하므로 코드 내 이 부분이 반영되어 있을 수 있습니다.
+얼굴 인식 및 검사는 Google Cloud Vision API를 활용합니다. 이 기술을 적용해야 하는 회사 프로덕트는 React에 TypeScript가 적용되어 있기 때문에 예제도 해당 부분을 반영해서 작성합니다. 또한, PostCSS 대신 [Styled-components](https://www.styled-components.com/)를 활용하므로 코드 내 이 부분이 반영되어 있을 수 있습니다.
 
 
 ## React-TypeScript 프로덕트에 HTML5 canvas와 Google Vision API를 활용한 인물사진 유효성 검사하기
@@ -27,7 +27,7 @@ Google Cloud Vision API를 활용해 얼굴 인식을 하려면 기본적으로 
 
 > [Enable the Vision API](https://cloud.google.com/vision/docs/before-you-begin)
 
-그 외 클라이언트에서는 따로 해줄 게 없습니다(처음엔 @google-api/vision 라이브러리의 설치가 필요한 줄 알아서 라이브러리를 설치했다가 호출에 실패하는 등의 시행착오를 거쳤습니다). API 호출은 fetch를 통해 이루어집니다. (물론 axios 같은 라이브러리를 활용해도 좋습니다)
+그 외 클라이언트에서는 따로 해줄 게 없습니다(처음엔 `@google-api/vision` 라이브러리의 설치가 필요한 줄 알아서 라이브러리를 설치했다가 호출에 실패하는 등의 시행착오를 거쳤습니다). API 호출은 fetch를 통해 이루어집니다. (물론 axios 같은 라이브러리를 활용해도 좋습니다)
 
 또한, API 호출을 위한 데이터 모델은 [src/Photo.ts](https://github.com/ClareKang/react-ts-canvas-photo-upload/blob/master/src/Photo.ts)에 인터페이스를 따로 정의했으며, 인터페이스의 이름은 대부분 구글 API의 명세를 따랐습니다.
 
@@ -35,7 +35,7 @@ Google Cloud Vision API를 활용해 얼굴 인식을 하려면 기본적으로 
 [Detecting Faces | Cloud Vision API Documentation | Google Cloud](https://cloud.google.com/vision/docs/detecting-faces#vision-face-detection-gcs-protocol)
 
 ### 2. 사진 편집을 위해 HTML5의 canvas 도입
-주어진 과제에는 사진 편집 기능이 들어갑니다. 얼굴을 화면의 중앙에 배치하며 지정된 배율로 잘라내고, 지정된 크기로 리사이징을 합니다. 이를 보다 쉽게 활용하기 위해 canvas를 도입했습니다. 대체로 canvas는 id를 부여하고 document.getElementById()를 통해 해당 element를 받아 처리하는 방식으로 사용하지만, React에서는 VirtualDOM을 활용한 렌더링을 하므로 위와 같은 사용 방식은 적절하지 않습니다. 다소 번거롭고 코드가 예쁘지 않지만 레퍼런스를 활용해 코드를 작성하게 되었습니다.
+주어진 과제에는 사진 편집 기능이 들어갑니다. 얼굴을 화면의 중앙에 배치하며 지정된 배율로 잘라내고, 지정된 크기로 리사이징을 합니다. 이를 보다 쉽게 활용하기 위해 canvas를 도입했습니다. 대체로 canvas는 id를 부여하고 `document.getElementById()`를 통해 해당 element를 받아 처리하는 방식으로 사용하지만, React에서는 VirtualDOM을 활용한 렌더링을 하므로 위와 같은 사용 방식은 적절하지 않습니다. 다소 번거롭고 코드가 예쁘지 않지만 레퍼런스를 활용해 코드를 작성하게 되었습니다.
 
 ### 3. 진행 과정은 아래와 같습니다.
 1. 지정된 파일 확장자만 업로드 가능한 파일 업로드 input 만들기
@@ -45,7 +45,7 @@ Google Cloud Vision API를 활용해 얼굴 인식을 하려면 기본적으로 
 5. 캔버스에 사진 크롭 및 리사이징해서 그려주기
 
 #### 1. 지정된 파일 확장자만 업로드 가능한 파일 업로드 input 만들기
-사실, 이 과정은 쉽습니다. HTML이 기본으로 제공하는 `<input type="file" />`을 활용하면 됩니다. App의 render에 input을 추가하고, file upload를 핸들 하는 함수를 App에 추가합니다.
+사실, 이 과정은 쉽습니다. HTML이 기본으로 제공하는 `<input type="file" />`을 활용하면 됩니다. App의 `render`에 input을 추가하고, file upload를 핸들 하는 함수를 App에 추가합니다.
 
 ````tsx
 render() {
@@ -78,8 +78,8 @@ render() {
 > input에는 `accept` attribute를 통해 지정된 파일 확장자만 업로드 가능하도록 합니다.
 
 #### 2. FileReader를 활용해 업로드한 이미지를 base64로 인코딩하기
-Vision API는 이미지 파일을 base64 인코딩 되어 받기를 원합니다. 그래서 우리는 방금 업로드한 이미지 파일을 base64로 인코딩하는 과정을 거쳐야 합니다. 이 과정은 FileReader를 통해 진행합니다.
-handleOnFileUpload 함수에 FileReader와 관련된 내용을 추가합니다.
+Vision API는 이미지 파일을 base64 인코딩 되어 받기를 원합니다. 그래서 우리는 방금 업로드한 이미지 파일을 base64로 인코딩하는 과정을 거쳐야 합니다. 이 과정은 `FileReader`를 통해 진행합니다.
+`handleOnFileUpload` 함수에 `FileReader`와 관련된 내용을 추가합니다.
 
 ````ts
 private handleOnFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,10 +91,10 @@ private handleOnFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 ````
 
-reader가 onload 되면 여러가지 값을 가지게 되는데, 그중 `result` 값이 바로 base64로 인코딩된 값입니다. 다만 result에는 `data:image/png;base64`,와 같은 prefix가 붙기 때문에 이 부분을 제외하고 전달해야 합니다. 따라서 ","을 기준으로 split 한 다음 ","이후의 값만 전달하도록 합니다.
+reader가 로드되면 여러가지 값을 가지게 되는데, 그중 `result` 값이 바로 base64로 인코딩된 값입니다. 다만 `result`에는 `data:image/png;base64`,와 같은 prefix가 붙기 때문에 이 부분을 제외하고 전달해야 합니다. 따라서 ","을 기준으로 split 한 다음 ","이후의 값만 전달하도록 합니다.
 
 #### 3. 파일 업로드 시 Vision API를 통해 사진 검증받기
-이제 fetch를 활용해 Vision API로 이미지를 데이터를 받아와 보겠습니다. API POST로 호출하기 때문에 Request body를 먼저 작성합니다. 구글 문서를 보며 body를 작성합니다. 우리는 얼굴 인식을 활용할 것이기 때문에 `features.type`는 "FACE_DETECTION"으로 작성합니다. 그리고 `image.content`에는 위에서 base64로 인코딩된 이미지 데이터를 넣어줍니다.
+이제 fetch를 활용해 Vision API로 이미지를 데이터를 받아와 보겠습니다. API POST로 호출하기 때문에 Request body를 먼저 작성합니다. 구글 문서를 보며 body를 작성합니다. 우리는 얼굴 인식을 활용할 것이기 때문에 `features.type`는 `"FACE_DETECTION"`으로 작성합니다. 그리고 `image.content`에는 위에서 base64로 인코딩된 이미지 데이터를 넣어줍니다.
 
 ````ts
 const body = {
@@ -113,7 +113,7 @@ const body = {
 };
 ````
 그리고 fetch 또한 작성합니다.
-아래 소스 코드의 "GOOGLE-CLOUD-VISION-KEY" 부분에 [1. Google Cloud Vision API 활용하기](#1-google-cloud-vision-api-활용하기)에서 발급받은 API 키를 입력합니다.
+아래 소스 코드의 `"GOOGLE-CLOUD-VISION-KEY"` 부분에 [1. Google Cloud Vision API 활용하기](#1-google-cloud-vision-api-활용하기)에서 발급받은 API 키를 입력합니다.
 
 ````ts
 public uploadPhoto(body: AgentPhotoRequests): Promise<AgentPhotoResponses> {
@@ -235,7 +235,7 @@ return {
 #### 5. 캔버스에 사진 크롭 및 리사이징해서 그려주기
 드디어 캔버스의 차례가 왔습니다. 다만, 캔버스에 사진을 렌더링 하는 과정은 통과 여부와 상관없이 진행됩니다. 왜냐하면 오류가 있는 것 또한 시각적으로 표시해줘야 하기 때문입니다.
 
-* 일단 캔버스를 render에 추가해볼까요? canvas는 앞서 말했듯, 레퍼런스로 관리됩니다. 그렇게 작동하기 위해서는 아래와 같이 코드를 작성합니다. canvas 변수를 App 상단에 선언하고, render에 canvas element를 작성합니다. 그리고 마지막으로 this.canvas가 canvas element를 가리킬 수 있도록 refCanvas를 작성해줍니다. 그러면 앞으로 우리는 this.canvas를 통해 canvas element에 접근할 수 있게 됩니다.
+* 일단 캔버스를 `render`에 추가해볼까요? canvas는 앞서 말했듯, 레퍼런스로 관리됩니다. 그렇게 작동하기 위해서는 아래와 같이 코드를 작성합니다. canvas 변수를 App 상단에 선언하고, `render`에 canvas element를 작성합니다. 그리고 마지막으로 `this.canvas`가 canvas element를 가리킬 수 있도록 `refCanvas`를 작성해줍니다. 그러면 앞으로 우리는 `this.canvas`를 통해 canvas element에 접근할 수 있게 됩니다.
 
 ````tsx
 private canvas: HTMLCanvasElement;
@@ -256,7 +256,7 @@ private refCanvas = (canvas: HTMLCanvasElement) => {
 };
 ````
 * `canvasWidth`, `canvasHeight`는 사진을 렌더 할 캔버스의 크기를 나타냅니다.
-* 위에서 `getPhotoInfo` 함수를 통해 가져온 값을 활용해 캔버스에 이미지를 렌더 합니다. 하지만 그전에 검증 과정에서 통과 못해 메시지만 보낸 경우가 있었으니 그것부터 처리를 해줍니다. 결과값을 result라는 파라미터로 전달합니다. 그리고 메시지가 있는지 확인하고 메시지가 있는 경우 setState를 통해 메시지를 state에 저장합니다. drawInCanvas 함수를 통해 캔버스에 사진을 그립니다. result 중 메시지는 캔버스 렌더링과 무관하므로 좌표값을 포함한 `result.info` 값만 넘겨줍니다.
+* 위에서 `getPhotoInfo` 함수를 통해 가져온 값을 활용해 캔버스에 이미지를 렌더 합니다. 하지만 그전에 검증 과정에서 통과 못해 메시지만 보낸 경우가 있었으니 그것부터 처리를 해줍니다. 결과값을 `result`라는 파라미터로 전달합니다. 그리고 메시지가 있는지 확인하고 메시지가 있는 경우 `setState`를 통해 메시지를 state에 저장합니다. `drawInCanvas` 함수를 통해 캔버스에 사진을 그립니다. `result` 중 메시지는 캔버스 렌더링과 무관하므로 좌표값을 포함한 `result.info` 값만 넘겨줍니다.
 
 ````ts
 if (!!result.message) {
@@ -266,7 +266,7 @@ if (!!result.message) {
 }
 this.drawInCanvas(result.info!);
 ````
-대망의 캔버스 렌더링입니다. `getContext("2d")`를 사용해 캔버스의 컨텍스트를 가져갑니다. 만약 위의 result에서 메시지만 넘어오고 info(좌표값)가 넘어오지 않았을 경우 사진 이미지는 원본 그대로 렌더링하도록 합니다. result에서 좌표가 올바르게 넘어왔을 경우 사진을 좌표값에 맞게 렌더링 합니다.
+대망의 캔버스 렌더링입니다. `getContext("2d")`를 사용해 캔버스의 컨텍스트를 가져갑니다. 만약 위의 `result`에서 메시지만 넘어오고 info(좌표값)가 넘어오지 않았을 경우 사진 이미지는 원본 그대로 렌더링하도록 합니다. `result`에서 좌표가 올바르게 넘어왔을 경우 사진을 좌표값에 맞게 렌더링 합니다.
 
 ````ts
 private drawInCanvas = (photoInfo: PhotoInfo) => {
