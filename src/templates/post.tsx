@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FacebookShareButton, TwitterShareButton } from "react-share";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { graphql } from "gatsby";
 import { Location } from "@reach/router";
 import { OutboundLink } from "gatsby-plugin-google-analytics";

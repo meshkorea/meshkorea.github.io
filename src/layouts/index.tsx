@@ -4,12 +4,13 @@ import { StaticQuery, graphql } from "gatsby";
 import { Location } from "@reach/router";
 
 import "modern-normalize";
-import "../styles/normalize";
+import globalStyle from "../styles/globalStyle";
 
 import Header from "../components/Header";
 import LayoutRoot from "../components/LayoutRoot";
 import LayoutMain from "../components/LayoutMain";
 import Footer from "../components/Footer";
+import { Global } from "@emotion/react";
 
 interface StaticQueryProps {
   site: {
@@ -91,6 +92,7 @@ class IndexLayout extends React.Component {
             <link rel="shortcut icon" href="/favicon.ico" />
           </Helmet>
 
+          <Global styles={globalStyle} />
           <Header
             home={location.pathname === "/"}
             title={data.site.siteMetadata.title}

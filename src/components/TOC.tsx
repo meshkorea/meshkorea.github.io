@@ -1,6 +1,6 @@
 import * as React from "react";
 import enhanceWithClickOutside from "react-click-outside";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 import { getEmSize } from "../styles/mixins";
 import { colors, breakpoints } from "../styles/variables";
