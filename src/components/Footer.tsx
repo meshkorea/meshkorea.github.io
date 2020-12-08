@@ -55,7 +55,7 @@ const Footer = () => (
         </p>
         <p>
           <OutboundLink
-            href="https://www.wanted.co.kr/company/676"
+            href="https://www.meshkorea.net/kr/career/"
             target="_blank"
           >
             지금 지원하러 가기&nbsp;
