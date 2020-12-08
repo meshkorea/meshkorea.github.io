@@ -10,10 +10,10 @@ import AuthorInfo, {
 import Icon from "../components/Icon";
 import { NavigationWrapper, NavigationLink } from "../components/Navigation";
 import Page from "../components/Page";
-import { TagList } from "../components/PostList";
+import { TagList as PostTagList } from "../components/PostList";
 import Container from "../components/Container";
 import IndexLayout from "../layouts";
-import { clearfix, getEmSize } from "../styles/mixins";
+import { getEmSize, resetUl } from "../styles/mixins";
 import { breakpoints, colors } from "../styles/variables";
 import { transformTags } from "../utils/tag";
 
@@ -25,7 +25,7 @@ interface IndexPageProps {
         description: string;
       };
     };
-    allMarkdownRemark: {
+    posts: {
       edges: Array<{
         node: {
           excerpt: string;
@@ -58,9 +58,15 @@ interface IndexPageProps {
                 };
               };
             };
-            tags?: string;
+            tags?: string[];
           };
         };
+      }>;
+    };
+    tagsGroup: {
+      tags: Array<{
+        tag: string;
+        count: number;
       }>;
     };
   };
@@ -145,7 +151,10 @@ const RecentExcerpt = styled.summary`
 `;
 
 const PostList = styled.ul`
-  ${clearfix} margin: 50px -10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 2;
+  margin: 0;
   padding: 0;
   list-style: none;
   list-style-image: none;
@@ -156,7 +165,6 @@ const PostList = styled.ul`
 `;
 
 const ListItem = styled.li`
-  float: left;
   margin: 0 10px 40px;
   width: 300px;
   color: ${colors.gray80};
@@ -212,9 +220,85 @@ const ListItemImg = styled.div`
   }
 `;
 
+const GridWrapper = styled.div`
+  display: flex;
+  margin: 50px -10px 0;
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+`;
+
+const TagListWrapper = styled.aside`
+  flex: 1;
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    flex: 0;
+    width: 100%;
+    padding: 0;
+  }
+`;
+
+const TagListTitle = styled.h3`
+  margin: 0 0 0 40px;
+  font-size: 1em;
+  text-transform: uppercase;
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    margin: 0 10px;
+    padding-top: 16px;
+    border-top: 1px solid ${colors.gray15};
+  }
+`;
+
+const TagList = styled.ul`
+  ${resetUl};
+  margin: 10px 0 0 40px;
+  padding: 0;
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    margin: 10px 10px 0;
+  }
+`;
+
+const TagItem = styled.li`
+  margin: 0;
+  padding: 0;
+
+  &::before {
+    content: "-";
+    margin-right: 10px;
+    color: ${colors.gray60};
+  }
+
+  a {
+    color: ${colors.gray100};
+
+    i {
+      margin-left: 0.25em;
+      font-size: 0.875em;
+      font-style: normal;
+      color: ${colors.gray80};
+    }
+  }
+
+  a:hover {
+    color: ${colors.gray80};
+  }
+
+  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+    display: inline-block;
+
+    & + & {
+      margin-left: 20px;
+    }
+  }
+`;
+
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
-  if (!data.allMarkdownRemark || !data.allMarkdownRemark.edges.length) {
+  if (!data.posts || !data.posts.edges.length) {
     return (
       <IndexLayout>
         <Page>
@@ -223,11 +307,9 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
       </IndexLayout>
     );
   }
-  const mostRecentPost = data.allMarkdownRemark.edges[0].node;
-  const posts = data.allMarkdownRemark.edges.filter(
-    (_, idx) => idx > 0 && idx < 10,
-  );
-  const isNextPageExist = data.allMarkdownRemark.edges.length > 10;
+  const mostRecentPost = data.posts.edges[0].node;
+  const posts = data.posts.edges.filter((_, idx) => idx > 0 && idx < 10);
+  const isNextPageExist = data.posts.edges.length > 10;
   return (
     <IndexLayout>
       <Page>
@@ -243,8 +325,7 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
               <RecentBadge>
                 <strong>RECENT</strong>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                {(mostRecentPost.frontmatter.tags || "")
-                  .split(",")
+                {(mostRecentPost.frontmatter.tags || [])
                   .map(x => `#${x.trim()}`)
                   .join(" ")}
               </RecentBadge>
@@ -257,41 +338,58 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
           </RecentPageWrapper>
         </Link>
         <Container>
-          <PostList>
-            {posts.map(({ node }) => (
-              <ListItem key={node.fields.slug}>
-                <Link to={node.fields.slug}>
-                  <ListItemImgWrapper>
-                    <ListItemImg
-                      src={
-                        node.frontmatter.titleImage.childImageSharp.resize.src
-                      }
-                    />
-                  </ListItemImgWrapper>
-                  <ListItemTitle>{node.frontmatter.title}</ListItemTitle>
-                  <TagList>
-                    {transformTags(node.frontmatter.tags, true)}
-                  </TagList>
-                  <summary>{node.excerpt}</summary>
-                  <AuthorInfo>
-                    <AuthorAvatar
-                      src={node.frontmatter.author.avatar.children[0].fixed.src}
-                    />
-                    <AuthorName>{node.frontmatter.author.name}</AuthorName>
-                    <AuthorDesc>{node.frontmatter.date}</AuthorDesc>
-                  </AuthorInfo>
-                </Link>
-              </ListItem>
-            ))}
-          </PostList>
-          {isNextPageExist && (
-            <NavigationWrapper>
-              <NavigationLink prev to="/pages/2">
-                <Icon name="CARET_SMALL_LEFT" width={16} height={12} />
-                Older
-              </NavigationLink>
-            </NavigationWrapper>
-          )}
+          <GridWrapper>
+            <PostList>
+              {posts.map(({ node }) => (
+                <ListItem key={node.fields.slug}>
+                  <Link to={node.fields.slug}>
+                    <ListItemImgWrapper>
+                      <ListItemImg
+                        src={
+                          node.frontmatter.titleImage.childImageSharp.resize.src
+                        }
+                      />
+                    </ListItemImgWrapper>
+                    <ListItemTitle>{node.frontmatter.title}</ListItemTitle>
+                    <PostTagList>
+                      {transformTags(node.frontmatter.tags, true)}
+                    </PostTagList>
+                    <summary>{node.excerpt}</summary>
+                    <AuthorInfo>
+                      <AuthorAvatar
+                        src={
+                          node.frontmatter.author.avatar.children[0].fixed.src
+                        }
+                      />
+                      <AuthorName>{node.frontmatter.author.name}</AuthorName>
+                      <AuthorDesc>{node.frontmatter.date}</AuthorDesc>
+                    </AuthorInfo>
+                  </Link>
+                </ListItem>
+              ))}
+            </PostList>
+            {isNextPageExist && (
+              <NavigationWrapper>
+                <NavigationLink prev to="/pages/2">
+                  <Icon name="CARET_SMALL_LEFT" width={16} height={12} />
+                  Older
+                </NavigationLink>
+              </NavigationWrapper>
+            )}
+            <TagListWrapper>
+              <TagListTitle>Tags</TagListTitle>
+              <TagList>
+                {data.tagsGroup.tags.map(({ tag, count }) => (
+                  <TagItem key={tag}>
+                    <a href={`/tags/${tag}`}>
+                      {tag}
+                      <i>({count})</i>
+                    </a>
+                  </TagItem>
+                ))}
+              </TagList>
+            </TagListWrapper>
+          </GridWrapper>
         </Container>
       </Page>
     </IndexLayout>
@@ -306,7 +404,7 @@ export const pageQuery = graphql`
         description
       }
     }
-    allMarkdownRemark(
+    posts: allMarkdownRemark(
       sort: { fields: [frontmatter___date], order: DESC }
       limit: 11
     ) {
@@ -347,6 +445,12 @@ export const pageQuery = graphql`
             tags
           }
         }
+      }
+    }
+    tagsGroup: allMarkdownRemark {
+      tags: group(field: frontmatter___tags) {
+        tag: fieldValue
+        count: totalCount
       }
     }
   }

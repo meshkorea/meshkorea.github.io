@@ -122,6 +122,10 @@ exports.createPages = async ({ graphql, actions }) => {
             }
           }
         }
+        tags: group(field: frontmatter___tags) {
+          tag: fieldValue
+          totalCount
+        }
       }
     }
   `);
@@ -142,23 +146,13 @@ exports.createPages = async ({ graphql, actions }) => {
     },
   });
 
-  const tags = [];
-  allMarkdown.data.allMarkdownRemark.edges.forEach(edge => {
-    if (edge.node.frontmatter.tags) {
-      tags.push(edge.node.frontmatter.tags.split(",").map(x => x.trim()));
-    }
-  });
-  const uniqueTags = tags.reduce(
-    (prev, tag) => (prev.find(x => x === tag) ? prev : prev.concat(tag)),
-    [],
-  );
-  uniqueTags.forEach(tag => {
+  const tags = allMarkdown.data.allMarkdownRemark.tags || [];
+  tags.forEach(({ tag, totalCount }) => {
     const tagPath = `tags/${tag}`;
     const matchedPosts = allMarkdown.data.allMarkdownRemark.edges.filter(
       edge =>
         edge.node.frontmatter.tags &&
         edge.node.frontmatter.tags
-          .split(",")
           .map(x => x.trim())
           .find(tagInPost => tagInPost === tag),
     );
@@ -170,7 +164,7 @@ exports.createPages = async ({ graphql, actions }) => {
         pathPrefix: tagPath,
         pageLength: 15,
         context: {
-          totalItems: matchedPosts.length,
+          totalItems: totalCount,
           tagName: tag,
         },
       });

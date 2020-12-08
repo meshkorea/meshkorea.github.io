@@ -2,9 +2,10 @@ import * as React from "react";
 import styled from "@emotion/styled";
 
 import { breakpoints, widths } from "../styles/variables";
-import { getEmSize } from "../styles/mixins";
+import { clearfix, getEmSize } from "../styles/mixins";
 
 const StyledContainer = styled.div`
+  ${clearfix};
   margin-left: auto;
   margin-right: auto;
   width: auto;
