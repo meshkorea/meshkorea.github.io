@@ -241,7 +241,7 @@ const TagListWrapper = styled.aside`
     position: static;
     flex: 0;
     order: -1;
-    margin-top: 10px;
+    margin-top: -30px;
     width: 100%;
     padding: 0;
   }

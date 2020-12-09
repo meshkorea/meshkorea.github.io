@@ -1,7 +1,8 @@
 /* tslint:disable:max-line-length */
 
 export const colors = {
-  primary100: "#003894",
+  primary100: "#0971ce",
+  bi: "#05cd82",
   gray100: "#4B5058",
   gray90: "#5B5E62",
   gray80: "#7A7F86",
@@ -40,8 +41,9 @@ export const fonts = {
 };
 
 export const breakpoints = {
+  xxs: 370,
   xs: 480,
-  sm: 576,
+  sm: 610,
   md: 768,
   lg: 992,
   xl: 1200,

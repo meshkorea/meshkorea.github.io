@@ -39,6 +39,9 @@ const StyledHeader = styled.header`
 `;
 
 const LogoContainer = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+
   @media (min-width: ${getEmSize(breakpoints.sm)}em) {
     display: ${(props: StyledHeaderProps) => (props.folded ? "none" : "block")};
   }
@@ -53,11 +56,7 @@ const Logo = styled.div`
     width: 26px;
     height: 30px;
     overflow: hidden;
-
-    > i > svg {
-      width: 166px;
-      height: 30px;
-    }
+    color: ${colors.bi};
   }
 `;
 
@@ -75,6 +74,10 @@ const Title = styled.h1`
     line-height: 30px;
     vertical-align: top;
   }
+
+  @media (max-width: ${getEmSize(breakpoints.xxs)}em) {
+    font-size: 0.875rem;
+  }
 `;
 
 const SmallTitleContainer = styled(Container)`
@@ -86,10 +89,9 @@ const SmallTitleContainer = styled(Container)`
 `;
 
 const SmallTitle = styled.h1`
-  padding-top: 5px;
+  padding-top: 7px;
   font-size: inherit;
-  color: ${(props: TitleProps) =>
-    props.show ? colors.primary100 : colors.gray10};
+  color: ${(props: TitleProps) => (props.show ? colors.bi : colors.gray10)};
   cursor: ${(props: TitleProps) => (props.show ? "pointer" : "default")};
   transition: ${(props: TitleProps) =>
     props.show ? "color 0.5s ease-in" : "color 0.2s ease-out"};
@@ -102,7 +104,7 @@ const SmallTitle = styled.h1`
   }
 
   i {
-    margin-right: 14px;
+    margin-right: 10px;
   }
 
   @media (max-width: ${getEmSize(breakpoints.sm)}em) {
@@ -282,14 +284,20 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
           <SmallTitleContainer>
             <Link to="/">
               <SmallTitle show={folded}>
-                <Icon
-                  name="LOGO"
-                  width={26}
-                  height={30}
-                  viewboxLeft={20.8}
-                  viewboxTop={24}
-                />
-                <span className="link-text">Mesh Korea Makers Blog</span>
+                {this.state.isMobile && (
+                  <Icon name="BI" width={26} height={30} />
+                )}
+                <span className="link-text">
+                  <Icon
+                    name="COMBINED_BI"
+                    width={242}
+                    height={16}
+                    viewboxLeft={271.53}
+                    viewboxTop={18}
+                    title="MESH KOREA | VROONG"
+                  />
+                  Tech Blog
+                </span>
               </SmallTitle>
             </Link>
             <div style={{ flex: 1 }} />
@@ -311,16 +319,15 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
             <LogoContainer folded={folded}>
               <HomepageLink to="/">
                 <Logo>
-                  <Icon
-                    name="LOGO"
-                    width={133}
-                    height={24}
-                    color={colors.primary100}
-                  />
+                  {this.state.isMobile ? (
+                    <Icon name="BI" width={26} height={30} />
+                  ) : (
+                    <Icon name="COMBINED_BI" width={271.53} height={18} />
+                  )}
                 </Logo>
                 <Title>
-                  {this.state.isMobile && "Mesh Korea "}
-                  Makers Blog
+                  {this.state.isMobile && "MESH KOREA | VROONG "}
+                  Tech Blog
                 </Title>
               </HomepageLink>
             </LogoContainer>
