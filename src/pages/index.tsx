@@ -240,6 +240,7 @@ const TagListWrapper = styled.aside`
   @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     position: static;
     flex: 0;
+    order: -1;
     margin-top: 10px;
     width: 100%;
     padding: 0;
