@@ -137,7 +137,7 @@ const RecentTitle = styled.h2`
     top: -1.2rem;
   }
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     font-size: 2rem;
 
     > sup {
@@ -159,7 +159,7 @@ const PostList = styled.ul`
   list-style: none;
   list-style-image: none;
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     margin-top: 30px;
   }
 `;
@@ -173,7 +173,7 @@ const ListItem = styled.li`
     color: inherit;
   }
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     margin-left: 0;
     margin-right: 0;
     width: 50%;
@@ -221,43 +221,48 @@ const ListItemImg = styled.div`
 `;
 
 const GridWrapper = styled.div`
+  position: relative;
   display: flex;
+  flex-direction: column;
   margin: 50px -10px 0;
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     flex-wrap: wrap;
-    flex-direction: column;
   }
 `;
 
 const TagListWrapper = styled.aside`
-  flex: 1;
+  position: absolute;
+  right: 0;
+  width: 140px;
+  font-size: 0.875em;
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
+    position: static;
     flex: 0;
+    margin-top: 10px;
     width: 100%;
     padding: 0;
   }
 `;
 
 const TagListTitle = styled.h3`
-  margin: 0 0 0 40px;
+  margin: 0;
   font-size: 1em;
   text-transform: uppercase;
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     margin: 0 10px;
     padding-top: 16px;
-    border-top: 1px solid ${colors.gray15};
   }
 `;
 
 const TagList = styled.ul`
   ${resetUl};
-  margin: 10px 0 0 40px;
+  margin: 10px 0 0 0;
   padding: 0;
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     margin: 10px 10px 0;
   }
 `;
@@ -287,7 +292,7 @@ const TagItem = styled.li`
     color: ${colors.gray80};
   }
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     display: inline-block;
 
     & + & {

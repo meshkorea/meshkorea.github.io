@@ -6,9 +6,11 @@ import { clearfix } from "../styles/mixins";
 import { colors } from "../styles/variables";
 
 export const NavigationWrapper = styled.nav`
-  ${clearfix} font-size: 0.875rem;
+  ${clearfix};
+  font-size: 0.875rem;
   font-weight: 600;
   color: ${colors.gray80};
+  margin: 0 10px;
   border-top: 1px solid ${colors.gray40};
 `;
 

@@ -9,7 +9,7 @@ const StyledContainer = styled.div`
   margin-left: auto;
   margin-right: auto;
   width: auto;
-  max-width: ${getEmSize(widths.lg)}rem;
+  max-width: ${getEmSize(widths.xl)}rem;
   padding: 0 20px;
 
   @media (max-width: ${getEmSize(breakpoints.sm)}em) {

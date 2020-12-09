@@ -62,7 +62,7 @@ const ListItemImgWrapper = styled.figure`
 
   @media (max-width: ${getEmSize(
       breakpoints.md,
-    )}em) and (max-width: ${getEmSize(breakpoints.lg)}em) {
+    )}em) and (max-width: ${getEmSize(breakpoints.xl)}em) {
     margin-left: 40px;
   }
 

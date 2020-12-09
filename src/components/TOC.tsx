@@ -108,7 +108,7 @@ const TOCList = styled.div`
       }
     }
 
-    &:not(:first-child) {
+    &:not(:first-of-type) {
       padding-left: 1rem;
     }
   }
