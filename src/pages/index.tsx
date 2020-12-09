@@ -301,6 +301,8 @@ const TagItem = styled.li`
   }
 `;
 
+const predefinedCategories = ["웹프론트엔드", "모바일", "서버"];
+
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
   if (!data.posts || !data.posts.edges.length) {
@@ -315,6 +317,11 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
   const mostRecentPost = data.posts.edges[0].node;
   const posts = data.posts.edges.filter((_, idx) => idx > 0 && idx < 10);
   const isNextPageExist = data.posts.edges.length > 10;
+
+  const filteredTags = data.tagsGroup.tags.filter(({ tag }) =>
+    predefinedCategories.includes(tag),
+  );
+
   return (
     <IndexLayout>
       <Page>
@@ -382,9 +389,9 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
               </NavigationWrapper>
             )}
             <TagListWrapper>
-              <TagListTitle>Tags</TagListTitle>
+              <TagListTitle>Categories</TagListTitle>
               <TagList>
-                {data.tagsGroup.tags.map(({ tag, count }) => (
+                {filteredTags.map(({ tag, count }) => (
                   <TagItem key={tag}>
                     <a href={`/tags/${tag}`}>
                       {tag}
