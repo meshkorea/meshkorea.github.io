@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import Icon from "../components/Icon";
@@ -92,7 +92,7 @@ const NotFound = () => (
           짝짝짝, 직업적으로 올바른 자세입니다! 지금 이 상쾌한 기분으로&nbsp;
           <strong>
             <OutboundLink
-              href="https://www.wanted.co.kr/company/676"
+              href="https://www.meshkorea.net/kr/career/"
               target="_blank"
             >
               지금 지원하러 가기

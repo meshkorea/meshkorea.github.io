@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Link } from "gatsby";
 import { OutboundLink } from "gatsby-plugin-google-analytics";
 
@@ -298,7 +298,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
                 <Icon name="GITHUB" />
               </OutboundLink>
               <RecruitLink
-                href="https://www.wanted.co.kr/company/676"
+                href="https://www.meshkorea.net/kr/career/"
                 target="_blank"
               >
                 지금 지원하러 가기

@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { OutboundLink } from "gatsby-plugin-google-analytics";
 
 import { breakpoints, colors } from "../styles/variables";
@@ -55,7 +55,7 @@ const Footer = () => (
         </p>
         <p>
           <OutboundLink
-            href="https://www.wanted.co.kr/company/676"
+            href="https://www.meshkorea.net/kr/career/"
             target="_blank"
           >
             지금 지원하러 가기&nbsp;

@@ -1,9 +1,8 @@
-import { injectGlobal } from "emotion";
+import { css } from "@emotion/react";
 import { dimensions, fonts, colors, breakpoints } from "./variables";
 import { getEmSize } from "./mixins";
 
-// tslint:disable-next-line:no-unused-expression
-injectGlobal`
+const globalStyle = css`
   html {
     box-sizing: border-box;
   }
@@ -63,7 +62,7 @@ injectGlobal`
 
   td,
   th {
-    padding: .25rem .5rem;
+    padding: 0.25rem 0.5rem;
     border: 1px solid ${colors.ui.light};
   }
 
@@ -84,9 +83,14 @@ injectGlobal`
     }
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     margin-top: 1.414rem;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
     color: inherit;
     font-weight: 700;
     line-height: ${dimensions.lineHeight.heading};
@@ -106,7 +110,9 @@ injectGlobal`
     font-size: ${dimensions.headingSizes.h3}rem;
   }
 
-  h4, h5, h6 {
+  h4,
+  h5,
+  h6 {
     font-size: ${dimensions.headingSizes.h4}rem;
   }
 
@@ -131,7 +137,7 @@ injectGlobal`
   }
 
   dd {
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
   }
 
   hr {
@@ -142,9 +148,9 @@ injectGlobal`
   }
 
   blockquote {
-    margin: .8rem 0;
-    padding: .5rem 1rem;
-    border-left: .25rem solid ${colors.ui.light};
+    margin: 0.8rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 0.25rem solid ${colors.ui.light};
 
     p {
       &:last-child {
@@ -158,7 +164,7 @@ injectGlobal`
     }
   }
 
-    /* PrismJS 1.15.0
+  /* PrismJS 1.15.0
   https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+c+csharp+bash+cpp+css-extras+django+markup-templating+gherkin+git+go+graphql+handlebars+http+java+json+kotlin+latex+markdown+makefile+nginx+objectivec+php+php-extras+powershell+scss+python+jsx+typescript+sass+scala+swift+yaml+tsx+vim+wasm */
   /**
   * prism.js default theme for JavaScript, CSS and HTML
@@ -197,14 +203,14 @@ injectGlobal`
   /* Code blocks */
   pre[class*="language-"] {
     padding: 1em;
-    margin: .5em 0;
+    margin: 0.5em 0;
     overflow: auto;
   }
 
   /* Inline code */
   :not(pre) > code[class*="language-"] {
-    padding: .1em;
-    border-radius: .3em;
+    padding: 0.1em;
+    border-radius: 0.3em;
     white-space: normal;
   }
 
@@ -220,7 +226,7 @@ injectGlobal`
   }
 
   .namespace {
-    opacity: .7;
+    opacity: 0.7;
   }
 
   .token.property,
@@ -248,7 +254,7 @@ injectGlobal`
   .language-css .token.string,
   .style .token.string {
     color: #9a6e3a;
-    background: hsla(0, 0%, 100%, .5);
+    background: hsla(0, 0%, 100%, 0.5);
   }
 
   .token.atrule,
@@ -259,7 +265,7 @@ injectGlobal`
 
   .token.function,
   .token.class-name {
-    color: #DD4A68;
+    color: #dd4a68;
   }
 
   .token.regex,
@@ -280,3 +286,5 @@ injectGlobal`
     cursor: help;
   }
 `;
+
+export default globalStyle;
