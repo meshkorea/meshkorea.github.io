@@ -46,15 +46,19 @@ interface ShareSheetProps {
   fixed: boolean;
 }
 
+const PostContainer = styled(Container)`
+  position: relative;
+`;
+
 const ShareSheet = styled.aside`
   position: ${(props: ShareSheetProps) => (props.fixed ? "fixed" : "absolute")};
-  top: ${(props: ShareSheetProps) => (props.fixed ? "131px" : "auto")};
+  top: ${(props: ShareSheetProps) => (props.fixed ? "131px" : "40px")};
   right: 50%;
   font-size: 0.75rem;
   font-weight: 500;
   text-align: right;
   color: ${colors.gray60};
-  transform: translateX(470px);
+  transform: translateX(550px);
 
   a,
   .SocialMediaShareButton {
@@ -105,7 +109,7 @@ const ShareSheet = styled.aside`
     }
   }
 
-  @media (max-width: ${getEmSize(breakpoints.lg)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     display: none;
   }
 `;
@@ -362,7 +366,7 @@ class PageTemplate extends React.PureComponent<
             title={post.frontmatter.title}
             tags={post.frontmatter.tags}
           />
-          <Container>
+          <PostContainer>
             <Location>
               {({ location }) => (
                 <ShareSheet fixed={this.state.shareSheetFixed}>
@@ -407,7 +411,7 @@ class PageTemplate extends React.PureComponent<
               />
               <Article dangerouslySetInnerHTML={{ __html: post.html }} />
             </PostWrapper>
-          </Container>
+          </PostContainer>
         </Page>
       </IndexLayout>
     );

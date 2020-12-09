@@ -72,7 +72,7 @@ const globalStyle = css`
 
   tbody {
     tr {
-      &:nth-child(odd) {
+      &:nth-of-type(odd) {
         td {
           background-color: ${colors.ui.whisper};
         }

@@ -2,13 +2,14 @@ import * as React from "react";
 import styled from "@emotion/styled";
 
 import { breakpoints, widths } from "../styles/variables";
-import { getEmSize } from "../styles/mixins";
+import { clearfix, getEmSize } from "../styles/mixins";
 
 const StyledContainer = styled.div`
+  ${clearfix};
   margin-left: auto;
   margin-right: auto;
   width: auto;
-  max-width: ${getEmSize(widths.lg)}rem;
+  max-width: ${getEmSize(widths.xl)}rem;
   padding: 0 20px;
 
   @media (max-width: ${getEmSize(breakpoints.sm)}em) {
