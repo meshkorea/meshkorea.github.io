@@ -55,7 +55,7 @@ Makers Blog는 [Github Flavored Markdown](https://github.github.com/gfm/)을 사
 layout: post
 title: (글 제목)
 date: (작성일)
-tags: (comma로 구분된 태그 목록. comma 뒤에 띄어쓰기 가능)
+tags: ["(카테고리 / 태그명)", "(추가적인 태그명)", ...]
 author: (저자 ID: 이름. 동명이인이 있을 경우 이름 뒤에 회사에서 사용하는 알파벳을 붙입니다. ex. 홍길동A)
 titleImage: (준비된 일러스트/사진의 상대 경로)
 link: (See also에 보여줄 링크, Optional)
