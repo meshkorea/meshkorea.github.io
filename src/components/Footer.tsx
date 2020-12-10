@@ -44,7 +44,14 @@ const Footer = () => (
   <Wrapper>
     <FooterContainer>
       <CompanyLogo>
-        <Icon name="LOGO" width={133} height={24} color={colors.primary100} />
+        <Icon
+          name="LOGO"
+          width={121.15}
+          height={16}
+          viewboxLeft={136.29}
+          viewboxTop={18}
+          color={colors.primary100}
+        />
       </CompanyLogo>
       <CompanyDesc>
         <p>
