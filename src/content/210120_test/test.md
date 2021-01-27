@@ -5,7 +5,7 @@ date: "2021-01-20"
 tags: ["postgis"]
 author: 강성일
 authorDesc:
-titleImage: "./title.jpg"
+titleImage: "./title.png"
 github: https://github.com/Luavis/luavis.github.io/blob/master/_posts/server/2020-11-19-how-to-deal-with-spatial-data.md
 link: https://b.luavis.kr/server/how-to-deal-with-spatial-data
 
