@@ -2,7 +2,7 @@
 layout: post
 title: "VROONG TMS 매니저웹 폴더 구조 변천사"
 date: "2017-07-07"
-tags: ["웹프론트엔드", "react"]
+tags: ["Dev Notes", "react"]
 author: 최태건
 authorDesc: "플랫폼셀에서 웹 프론트엔드 개발을 담당하고 있습니다"
 titleImage: "./title.png"

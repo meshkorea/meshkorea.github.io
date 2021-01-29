@@ -2,7 +2,7 @@
 layout: post
 title: "JavaScript in 2017: 옛날 사람 탈출하기"
 date: "2017-03-27"
-tags: ["웹프론트엔드", "JavaScript", "react"]
+tags: ["Dev Notes", "JavaScript", "react"]
 author: 최태건
 authorDesc: "플랫폼셀에서 웹 프론트엔드 개발을 담당하고 있습니다"
 titleImage: "./title.png"
