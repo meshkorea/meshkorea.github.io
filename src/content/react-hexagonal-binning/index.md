@@ -2,7 +2,7 @@
 layout: post
 title: "React, Google Maps, D3 를 이용한 Hexagonal Binning 기법"
 date: "2016-09-26"
-tags: ["웹프론트엔드"]
+tags: ["Dev Notes"]
 author: 윤현규
 authorDesc:
 titleImage: "./title.png"
