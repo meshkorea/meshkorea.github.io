@@ -302,7 +302,7 @@ const TagItem = styled.li`
   }
 `;
 
-const predefinedCategories = ["웹프론트엔드", "모바일", "서버"];
+const predefinedCategories = ["Dev Notes", "People & Culture", "Bookshelf", "Newsroom"];
 
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;

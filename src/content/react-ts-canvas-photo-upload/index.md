@@ -2,7 +2,7 @@
 layout: post
 title: "React-TypeScript 프로덕트에서 인물사진 유효성 검사하기"
 date: "2018-07-16"
-tags: ["react", "typescript", "google api", "canvas"]
+tags: ["react", "typescript", "google api", "canvas", "Dev Notes"]
 author: 강민경
 titleImage: "./header.png"
 github: https://github.com/ClareKang/react-ts-canvas-photo-upload
