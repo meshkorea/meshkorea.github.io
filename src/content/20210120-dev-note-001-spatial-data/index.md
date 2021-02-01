@@ -2,7 +2,7 @@
 layout: post
 title: "Spatial data를 10,000배 잘 다루게 된 방법  "
 date: "2021-01-20"
-tags: ["postgis"]
+tags: ["postgis", "Dev Notes"]
 author: 강성일
 authorDesc:
 titleImage: "./title.png"
