@@ -302,7 +302,7 @@ const TagItem = styled.li`
   }
 `;
 
-const predefinedCategories = ["Dev Notes", "People&Culture", "Bookshelf", "Newsroom"];
+const predefinedCategories = ["Dev Notes", "People & Culture", "Bookshelf", "Newsroom"];
 
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
