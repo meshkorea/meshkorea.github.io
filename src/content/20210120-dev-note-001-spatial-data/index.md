@@ -82,7 +82,7 @@ R-tree 성능에 대해서 Python으로 구현해보고 충분히 빠른 것을 
 ctypes를 이용해 libspatialindex를 래핑한 [라이브러리](https://pypi.org/project/Rtree/)를 찾을 수 있었습니다.
 
 그래서 'PostGIS는 이런 것을 지원 안하나?' 싶어서 찾아보게 되었는데 PostGIS도 R-tree와 같은 bounding box indexing을 지원한다는
-것을 알게되었고, 심지어 해당 인덱싱이 위의 쿼리에 `polygon` 컬럼에 적용되어 있는 것을 확인했습니다.
+것을 알게 되었고, 심지어 해당 인덱싱이 위의 쿼리에 `polygon` 컬럼에 적용되어 있는 것을 확인했습니다.
 
 정확히는 PostGIS는 R-Tree라는 이름으로 사용하지 않고 [GIST](https://postgis.net/workshops/postgis-intro/indexing.html)
 라는 이름으로 index 방법을 제공하고 있는것을 알게 되었습니다. 그리고 위 GIST의 링크를 읽어보면 나와 있는데,
@@ -102,7 +102,7 @@ Execution Time: 522.464 ms
 ```
 
 위 explain 결과를 보면 index condition으로 `polygon` column 과 `&&` 연산을 통해서 bounding box를 주어진
-polygon 데이터와 비교하고, 후에 filter 조건으로 _st_intersects를 사용하는 것을 확인할 수 있습니다.
+polygon 데이터와 비교하고, 후에 filter 조건으로 `_st_intersects`를 사용하는 것을 확인할 수 있습니다.
 
 
 ## 그러면 문제는 어디서 발생하는걸까?
@@ -142,15 +142,14 @@ Execution Time: 66590.472 ms
 > the whole table from the start.
 
 postgresql이 경우에 따라서 index를 타는 것이 비효율적이라 판단되면 풀서치하는 방향으로 optimize하는걸 알게 되었습니다.
-어떤 기준으로 하는지가 불명확하고 vacuuming 해도 index를 사용할 때도 있고 안 할 때도 있어서 단순히 vacumming으로는 일관적인
+어떤 기준으로 하는지가 불명확하고 vacuuming 해도 index를 사용할 때도 있고 안 할 때도 있어서 단순히 vacuuming으로는 일관적인
 성능을 보장하기는 어렵다고 판단했습니다.
 
-위에 region의 테이블이 약 천만개의 row가 있는데 실제로 그중 행정동/법정동과 시군구, 시도의 모든 폴리곤을 58,000개 정도
-밖에 안되서 postgresql이 spatial index를 타는게 이득이 될 수 있다 판단할 수 있도록 row 수를 줄이고, join을 풀어서
-spatial index와 address_type index를 병렬로 사용할 수 있도록 하기 위해서 table을 합칠까 생각하던 중
+위에 region의 테이블이 약 천만개의 row가 있는데 실제로 그중 행정동/법정동과 시군구, 시도의 모든 폴리곤을 58,000개 정도 밖에 안돼서 postgresql이 `spatial index`를 타는게 이득이 될 수 있다 판단할 수 있도록 row 수를 줄이고, join을 풀어서
+`spatial index`와 `address_type index`를 병렬로 사용할 수 있도록 하기 위해서 table을 합칠까 생각하던 중
 [materialized view](https://en.wikipedia.org/wiki/Materialized_view)를 떠올리게 되었습니다.
 
-oracle, postgresql, mariadb 에서는 일반적인 view와는 달리 물리적으로 어느 정도의 데이터를 저장하고 view의 columne에
+oracle, postgresql, mariadb 에서는 일반적인 view와는 달리 물리적으로 어느 정도의 데이터를 저장하고 view의 column에
 index를 적용할 수 있는 materialized view를 지원합니다. join 조건을 materialized view로 만들어서 최적화하고
 `polygon` 컬럼에 index를 적용 시켜준다면 spatial index 사이즈가 작아지면서 postgresql이 cost
 계산을 더 잘 할 수 있을거라 추측해서 아래와 같이 적용해봤습니다.
