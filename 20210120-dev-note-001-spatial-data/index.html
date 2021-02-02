@@ -101,7 +101,7 @@ B-tree의 형식으로 관리하는 index tree입니다. 이렇게 B-tree의 범
 R-tree 성능에 대해서 Python으로 구현해보고 충분히 빠른 것을 확인하였습니다. Python에서는 R-tree의 구현을
 ctypes를 이용해 libspatialindex를 래핑한 <a href="https://pypi.org/project/Rtree/">라이브러리</a>를 찾을 수 있었습니다.</p>
 <p>그래서 ‘PostGIS는 이런 것을 지원 안하나?’ 싶어서 찾아보게 되었는데 PostGIS도 R-tree와 같은 bounding box indexing을 지원한다는
-것을 알게되었고, 심지어 해당 인덱싱이 위의 쿼리에 <code class="language-text">polygon</code> 컬럼에 적용되어 있는 것을 확인했습니다.</p>
+것을 알게 되었고, 심지어 해당 인덱싱이 위의 쿼리에 <code class="language-text">polygon</code> 컬럼에 적용되어 있는 것을 확인했습니다.</p>
 <p>정확히는 PostGIS는 R-Tree라는 이름으로 사용하지 않고 <a href="https://postgis.net/workshops/postgis-intro/indexing.html">GIST</a>
 라는 이름으로 index 방법을 제공하고 있는것을 알게 되었습니다. 그리고 위 GIST의 링크를 읽어보면 나와 있는데,
 bounding box간의 연산을 위해서 postgresql에서는 <a href="https://postgis.net/docs/reference.html#idm9871">특수한 연산자</a>를 따로
@@ -116,7 +116,7 @@ bounding box간의 연산을 위해서 postgresql에서는 <a href="https://post
 Planning Time: 0.244 ms
 Execution Time: 522.464 ms</code></pre></div>
 <p>위 explain 결과를 보면 index condition으로 <code class="language-text">polygon</code> column 과 <code class="language-text">&amp;&amp;</code> 연산을 통해서 bounding box를 주어진
-polygon 데이터와 비교하고, 후에 filter 조건으로 <em>st</em>intersects를 사용하는 것을 확인할 수 있습니다.</p>
+polygon 데이터와 비교하고, 후에 filter 조건으로 <code class="language-text">_st_intersects</code>를 사용하는 것을 확인할 수 있습니다.</p>
 <h2 id="그러면-문제는-어디서-발생하는걸까"><a href="#%EA%B7%B8%EB%9F%AC%EB%A9%B4-%EB%AC%B8%EC%A0%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%84%9C-%EB%B0%9C%EC%83%9D%ED%95%98%EB%8A%94%EA%B1%B8%EA%B9%8C" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>그러면 문제는 어디서 발생하는걸까?</h2>
 <p>그렇다면 ‘문제가 된 쿼리 1은 도대체 무슨 문제가 있었던 건가?’ 싶어서 해당 쿼리도 <code class="language-text">explain analyze</code>를 돌려보았습니다.</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">Gather  (cost=1080.01..67698.36 rows=... width=1894) (actual time=117.101..66590.220 rows=... loops=1)
@@ -149,13 +149,12 @@ in the table, traversing the index tree to get each record will actually be slow
 the whole table from the start.</p>
 </blockquote>
 <p>postgresql이 경우에 따라서 index를 타는 것이 비효율적이라 판단되면 풀서치하는 방향으로 optimize하는걸 알게 되었습니다.
-어떤 기준으로 하는지가 불명확하고 vacuuming 해도 index를 사용할 때도 있고 안 할 때도 있어서 단순히 vacumming으로는 일관적인
+어떤 기준으로 하는지가 불명확하고 vacuuming 해도 index를 사용할 때도 있고 안 할 때도 있어서 단순히 vacuuming으로는 일관적인
 성능을 보장하기는 어렵다고 판단했습니다.</p>
-<p>위에 region의 테이블이 약 천만개의 row가 있는데 실제로 그중 행정동/법정동과 시군구, 시도의 모든 폴리곤을 58,000개 정도
-밖에 안되서 postgresql이 spatial index를 타는게 이득이 될 수 있다 판단할 수 있도록 row 수를 줄이고, join을 풀어서
-spatial index와 address<em>type index를 병렬로 사용할 수 있도록 하기 위해서 table을 합칠까 생각하던 중
-[materialized view](<a href="https://en.wikipedia.org/wiki/Materialized">https://en.wikipedia.org/wiki/Materialized</a></em>view)를 떠올리게 되었습니다.</p>
-<p>oracle, postgresql, mariadb 에서는 일반적인 view와는 달리 물리적으로 어느 정도의 데이터를 저장하고 view의 columne에
+<p>위에 region의 테이블이 약 천만개의 row가 있는데 실제로 그중 행정동/법정동과 시군구, 시도의 모든 폴리곤을 58,000개 정도 밖에 안돼서 postgresql이 <code class="language-text">spatial index</code>를 타는게 이득이 될 수 있다 판단할 수 있도록 row 수를 줄이고, join을 풀어서
+<code class="language-text">spatial index</code>와 <code class="language-text">address_type index</code>를 병렬로 사용할 수 있도록 하기 위해서 table을 합칠까 생각하던 중
+<a href="https://en.wikipedia.org/wiki/Materialized_view">materialized view</a>를 떠올리게 되었습니다.</p>
+<p>oracle, postgresql, mariadb 에서는 일반적인 view와는 달리 물리적으로 어느 정도의 데이터를 저장하고 view의 column에
 index를 적용할 수 있는 materialized view를 지원합니다. join 조건을 materialized view로 만들어서 최적화하고
 <code class="language-text">polygon</code> 컬럼에 index를 적용 시켜준다면 spatial index 사이즈가 작아지면서 postgresql이 cost
 계산을 더 잘 할 수 있을거라 추측해서 아래와 같이 적용해봤습니다.</p>
