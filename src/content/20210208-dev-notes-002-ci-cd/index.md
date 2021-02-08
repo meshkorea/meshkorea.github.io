@@ -23,7 +23,7 @@ titleImage: "./title.png"
 # 기존 CI/CD Pipeline에는 어떤 문제점들이 있었을까?
 Mesh Korea의 대부분의 MSA는 JAVA 기반의 기술 스택으로 구성되어 있으며, CI/CD Pipeline을 위해 Bamboo, Spinnaker를 사용하고 있습니다.
 
-CI/CD 적용을 위해 개발자가 Bamboo Job / Spinnaker application을 설정해야 하며, 특히 CI <-> CD tool이 연동되어 있지 않아 Bamboo CI에서 빌드 된 Docker image tag를 복사하여 spinnaker에 손으로 입력해야 하는 등 불편한 점이 많았습니다🤦
+CI/CD 적용을 위해 개발자가 Bamboo Job / Spinnaker application을 설정해야 하며, 특히 CI <-> CD tool이 연동되어 있지 않아 Bamboo CI에서 빌드 된 Docker image tag를 복사하여 Spinnaker에 손으로 입력해야 하는 등 불편한 점이 많았습니다🤦
 
 `Spinnaker`는 멀티 클러스터 / 클라우드 배포 등 강력한 기능을 지닌 CD Workflow platform이지만 Mesh Korea의 Kubernetes 숙련도, 단일 Cloud 환경 사용 등 저희가 원하는 기능보다 훨씬 복잡하고 많은 기능을 사용하기 힘든 오버 엔지니어링이라고 판단하였고, 새로운 도구들을 도입하기로 했습니다.
 
@@ -255,7 +255,7 @@ Manual 실행 방식입니다. 사용자가 수동으로 Pipeline 실행 시 ECR
 
 ![](./helm.png)
 
-`vroong-workload` 라는 공용 Helm chart를 통해 개발자는 `values.yaml`에 필요한 내용을 기입하여 manifest 작성 없이 k8s resource(workload)를 구성합니다. Helm chart repositiory 관리를 위해 [Chartmusiem](https://chartmuseum.com), [Harbor](https://goharbor.io) 등을 검토하였지만 관리해야하는 Chart가 아직 많지 않아 `Github private repository를 만들고 차트 저장소로 사용`했습니다.
+`vroong-workload` 라는 공용 Helm chart를 통해 개발자는 `values.yaml`에 필요한 내용을 기입하여 manifest 작성 없이 k8s resource(workload)를 구성합니다. Helm chart repositiory 관리를 위해 [Chartmuseum](https://chartmuseum.com), [Harbor](https://goharbor.io) 등을 검토하였지만 관리해야하는 Chart가 아직 많지 않아 `Github private repository를 만들고 차트 저장소로 사용`했습니다.
 
 해당 Chart를 통해 DevOps에선 중복되는 manifest code를 줄일 수 있고 무엇보다 기능 도입 시 공용 Chart에 내용을 업데이트하면 됩니다. 특히 앞으로 계획 중인 `Blue/green`, `canary deployment`는 Argo CD에선 `CRD(Custom Resource Definition)`로 제공하고 있습니다. 만약 Helm을 사용하지 않은 상황에서 적용해야한다면 모든 manifest가 저장된 repository에 업데이트를 해야하지만 **공용 Chart만 업데이트하고 개발자들에게 특정 차트 버전으로 업데이트**를 부탁드리면 됩니다.
 
@@ -486,5 +486,5 @@ $ argocd app create -f ./app-${target_val}.yaml
 DevOps의 고객은 조직의 엔지니어이기때문에 불편한 점에 대한 의견을 경청하고, 다양한 도구와 방법론으로 개선해야합니다. 멋진 도구는 아름답지만 사용하기 어렵다면 그 의미는 퇴색되기 마련입니다. 때문에 지속적인 온보딩과 세션을 진행하고, 피드백을 통해 조직에서 좀 더 사용하기 좋은 방법을 고민하고 적용해서 발전시켜야합니다. 그런 의미로 이번 프로젝트를 위해 도와주셨던 많은 분들께 이 글을 통해 감사 인사를 전합니다! 🙇‍♂️
 
 ## 메쉬코리아는 채용 중!
-현재 Mesh Korea의 플랫폼실은 소규모 인원으로 많은 영역을 커버하고 있는데요. 인력 자원이 부족하다보니 IaC 등을 활용해서 지속적으로 자동화하여 관리 비용을 줄이려는 노력을 하고 있습니다👨‍💻 플랫폼실은 `AWS`, `Kubernetes`, `Database`, `Automatic Test` 등 분야와 영역을 막론하고 좀 더 좋은 방식에 대해 고민하고 적용하는 조직으로, 이러한 여정을 함께하고 같이 성장하실 분들을 기다리고 있습니다! 메쉬코리아의 문은 언제나 열려있으니 많은 지원 부탁드립니다 :)
+현재 Mesh Korea의 플랫폼실은 소규모 인원으로 많은 영역을 커버하고 있는데요. 인력 자원이 부족하다보니 IaC 등을 활용해서 지속적으로 자동화하여 관리 비용을 줄이려는 노력을 하고 있습니다👨‍💻 플랫폼실은 `AWS`, `Kubernetes`, `Database`, `Test automation` 등 분야와 영역을 막론하고 좀 더 좋은 방식에 대해 고민하고 적용하는 조직으로, 이러한 여정을 함께하고 같이 성장하실 분들을 기다리고 있습니다! 메쉬코리아의 문은 언제나 열려있으니 많은 지원 부탁드립니다 :)
 긴 글 읽어주셔서 감사합니다!
