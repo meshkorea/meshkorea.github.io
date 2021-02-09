@@ -2,7 +2,7 @@
 layout: post
 title: "CI/CD 도구 및 방법론 도입기"
 date: "2021-02-08"
-tags: ["Dev Notes"]
+tags: ["Dev Notes", "CICD", "ArgoCD", "Jenkins", "Kubernetes", "Helm"]
 author: 최제필
 authorDesc: "플랫폼실 최제필"
 titleImage: "./title.png"
