@@ -1,0 +1,887 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><style data-href="/styles.2072d913c063a542f3b5.css" id="gatsby-global-css">/*! modern-normalize | MIT License | https://github.com/sindresorhus/modern-normalize */html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}:root{-moz-tab-size:4;-o-tab-size:4;tab-size:4}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}hr{height:0}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{padding:0}progress{vertical-align:baseline}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}</style><meta name="generator" content="Gatsby 2.28.1"/><style type="text/css">
+    .anchor {
+      float: left;
+      padding-right: 4px;
+      margin-left: -20px;
+    }
+    h1 .anchor svg,
+    h2 .anchor svg,
+    h3 .anchor svg,
+    h4 .anchor svg,
+    h5 .anchor svg,
+    h6 .anchor svg {
+      visibility: hidden;
+    }
+    h1:hover .anchor svg,
+    h2:hover .anchor svg,
+    h3:hover .anchor svg,
+    h4:hover .anchor svg,
+    h5:hover .anchor svg,
+    h6:hover .anchor svg,
+    h1 .anchor:focus svg,
+    h2 .anchor:focus svg,
+    h3 .anchor:focus svg,
+    h4 .anchor:focus svg,
+    h5 .anchor:focus svg,
+    h6 .anchor:focus svg {
+      visibility: visible;
+    }
+  </style><script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var hash = window.decodeURI(location.hash.replace('#', ''))
+      if (hash !== '') {
+        var element = document.getElementById(hash)
+        if (element) {
+          var offset = element.offsetTop
+          // Wait for the browser to finish rendering before scrolling.
+          setTimeout((function() {
+            window.scrollTo(0, offset - 0)
+          }), 0)
+        }
+      }
+    })
+  </script><link rel="canonical" href="https://meshkorea.github.io/20210208-dev-notes-002-ci-cd/" data-baseprotocol="https:" data-basehost="meshkorea.github.io"/><title data-react-helmet="true">CI/CD 도구 및 방법론 도입기:: Mesh Korea Makers Blog</title><link data-react-helmet="true" rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon.png" sizes="1024x1024"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16"/><link data-react-helmet="true" rel="mask-icon" href="/mask-icon.svg" color="#1b3993"/><link data-react-helmet="true" rel="shortcut icon" href="/favicon.ico"/><meta data-react-helmet="true" name="description" content="안녕하세요😃 메쉬코리아 플랫폼실 최제필입니다 :)
+이번 글에서는  Kubernetes(이하  )에 배포되어 운영하는 여러 MSA를 위해 도입한 CI/CD 도구 및 방법론 에 대해 공유하고자 합니다! CI (Continuous Integration…"/><meta data-react-helmet="true" name="keywords" content="Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, Dev Notes"/><meta data-react-helmet="true" property="og:url" content="https://meshkorea.github.io/20210208-dev-notes-002-ci-cd/"/><meta data-react-helmet="true" property="og:title" content="CI/CD 도구 및 방법론 도입기
+            :: Mesh Korea Makers Blog"/><meta data-react-helmet="true" property="og:description" content="안녕하세요😃 메쉬코리아 플랫폼실 최제필입니다 :)
+이번 글에서는  Kubernetes(이하  )에 배포되어 운영하는 여러 MSA를 위해 도입한 CI/CD 도구 및 방법론 에 대해 공유하고자 합니다! CI (Continuous Integration…"/><meta data-react-helmet="true" property="og:type" content="article"/><meta data-react-helmet="true" property="og:image" content="https://meshkorea.github.io/static/64705557b0dff75fded81a9c6becc6a4/eeb1b/title.png"/><link rel="manifest" href="/manifest.webmanifest" crossorigin="anonymous"/><meta name="theme-color" content="#1b3993"/><link rel="apple-touch-icon" sizes="192x192" href="/android-icon-192x192.png"/><link rel="apple-touch-icon" sizes="384x384" href="/android-icon-384x384.png"/><link as="script" rel="preload" href="/webpack-runtime-0532c3bcc2cd869e8d80.js"/><link as="script" rel="preload" href="/framework-da68acf1b9295dbf7273.js"/><link as="script" rel="preload" href="/app-22865dd68e8243d4cdbd.js"/><link as="script" rel="preload" href="/styles-e9d24b1846c7d6eb9685.js"/><link as="script" rel="preload" href="/e0525e89-740ce12359b8b303d957.js"/><link as="script" rel="preload" href="/commons-dcdf0d39b8604fc9401a.js"/><link as="script" rel="preload" href="/component---src-templates-post-tsx-1bf9ab989079ec585ec1.js"/><link as="fetch" rel="preload" href="/page-data/20210208-dev-notes-002-ci-cd/page-data.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/sq/d/1963140206.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/app-data.json" crossorigin="anonymous"/></head><body><div id="___gatsby"><div style="outline:none" tabindex="-1" id="gatsby-focus-wrapper"><style data-emotion="css x35p1m-StyledLayoutRoot">.css-x35p1m-StyledLayoutRoot{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;min-height:100vh;background:#fff;}</style><div class="css-x35p1m-StyledLayoutRoot e3awmat0"><style data-emotion="css-global w0u7it">html{box-sizing:border-box;}*,*::before,*::after{box-sizing:inherit;}html{font-size:16px!important;line-height:1.5!important;}body{width:100%;overflow-x:hidden;overflow-y:scroll;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",Arial,sans-serif;color:#4B5058;background-color:#EFF0F5;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}a{color:#0971ce;-webkit-text-decoration:none;text-decoration:none;}a:hover,a:focus{-webkit-text-decoration:none;text-decoration:none;}img{max-width:100%;object-fit:contain;}figure{margin:2rem 0;}figcaption{font-size:80%;}table{width:100%;margin-bottom:1rem;border:1px solid #f5f3f7;font-size:85%;border-collapse:collapse;}td,th{padding:0.25rem 0.5rem;border:1px solid #f5f3f7;}th{text-align:left;}tbody tr:nth-of-type(odd) td{background-color:#fbfafc;}tbody tr:nth-of-type(odd) tr{background-color:#fbfafc;}h1,h2,h3,h4,h5,h6{margin-top:1.414rem;margin-bottom:0.5rem;color:inherit;font-weight:700;line-height:1.2;text-rendering:optimizeLegibility;}h1{margin-top:0;font-size:2.441rem;}h2{font-size:1.953rem;}h3{font-size:1.563rem;}h4,h5,h6{font-size:1.25rem;}p{margin-top:0;margin-bottom:1rem;}strong{color:inherit;}ul,ol,dl{margin-top:0;margin-bottom:1rem;}dt{font-weight:bold;}dd{margin-bottom:0.5rem;}hr{position:relative;margin:1.5rem 0;border:0;border-top:1px solid #f5f3f7;}blockquote{margin:0.8rem 0;padding:0.5rem 1rem;border-left:0.25rem solid #f5f3f7;}blockquote p:last-child{margin-bottom:0;}@media (min-width: 48em){blockquote{padding-right:5rem;padding-left:1.25rem;}}code[class*="language-"],pre[class*="language-"]{color:black;background:none;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}@media print{code[class*="language-"],pre[class*="language-"]{text-shadow:none;}}pre[class*="language-"]{padding:1em;margin:0.5em 0;overflow:auto;}:not(pre)>code[class*="language-"]{padding:0.1em;border-radius:0.3em;white-space:normal;}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray;}.token.punctuation{color:#999;}.namespace{opacity:0.7;}.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol,.token.deleted{color:#905;}.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#690;}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string{color:#9a6e3a;background:hsla(0, 0%, 100%, 0.5);}.token.atrule,.token.attr-value,.token.keyword{color:#07a;}.token.function,.token.class-name{color:#dd4a68;}.token.regex,.token.important,.token.variable{color:#e90;}.token.important,.token.bold{font-weight:bold;}.token.italic{font-style:italic;}.token.entity{cursor:help;}</style><style data-emotion="css jaqxp9-SmallTitleBox">.css-jaqxp9-SmallTitleBox{z-index:105;position:fixed;top:0;left:0;right:0;margin:0;height:75px;padding-top:26px;font-size:1.125rem;font-weight:700;line-height:1.2;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-jaqxp9-SmallTitleBox{height:44px;padding-top:0;left:50px;}}</style><div class="css-jaqxp9-SmallTitleBox e1obetcm3"><style data-emotion="css 1mfk7pj-SmallTitleContainer">.css-1mfk7pj-SmallTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-1mfk7pj-SmallTitleContainer >a{color:inherit;}</style><style data-emotion="css eduyk7-StyledContainer-SmallTitleContainer">.css-eduyk7-StyledContainer-SmallTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-eduyk7-StyledContainer-SmallTitleContainer::before,.css-eduyk7-StyledContainer-SmallTitleContainer::after{content:"";display:table;}.css-eduyk7-StyledContainer-SmallTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-eduyk7-StyledContainer-SmallTitleContainer{padding-left:16px;padding-right:16px;}}.css-eduyk7-StyledContainer-SmallTitleContainer >a{color:inherit;}</style><div class="e1obetcm5 css-eduyk7-StyledContainer-SmallTitleContainer e1ig3f2t0"><a href="/"><style data-emotion="css 282isq-SmallTitle">.css-282isq-SmallTitle{padding-top:7px;font-size:inherit;color:#05cd82;cursor:pointer;-webkit-transition:color 0.5s ease-in;transition:color 0.5s ease-in;}.css-282isq-SmallTitle .link-text{color:#4B5058;opacity:1;-webkit-transition:opacity 0.5s ease-in;transition:opacity 0.5s ease-in;}.css-282isq-SmallTitle i{margin-right:10px;}@media (max-width: 38.125em){.css-282isq-SmallTitle{display:none;}}</style><h1 class="css-282isq-SmallTitle e1obetcm4"><span class="link-text"><style data-emotion="css 1anhml5-IconWrapper">.css-1anhml5-IconWrapper{position:relative;display:inline-block;line-height:16px;color:inherit;}.css-1anhml5-IconWrapper>svg{vertical-align:top;}.css-1anhml5-IconWrapper>svg{fill:currentColor;}</style><i class="css-1anhml5-IconWrapper e12rwrnm0" height="16" title="MESH KOREA | VROONG"><svg width="242" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i>Tech Blog</span></h1></a><div style="flex:1"></div><style data-emotion="css 22578y-RecruitLinks">.css-22578y-RecruitLinks{font-size:1rem;text-align:right;color:#0971ce;}.css-22578y-RecruitLinks >a{display:inline-block;min-width:36px;height:36px;padding-top:6px;text-align:center;line-height:24px;border-radius:18px;-webkit-transition:color 0.3s,background 0.5s;transition:color 0.3s,background 0.5s;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#fff;-webkit-text-decoration:none;text-decoration:none;background:#0971ce;}@media (max-width: 38.125em){.css-22578y-RecruitLinks >a{color:#5B5E62;margin:4px 0;border-radius:5px;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#4B5058;background:#E2E4EB;}}</style><div class="css-22578y-RecruitLinks e1obetcm2"><a href="https://github.com/meshkorea" target="_blank"><style data-emotion="css g8nddb-IconWrapper">.css-g8nddb-IconWrapper{position:relative;display:inline-block;line-height:24px;color:inherit;}.css-g8nddb-IconWrapper>svg{vertical-align:top;}.css-g8nddb-IconWrapper>svg{fill:currentColor;}</style><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,0A12,12,0,0,0,8.21,23.39c.6.11.82-.26.82-.58s0-1,0-2c-3.34.72-4-1.61-4-1.61A3.21,3.21,0,0,0,3.64,17.4c-1.09-.74.08-.73.08-.73a2.55,2.55,0,0,1,1.84,1.24,2.56,2.56,0,0,0,3.49,1,2.59,2.59,0,0,1,.76-1.61C7.15,17,4.34,16,4.34,11.37A4.63,4.63,0,0,1,5.58,8.15,4.28,4.28,0,0,1,5.7,5s1-.33,3.3,1.23a11.18,11.18,0,0,1,6,0C17.3,4.65,18.3,5,18.3,5a4.28,4.28,0,0,1,.12,3.17,4.63,4.63,0,0,1,1.23,3.22c0,4.61-2.8,5.63-5.47,5.92A2.88,2.88,0,0,1,15,19.52c0,1.6,0,2.89,0,3.29s.21.69.82.58A12,12,0,0,0,12,0Z"></path></svg></i></a><style data-emotion="css 17ctmwo-RecruitLink">.css-17ctmwo-RecruitLink{margin-left:12px;padding-top:5px!important;padding-left:1.25rem;padding-right:1.25rem;font-weight:600;border:1px solid #0971ce;}@media (max-width: 38.125em){.css-17ctmwo-RecruitLink{margin-left:0.6rem;margin-right:-0.625rem;padding-left:0.625rem;padding-right:0.625rem;line-height:26px;font-weight:400;color:#5B5E62;border:none;}}</style><a href="https://www.meshkorea.net/kr/career/" target="_blank" class="css-17ctmwo-RecruitLink e1obetcm1">지금 지원하러 가기</a></div></div></div><style data-emotion="css 1492abv-StyledHeader">.css-1492abv-StyledHeader{position:fixed;top:-125px;left:0;right:0;z-index:100;height:215px;padding:110px 0 0;color:#4B5058;border-bottom:1px solid #E2E4EB;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-1492abv-StyledHeader{top:-51px;height:96px;padding-top:58px;-webkit-transition:height 0.3s;transition:height 0.3s;}}</style><header class="css-1492abv-StyledHeader e1obetcm9"><style data-emotion="css 2028mn-StyledContainer">.css-2028mn-StyledContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;}.css-2028mn-StyledContainer::before,.css-2028mn-StyledContainer::after{content:"";display:table;}.css-2028mn-StyledContainer::after{clear:both;}@media (max-width: 38.125em){.css-2028mn-StyledContainer{padding-left:16px;padding-right:16px;}}</style><div class="css-2028mn-StyledContainer e1ig3f2t0"><style data-emotion="css 1htaa58-LogoContainer">.css-1htaa58-LogoContainer{white-space:nowrap;overflow:hidden;}@media (min-width: 38.125em){.css-1htaa58-LogoContainer{display:none;}}</style><div class="css-1htaa58-LogoContainer e1obetcm8"><style data-emotion="css 93x8qt-HomepageLink">.css-93x8qt-HomepageLink{color:inherit;}.css-93x8qt-HomepageLink:hover,.css-93x8qt-HomepageLink:focus{-webkit-text-decoration:none;text-decoration:none;}</style><a class="css-93x8qt-HomepageLink e1obetcm0" href="/"><style data-emotion="css l9mnzg-Logo">.css-l9mnzg-Logo{width:133px;height:24px;}@media (max-width: 38.125em){.css-l9mnzg-Logo{display:inline-block;width:26px;height:30px;overflow:hidden;color:#05cd82;}}</style><div class="css-l9mnzg-Logo e1obetcm7"><style data-emotion="css vi10os-IconWrapper">.css-vi10os-IconWrapper{position:relative;display:inline-block;line-height:18px;color:inherit;}.css-vi10os-IconWrapper>svg{vertical-align:top;}.css-vi10os-IconWrapper>svg{fill:currentColor;}</style><i class="css-vi10os-IconWrapper e12rwrnm0" height="18"><svg width="271.53" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i></div><style data-emotion="css yek61y-Title">.css-yek61y-Title{font-size:3rem;margin:6px 0 0;font-weight:700;line-height:1.2;letter-spacing:-0.015em;}@media (max-width: 38.125em){.css-yek61y-Title{display:inline-block;margin:0 0 0 14px;font-size:1.125rem;line-height:30px;vertical-align:top;}}@media (max-width: 23.125em){.css-yek61y-Title{font-size:0.875rem;}}</style><h1 class="css-yek61y-Title e1obetcm6">Tech Blog</h1></a></div></div></header><style data-emotion="css 1gp6gx1-StyledLayoutMain">.css-1gp6gx1-StyledLayoutMain{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-flex:1;-ms-flex:1;flex:1;padding-top:90px;}@media (max-width: 38.125em){.css-1gp6gx1-StyledLayoutMain{padding-top:97px;}}</style><main class="css-1gp6gx1-StyledLayoutMain ewf609k0"><style data-emotion="css 1scz8kd-StyledPage">.css-1scz8kd-StyledPage{display:block;-webkit-flex:1;-ms-flex:1;flex:1;position:relative;padding:0;margin-bottom:3rem;}</style><div class="css-1scz8kd-StyledPage e9n6qsq0"><style data-emotion="css 1ljieyz-Wrapper">.css-1ljieyz-Wrapper{height:360px;font-size:1.125em;color:#fff;text-shadow:0 2px 4px rgba(0, 0, 0, 0.5);background-color:#7A7F86;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/64705557b0dff75fded81a9c6becc6a4/eeb1b/title.png);}</style><div style="background-position:50% 50%" class="css-1ljieyz-Wrapper e140x8tc2"><style data-emotion="css fqnm68-PostTitleContainer">.css-fqnm68-PostTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-fqnm68-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-fqnm68-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-fqnm68-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-fqnm68-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><style data-emotion="css bb5jcx-StyledContainer-PostTitleContainer">.css-bb5jcx-StyledContainer-PostTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-bb5jcx-StyledContainer-PostTitleContainer::before,.css-bb5jcx-StyledContainer-PostTitleContainer::after{content:"";display:table;}.css-bb5jcx-StyledContainer-PostTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}.css-bb5jcx-StyledContainer-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-bb5jcx-StyledContainer-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><div class="e140x8tc1 css-bb5jcx-StyledContainer-PostTitleContainer e1ig3f2t0"><style data-emotion="css 1g33qqm-PostTitle">.css-1g33qqm-PostTitle{font-size:2.5rem;margin:0;word-break:keep-all;}@media (max-width: 48em){.css-1g33qqm-PostTitle{font-size:2rem;}}</style><h1 class="css-1g33qqm-PostTitle e140x8tc0">CI/CD 도구 및 방법론 도입기</h1><div><span>#<!-- -->Dev Notes</span></div></div></div><style data-emotion="css sz93qs-PostContainer">.css-sz93qs-PostContainer{position:relative;}</style><style data-emotion="css nokxz1-StyledContainer-PostContainer">.css-nokxz1-StyledContainer-PostContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;position:relative;}.css-nokxz1-StyledContainer-PostContainer::before,.css-nokxz1-StyledContainer-PostContainer::after{content:"";display:table;}.css-nokxz1-StyledContainer-PostContainer::after{clear:both;}@media (max-width: 38.125em){.css-nokxz1-StyledContainer-PostContainer{padding-left:16px;padding-right:16px;}}</style><div class="edaxc5g8 css-nokxz1-StyledContainer-PostContainer e1ig3f2t0"><style data-emotion="css m5nmoe-ShareSheet">.css-m5nmoe-ShareSheet{position:absolute;top:40px;right:50%;font-size:0.75rem;font-weight:500;text-align:right;color:#90959B;-webkit-transform:translateX(550px);-moz-transform:translateX(550px);-ms-transform:translateX(550px);transform:translateX(550px);}.css-m5nmoe-ShareSheet a,.css-m5nmoe-ShareSheet .SocialMediaShareButton{position:relative;display:block;margin-left:auto;margin-bottom:0.625rem;width:24px;color:#B9BDC1;cursor:pointer;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-m5nmoe-ShareSheet a:hover,.css-m5nmoe-ShareSheet .SocialMediaShareButton:hover{color:#90959B;}.css-m5nmoe-ShareSheet a:focus,.css-m5nmoe-ShareSheet .SocialMediaShareButton:focus{outline:0;}.css-m5nmoe-ShareSheet a:hover::before{position:absolute;top:0.5rem;right:26px;width:0;height:0;content:attr(title);color:rgba(0, 0, 0, 0);overflow:hidden;border-left:4px solid rgba(0, 0, 0, 0.5);border-top:4px solid transparent;border-bottom:4px solid transparent;}.css-m5nmoe-ShareSheet a:hover::after{position:absolute;top:0.125rem;right:30px;content:attr(title);padding:0 10px;font-size:1.167em;white-space:nowrap;color:#fff;border-radius:5px;background:rgba(0, 0, 0, 0.5);}@media (max-width: 75em){.css-m5nmoe-ShareSheet{display:none;}}</style><aside class="css-m5nmoe-ShareSheet edaxc5g7"><style data-emotion="css 766jc8-ShareSheetTitles">.css-766jc8-ShareSheetTitles{margin:1rem 0 5px;font-size:1em;font-weight:inherit;}.css-766jc8-ShareSheetTitles:first-of-type{margin-top:0;}</style><h5 class="css-766jc8-ShareSheetTitles edaxc5g6">Share</h5><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--facebook"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.68,0H1.32A1.32,1.32,0,0,0,0,1.32V22.67A1.33,1.33,0,0,0,1.32,24H12.83V14.72H9.7V11.08h3.13V8.41c0-3.1,1.89-4.79,4.66-4.79.93,0,1.86,0,2.79.14V7H18.37c-1.5,0-1.8.72-1.8,1.77v2.31h3.6l-.47,3.63H16.55V24h6.13A1.33,1.33,0,0,0,24,22.67h0V1.32A1.32,1.32,0,0,0,22.68,0Z"></path></svg></i></div><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--twitter"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.89,21A12.84,12.84,0,0,0,20.82,8.07c0-.2,0-.39,0-.59a9.18,9.18,0,0,0,2.26-2.35,9.08,9.08,0,0,1-2.61.71,4.54,4.54,0,0,0,2-2.51,9.05,9.05,0,0,1-2.88,1.1,4.55,4.55,0,0,0-7.86,3.11,5.1,5.1,0,0,0,.11,1A12.9,12.9,0,0,1,2.47,3.83,4.54,4.54,0,0,0,3.87,9.9a4.59,4.59,0,0,1-2-.57v.06a4.54,4.54,0,0,0,3.64,4.45,4.7,4.7,0,0,1-1.2.16,4.8,4.8,0,0,1-.85-.08,4.54,4.54,0,0,0,4.24,3.15A9.09,9.09,0,0,1,2,19,9.51,9.51,0,0,1,.93,19a12.82,12.82,0,0,0,7,2"></path></svg></i></div></aside><style data-emotion="css 1sykmk4-AuthorInfo-PostAuthorInfo">.css-1sykmk4-AuthorInfo-PostAuthorInfo{margin-top:10px;margin-top:40px;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::before,.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{content:"";display:table;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{clear:both;}@media (min-width: 30em) and (max-width: 48em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:40px;}}@media (max-width: 30em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:0;}}</style><aside class="css-1sykmk4-AuthorInfo-PostAuthorInfo edaxc5g3"><style data-emotion="css 19iuzk5-AuthorAvatar-PostAuthorAvatar">.css-19iuzk5-AuthorAvatar-PostAuthorAvatar{float:left;margin:0;width:3rem;height:3rem;border-radius:1.5rem;background-color:#EFF0F5;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/f7d830c9bab1d232451ec24680047ab7/a2408/jepil.choi.png);}@media (max-width: 48em){.css-19iuzk5-AuthorAvatar-PostAuthorAvatar{float:none;margin-bottom:0.75rem;width:2.25rem;height:2.25rem;}}</style><figure src="/static/f7d830c9bab1d232451ec24680047ab7/a2408/jepil.choi.png" class="css-19iuzk5-AuthorAvatar-PostAuthorAvatar edaxc5g4"></figure><style data-emotion="css 1wratvv-AuthorName-PostAuthorName">.css-1wratvv-AuthorName-PostAuthorName{display:block;margin:4px 0 0 60px;font-weight:600;line-height:1.3;color:#4B5058;margin-top:2px;margin-left:70px;font-size:1.125rem;}@media (max-width: 48em){.css-1wratvv-AuthorName-PostAuthorName{margin-left:0;}}</style><strong class="css-1wratvv-AuthorName-PostAuthorName edaxc5g2">최제필</strong><style data-emotion="css 5vph4m-AuthorDesc-PostAuthorDesc">.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;}@media (max-width: 48em){.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:0;}}</style><aside class="css-5vph4m-AuthorDesc-PostAuthorDesc edaxc5g1">서비스개발본부 플랫폼실에서 DevOps를 담당하고 있습니다.</aside><style data-emotion="css sja78i-AuthorDesc-PostAuthorDesc-PostDate">.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;margin-top:1.125rem;margin-bottom:1.5rem;}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:0;}}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-top:0;}}</style><aside class="css-sja78i-AuthorDesc-PostAuthorDesc-PostDate edaxc5g0">2021-02-08</aside></aside><style data-emotion="css 1xa252c-PostWrapper">.css-1xa252c-PostWrapper{font-size:1.25rem;}@media (max-width: 48em){.css-1xa252c-PostWrapper{margin-left:0;}}@media (max-width: 38.125em){.css-1xa252c-PostWrapper{font-size:1.125rem;}}@media (max-width: 30em){.css-1xa252c-PostWrapper{font-size:1rem;}}</style><article id="article" class="css-1xa252c-PostWrapper edaxc5g9"><style data-emotion="css nlx8yd-TOCWrapper">.css-nlx8yd-TOCWrapper{color:#B9BDC1;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-nlx8yd-TOCWrapper:hover{color:#7A7F86;}.css-nlx8yd-TOCWrapper >i{position:absolute;top:auto;margin-top:0.15em;width:30px;line-height:1.5rem;cursor:pointer;}.css-nlx8yd-TOCWrapper >i .short{-webkit-transition:width 0.5s;transition:width 0.5s;}.css-nlx8yd-TOCWrapper >i:hover .short{width:18px!important;}@media (max-width: 38.125em){.css-nlx8yd-TOCWrapper{display:none;}.css-nlx8yd-TOCWrapper >i{display:block;top:44px;left:0;margin-top:0;width:56px;height:50px;z-index:1100;padding:10px 36px 10px 16px;}}</style><nav class="css-nlx8yd-TOCWrapper e12xq6cv1"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="17" width="13" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="5" width="13" height="2" rx="1" ry="1"></rect></svg></i><style data-emotion="css 1nabgxc-TOCList">.css-1nabgxc-TOCList{position:absolute;top:auto;margin-top:-10px;z-index:50;margin-left:30px;width:0;height:0;font-size:1rem;}.css-1nabgxc-TOCList ul{margin:0;padding:0;list-style:none;list-style-image:none;}.css-1nabgxc-TOCList ul p{margin:0;}.css-1nabgxc-TOCList ul a{display:block;margin-left:-0.5rem;margin-right:-0.5rem;padding:0.3rem 0.5rem;border-radius:0.5rem;-webkit-transition:background-color 0.5s;transition:background-color 0.5s;}.css-1nabgxc-TOCList ul a:hover{background-color:#EFF0F5;}.css-1nabgxc-TOCList ul:not(:first-of-type){padding-left:1rem;}.css-1nabgxc-TOCList >ul{visibility:hidden;opacity:0;-webkit-transition:visibility 0s 0.5s,opacity 0.5s;transition:visibility 0s 0.5s,opacity 0.5s;width:320px;max-height:360px;overflow-y:auto;padding:0.5rem 1rem;background:#fff;border-radius:10px;box-shadow:0px 2px 4px rgba(0, 0, 0, 0.5);}@media (max-width: 38.125em){.css-1nabgxc-TOCList{top:89px;left:0;right:0;margin-top:0;margin-left:0;width:100%;}.css-1nabgxc-TOCList >ul{width:100%;box-shadow:none;border-radius:0;border-bottom:1px solid #E2E4EB;}}</style><div class="css-1nabgxc-TOCList e12xq6cv0"><ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#%EA%B8%B0%EC%A1%B4-cicd-pipeline%EC%97%90%EB%8A%94-%EC%96%B4%EB%96%A4-%EB%AC%B8%EC%A0%9C%EC%A0%90%EB%93%A4%EC%9D%B4-%EC%9E%88%EC%97%88%EC%9D%84%EA%B9%8C">기존 CI/CD Pipeline에는 어떤 문제점들이 있었을까?</a></li>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#jenkins-ci">Jenkins CI</a></p>
+<ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#%EA%B3%B5%EC%9A%A9-ci-pipeline-%EA%B0%9C%EB%B0%9C-%EB%B0%8F-%EC%A0%81%EC%9A%A9">공용 CI Pipeline 개발 및 적용</a></li>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#%ED%8A%B9%EC%A0%95-event%EC%97%90%EB%A7%8C-%EC%9E%91%EB%8F%99">특정 Event에만 작동</a></p>
+<ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#buildingtag">buildingTag</a></li>
+<li><a href="/20210208-dev-notes-002-ci-cd/#changerequest">changeRequest</a></li>
+<li><a href="/20210208-dev-notes-002-ci-cd/#triggeredby-useridcause">triggeredBy ‘UserIdCause’</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#argo-cd">Argo CD</a></p>
+<ul>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#helm-chart">Helm chart</a></p>
+<ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#gitops">GitOps</a></li>
+<li><a href="/20210208-dev-notes-002-ci-cd/#application">Application</a></li>
+</ul>
+</li>
+<li><a href="/20210208-dev-notes-002-ci-cd/#%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0">배포하기</a></li>
+</ul>
+</li>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#jenkins--argo-cicd-pipeline-%EC%A0%95%EB%A6%AC">Jenkins + Argo CI/CD Pipeline 정리</a></p>
+<ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#argo-repo-initialize">argo-repo-initialize</a></li>
+</ul>
+</li>
+<li>
+<p><a href="/20210208-dev-notes-002-ci-cd/#%EB%A7%88%EC%B9%98%EB%A9%B0">마치며</a></p>
+<ul>
+<li><a href="/20210208-dev-notes-002-ci-cd/#%EB%A9%94%EC%89%AC%EC%BD%94%EB%A6%AC%EC%95%84%EB%8A%94-%EC%B1%84%EC%9A%A9-%EC%A4%91">메쉬코리아는 채용 중!</a></li>
+</ul>
+</li>
+</ul></div></nav><style data-emotion="css 8o6tot-Article">.css-8o6tot-Article{padding:0 70px;}.css-8o6tot-Article >*{margin:1.5em 0;}.css-8o6tot-Article .image-wrapper{margin-left:-70px;margin-right:-70px;text-align:center;}.css-8o6tot-Article .image-caption{margin-top:0.75em;font-size:0.833em;text-align:center;color:#7A7F86;}.css-8o6tot-Article >p{line-height:1.75;}.css-8o6tot-Article li>p,.css-8o6tot-Article li>ul{margin-bottom:0;}.css-8o6tot-Article pre,.css-8o6tot-Article code,.css-8o6tot-Article kbd,.css-8o6tot-Article samp{padding:0.125em 0.3125em;white-space:pre-wrap;font-size:0.889rem;background:#F7F8FC;border-radius:3px;}.css-8o6tot-Article p>code,.css-8o6tot-Article li>code{vertical-align:1px;word-break:break-word;}.css-8o6tot-Article pre{padding-top:0.5em;padding-bottom:0.5em;}.css-8o6tot-Article pre code{background:none;padding:0;}.css-8o6tot-Article a:hover,.css-8o6tot-Article a:active{-webkit-text-decoration:underline;text-decoration:underline;}.css-8o6tot-Article a.anchor{margin-left:-1.5rem;padding-right:0.5rem;line-height:1.1;color:#90959B;}.css-8o6tot-Article a.anchor >svg{fill:#90959B;}@media (min-width: 30em) and (max-width: 48em){.css-8o6tot-Article{padding-left:40px;padding-right:40px;}.css-8o6tot-Article .gatsby-resp-iframe-wrapper,.css-8o6tot-Article .gatsby-resp-image-wrapper,.css-8o6tot-Article .image-wrapper{margin-left:-60px!important;margin-right:-60px!important;}}@media (min-width: 30em) and (max-width: 38.125em){.css-8o6tot-Article .gatsby-resp-iframe-wrapper,.css-8o6tot-Article .gatsby-resp-image-wrapper,.css-8o6tot-Article .image-wrapper{margin-left:-56px!important;margin-right:-56px!important;}}@media (max-width: 30em){.css-8o6tot-Article{padding-left:0;padding-right:0;}.css-8o6tot-Article .gatsby-resp-iframe-wrapper,.css-8o6tot-Article .gatsby-resp-image-wrapper,.css-8o6tot-Article .image-wrapper{margin-left:-16px!important;margin-right:-16px!important;}}</style><article class="css-8o6tot-Article edaxc5g5"><p>안녕하세요😃 메쉬코리아 플랫폼실 최제필입니다 :)
+이번 글에서는 <strong>Kubernetes(이하 <code class="language-text">k8s</code>)에 배포되어 운영하는 여러 MSA를 위해 도입한 CI/CD 도구 및 방법론</strong>에 대해 공유하고자 합니다!</p>
+<ul>
+<li>
+<p>CI (Continuous Integration)란?</p>
+<ul>
+<li>‘지속적인 통합’이란 의미로, 애플리케이션의 새로운 코드 변경 사항이 정기적으로 build 및 test 되어 공유 repository에 통합되는 것.</li>
+</ul>
+</li>
+<li>
+<p>CD(Continuous Delivery or Continuous Deploy) 란?</p>
+<ul>
+<li>‘지속적인 배포’란 의미로, 개발자들이 애플리케이션에 적용한 변경 사항이 bug test를 거쳐 repository에 자동으로 업로드되는 것.</li>
+</ul>
+</li>
+</ul>
+<p>즉 CI/CD란 개발 단계를 자동화하여 보다 짧은 주기로 배포하는 전략을 말하는데요. CI/CD 방법론을 적용하면 개발의 편의성이 증가하고, 소스코드 변경부터 배포까지의 작업을 자동화할 수 있기 때문에 수작업으로 할 때의 불편함을 줄일 수 있습니다.</p>
+<h1 id="기존-cicd-pipeline에는-어떤-문제점들이-있었을까"><a href="#%EA%B8%B0%EC%A1%B4-cicd-pipeline%EC%97%90%EB%8A%94-%EC%96%B4%EB%96%A4-%EB%AC%B8%EC%A0%9C%EC%A0%90%EB%93%A4%EC%9D%B4-%EC%9E%88%EC%97%88%EC%9D%84%EA%B9%8C" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>기존 CI/CD Pipeline에는 어떤 문제점들이 있었을까?</h1>
+<p>Mesh Korea의 대부분의 MSA는 JAVA 기반의 기술 스택으로 구성되어 있으며, CI/CD Pipeline을 위해 Bamboo, Spinnaker를 사용하고 있습니다.</p>
+<p>CI/CD 적용을 위해 개발자가 Bamboo Job / Spinnaker application을 설정해야 하며, 특히 CI &#x3C;-> CD tool이 연동되어 있지 않아 Bamboo CI에서 빌드 된 Docker image tag를 복사하여 Spinnaker에 손으로 입력해야 하는 등 불편한 점이 많았습니다🤦</p>
+<p><code class="language-text">Spinnaker</code>는 멀티 클러스터 / 클라우드 배포 등 강력한 기능을 지닌 CD Workflow platform이지만 Mesh Korea의 Kubernetes 숙련도, 단일 Cloud 환경 사용 등 저희가 원하는 기능보다 훨씬 복잡하고 많은 기능을 사용하기 힘든 오버 엔지니어링이라고 판단하였고, 새로운 도구들을 도입하기로 했습니다.</p>
+<p>그럼 지금부터 본격적인 CI/CD 도구 및 방법론 도입기, 시작하겠습니다!</p>
+<blockquote>
+<p>다음과 같은 순서로 진행되니 참고 부탁드립니다.</p>
+<ul>
+<li>Jenkins CI</li>
+<li>Argo CD</li>
+<li>CI/CD 도입 및 이전을 위한 자동화 방식</li>
+</ul>
+</blockquote>
+<hr>
+<h1 id="jenkins-ci"><a href="#jenkins-ci" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Jenkins CI</h1>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 55.51020408163265%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAAAsTAAALEwEAmpwYAAACJElEQVQoz5VSTYtSYRS+v8N0ITiiIrgWcaFbP3f+g/6ApGVuXERB7adVUSO1KqIQpprdBJHogB9MXmZqVJrrVRlI771e79f79L6vOFjMpgOH5zncex6ec94jYCcIITtoYzqx0OtokOU5zQl0fQ1RFJHP55HL5ZDNZpFKpZDJZHgWCgUIW4FtsrAsmzZrUJY2Dj/8Rq/3HScnbcxmM7Tbbfj9fgSDQY5erxc+n4/zcDgM4VqIYEfQgmmYuClM08R4PMZwOMRoNOKcIaslSdo4/Dds2+aN22DOVqsV547j8G+GYWC9XnPc1swIF5TEAY5ePAWhQqxB13UoisIF5vM54vE4arUarzudDq+j0SiSyeQ1j8ViSCQSECzLxKDfx/P9fbqzBWwmuNKhqioXkGUZlUoF9Xqd1336LxNKp9P8cdhjRCIRBAIBLizMpTnOTs9x2hvgQrz4a2RCHGhU3KSjsJGZczYBc79cLrFYLDhua2ZCeOu8xwF5jTfkHV46r9BxeuxisDbWm50ZGv4nhAfmY5SM+6gZD3GH4qHzmT4lsLIJ5FYDR7c9+NV4AvP8E8hZA+PJFe7dLaNarfJVlMsbXiqVUCwWIUzJDJdEwoTIHBVCd2c7sOgFXYnf0HyUx+z4GZTBR7rAAzS/fsEttwf+vT1+fx6PB6FQCG63Gy6X6+azIZtr53yh6ricTPHj5xCqpmOlqWi12mg2mxRb/NBZMt7tdvEHClriMddKhdoAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="devops"
+        title=""
+        src="/static/0020820e1e8f2a2d6c2419d228d05f78/2b72d/devops.png"
+        srcset="/static/0020820e1e8f2a2d6c2419d228d05f78/232f7/devops.png 245w,
+/static/0020820e1e8f2a2d6c2419d228d05f78/9319d/devops.png 490w,
+/static/0020820e1e8f2a2d6c2419d228d05f78/2b72d/devops.png 980w,
+/static/0020820e1e8f2a2d6c2419d228d05f78/28aea/devops.png 990w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>Mesh Korea의 DevOps를 위한 여러 플랫폼들은 Jenkins CI와 연동되며 k8s cluster에서 실행됩니다. <strong>IaC</strong>(Infrastructure as Code)를 위한 <code class="language-text">Terraform</code>, <code class="language-text">Ansible</code>, <code class="language-text">Packer</code> 등 Pipeline 실행 시 Pod 내 바이너리가 설치된 컨테이너에서 실행됩니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 43.673469387755105%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAByUlEQVQoz32RW4/SUBSFeWDkzbQ2nUIsA9NSe0rv0Bv0wmAZIEFe/OtGzah/hEBY7nMwJproSVb2Pm3Ol7X27lTbI9rjRzT7D0hWLeJ6jWTdIt9swaIZPNeF7/uI41jUKIown88RBAHCMIQf+PB8D0VRwDRNdOxZiXJ3hJc3GE1nGDoR3tohdBZDezCRJHMBKMuS+gR5nqNpGgHIsgzFohDf27aF53kcmCN7eiboAfF6A5YuwZIFpnkN3bQhSxIURYGmaej3+39IVVX076kqqrgPBgN0zDCBHWfw6hWCww5sWcOKMoKWUIePGI/HIhpjTMTl4nHTNBU9Sx2wwsFoPEKv17sBXe5qXiDYPcMnsUUFl2Z5PzbwMNRFZMMw4DgOdF2HLMuQyDmvbzQFkipBkiV0u90bcMqBFN1v38PbtLDTBZyixuDRwt3dK7yWZNi2LZbCnXI4X4CQcdNkMoFlWX8Btxv4+y2mT2s4NALu9F2xJHiFT5+/gJ/T6YTL5YLz+Swk+sv59/0XkJZAkWNyFxHUJYBHmmYlrFlBC6rw8v2HAF6vV/zvCKBDQJeAGblLDnuEVYOoWonZmmFG/0t8ffkmHnBHHPov/QTRJVoWm99mMgAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="jenkinsfile"
+        title=""
+        src="/static/d5ce9e3c406a7d0124cdddc11a1612e5/2b72d/jenkinsfile.png"
+        srcset="/static/d5ce9e3c406a7d0124cdddc11a1612e5/232f7/jenkinsfile.png 245w,
+/static/d5ce9e3c406a7d0124cdddc11a1612e5/9319d/jenkinsfile.png 490w,
+/static/d5ce9e3c406a7d0124cdddc11a1612e5/2b72d/jenkinsfile.png 980w,
+/static/d5ce9e3c406a7d0124cdddc11a1612e5/814a3/jenkinsfile.png 1470w,
+/static/d5ce9e3c406a7d0124cdddc11a1612e5/3557b/jenkinsfile.png 1692w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>실행되는 모든 CI Pipeline은 <code class="language-text">Jenkinsfile</code>에 스크립트를 작성하여 실행합니다. CI에 필요한 모든 바이너리는 Jenkins에 설치하는 것이 아닌, <strong>필요한 Container를 지정하여 Pod로 구성하여 독립적으로 실행</strong>합니다. 해당 내용을 MSA의 CI Pipeline으로 적용하기 위해 아래와 같은 내용을 진행하였습니다.</p>
+<h2 id="공용-ci-pipeline-개발-및-적용"><a href="#%EA%B3%B5%EC%9A%A9-ci-pipeline-%EA%B0%9C%EB%B0%9C-%EB%B0%8F-%EC%A0%81%EC%9A%A9" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>공용 CI Pipeline 개발 및 적용</h2>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 892px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 46.93877551020408%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAABcElEQVQoz3VRy0rDUBDNfwriH7jxJ4S66UK6UH/AhWK7KdKd1FWhKNSF2Be0eTRpnje5SW5yvDMSSaUOHDKXzJyZc8aIkgyOL7CPczhBilDkUKpCqSHzHEmSII5jhGHIUEqhrutflGWJNE2RZRn8OIMhpU7CCCLNAFQ4jBqWZWG1WmG73cL3fSZoE7ZDFgpG//ULvf4U3YcJeoM33A0/cDuc4XrwjqfxJ+IoYjLbtnk7iqqqOP+Luq5gdB+nuLgZ47z3gtPOCCeXzzi7GjE69xMEQQDTtFg6bUdkhGNBGxuqLNgjmaUQuqkoigPJRLbb7biGJNMAz/PYs1x73MhuLDD8MIbrh1xA5gohdC5RlIrfdAjHcZiQ/jU1UsrjhPu9h/V6jfl8juVyicViwV/TNHkIeedoUHMDIm3LbMOgaSSFimhqs2kjPdJHoUvbGrQpDSBQzzFSJiQ5/4XruthsNgzausld7WMkUt374zuBjvYNJeSr0z4jHnQAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="bamboo"
+        title=""
+        src="/static/ea49ddd0cc25571bf6c8fc43b25eb30c/aff63/bamboo.png"
+        srcset="/static/ea49ddd0cc25571bf6c8fc43b25eb30c/232f7/bamboo.png 245w,
+/static/ea49ddd0cc25571bf6c8fc43b25eb30c/9319d/bamboo.png 490w,
+/static/ea49ddd0cc25571bf6c8fc43b25eb30c/aff63/bamboo.png 892w"
+        sizes="(max-width: 892px) 100vw, 892px"
+      />
+    </span>
+  </span>
+  </p>
+<p>기존 Bamboo에 적용된 Java 기반 서비스의 CI Pipeline은 아래와 같은 형식을 따릅니다.</p>
+<blockquote>
+<p>Git checkout > Gradle build > Docker build > Docker push</p>
+</blockquote>
+<p>Jenkins에서 해당 CI Pipeline을 공용으로 사용하기 위해 필요한 Container와 단계별 실행해야 하는 스크립트가 포함된 <code class="language-text">groovy</code> 코드를 작성합니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"># vroongMsaJavaPipeline<span class="token operator">.</span>groovy
+
+<span class="token shebang comment">#!/usr/bin/env groovy</span>
+
+<span class="token keyword">def</span> <span class="token function">call</span><span class="token punctuation">(</span>Map args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    pipeline <span class="token punctuation">{</span>
+        agent <span class="token punctuation">{</span>
+            kubernetes <span class="token punctuation">{</span>
+                yaml <span class="token string gstring">"""
+                    # Pod로 구성할 Container 정보
+                """</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        options <span class="token punctuation">{</span>
+            <span class="token function">timeout</span><span class="token punctuation">(</span>time<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span> unit<span class="token punctuation">:</span> <span class="token string">'HOURS'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        environment <span class="token punctuation">{</span>
+            <span class="token punctuation">...</span>
+        <span class="token punctuation">}</span>
+
+        stages <span class="token punctuation">{</span>
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Init'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Check the docker image'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Gradle build'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Code review'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                parallel <span class="token punctuation">{</span>
+                    <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'unit test'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token punctuation">...</span>
+                    <span class="token punctuation">}</span>
+
+                    <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'sonarqube'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token punctuation">...</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Docker'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                parallel <span class="token punctuation">{</span>
+                    <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'ecr login'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token punctuation">...</span>
+                    <span class="token punctuation">}</span>
+
+                    <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'docker build'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token punctuation">...</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'ECR push'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Choose the environment'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'ArgoCD trigger'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token punctuation">...</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>해당 Jenkins script(groovy)는 Jenkins에 등록된 모든 프로젝트에서 공용으로 사용하기 위해 <code class="language-text">Shared library</code>에 등록합니다.</p>
+<blockquote>
+<p>관련 링크: <a href="https://www.jenkins.io/doc/book/pipeline/shared-libraries/">https://www.jenkins.io/doc/book/pipeline/shared-libraries/</a></p>
+</blockquote>
+<p>MSA를 위한 CI Pipeline에서 위에서 작성한 공용 Jenkins script를 사용하기 위해 프로젝트 상위에 <code class="language-text">Jenkinsfile</code>을 작성하여 Shared library에 등록된 Script 이름과 필요한 arguments를 지정합니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"><span class="token annotation punctuation">@Library</span><span class="token punctuation">(</span><span class="token string">'meshkorea'</span><span class="token punctuation">)</span> <span class="token number">_</span>
+
+<span class="token function">vroongMsaJavaPipeline</span><span class="token punctuation">(</span>
+    team<span class="token punctuation">:</span> <span class="token string">'baseserver'</span><span class="token punctuation">,</span>
+    ecrRepoName<span class="token punctuation">:</span> <span class="token string">'vroong/cumock'</span><span class="token punctuation">,</span>
+    argoAppName<span class="token punctuation">:</span> <span class="token string">'vroong-cumock'</span><span class="token punctuation">,</span>
+    gradleBuildArguments<span class="token punctuation">:</span> <span class="token string">'-x test'</span>
+    dockerBuildArguments<span class="token punctuation">:</span> <span class="token string">'copyJMXExporter'</span>
+<span class="token punctuation">)</span></code></pre></div>
+<p>Jenkins는 특정 Event가 발생했을 때, 프로젝트 내 <code class="language-text">Jenkinsfile</code>을 읽고 <code class="language-text">vroongMsaJavaPipeline</code> 라는 script를 Shared library에서 찾아 실행합니다. 사용자는 CI를 적용하기 위해 프로젝트에 Jenkinsfile만 추가하면 되는 환경이 조성됩니다. 또한 DevOps에선 CI Pipeline에 새로운 기능(ex. E2E test)을 추가할 때 <code class="language-text">Shared library</code>에 등록된 공용 스크립트만 수정, 업데이트하면 됩니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 44.48979591836735%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAABdElEQVQoz5WRuUoDQRjH53m8BUW08SXUaBePQrxARPAhNGkSxSJgIh7Y2Wvw6tL4AFpYCGrM7uxmd87N/p2ZJGIlOvDjO+ab38yyZOt0DDsXk9g+G8dapd8wgNVyH1aOerBS7nX5WmkEq6VhbBwPYd3sr1cGO/kgNk9GsX0+4aLtkeLtAgo3WeSqs9i7nsH+3SIO7peQr865ung3j8OHZRRus67OXWfMbMbFfLWd715NGaYdJE1T2CWFAhMRhOSI4hARa4JzYeCIeRNCMMS2J2LQwHP4AUXDb0Ap7RwwKmJ9VqqkRsQpuIzRZNQIQ/i+b6B4b7zCo3XTC4w87BCgEQao008kOnEOC8Evy29+OHkQeQhjD39ZRKsEUkq0Wi335u5N6XeO797PfZtL3UIkEujE5iZqDfL89oggCE2h3KAV/wV7E5MJaKydmJl/wDkDqb1cwvN880rxL6ElTdtiGy32S8nTRw2cCVcopTqD/xN3see/APFwhzInTFgfAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="cipipeline"
+        title=""
+        src="/static/d5d496a7ac52ebd628e00435c262897f/2b72d/cipipeline.png"
+        srcset="/static/d5d496a7ac52ebd628e00435c262897f/232f7/cipipeline.png 245w,
+/static/d5d496a7ac52ebd628e00435c262897f/9319d/cipipeline.png 490w,
+/static/d5d496a7ac52ebd628e00435c262897f/2b72d/cipipeline.png 980w,
+/static/d5d496a7ac52ebd628e00435c262897f/78687/cipipeline.png 1212w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<h2 id="특정-event에만-작동"><a href="#%ED%8A%B9%EC%A0%95-event%EC%97%90%EB%A7%8C-%EC%9E%91%EB%8F%99" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>특정 Event에만 작동</h2>
+<p>Bamboo에 적용된 CI Pipeline을 Jenkins로 옮길 때 고민했던 내용은 <strong>자동화</strong> 측면이었습니다.</p>
+<p>기존에 정형화된 Git branch 관리 방식이 없다 보니 팀마다 관리하는 방식이 제각각이었습니다. 특정 Event(ex. master branch에 push)가 발생하였을 때 webhook을 통해 Jenkins job을 triggering 하는 게 일반적인 CI 자동화 방식입니다. 다만 저희는 <a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Git-flow</a> 등 브랜치 관리 방식을 모든 팀에 일괄 적용하기엔 부담이 컸으며, <strong>Production 환경에 배포한 내용을 qa 환경에 추후에 Sync를 맞추는 등의 내용</strong>이 필요했습니다. 또한 팀마다 프로덕트 버전 네이밍 규칙이 다르다 보니 개발자, QA 등 버전명에 대한 혼동이 발생하는 경우가 종종 있습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 28.163265306122447%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVQY0y2PWXKDMBBEOYJBQmIxFglQJcwqNlfKFf/k/mfqtLA/XvVM90gaBTK9QqoUcVpAJvlZS529Papiruhr4vv44/tcMyu/aoRRjEucIKQXiFvFoQSqbCDyEkJqRAwFiVhf/PAH30fy7YfEP5zmN0RCISwqSNMgUBk3izV0bqDPmpdJ9UHzYn3misT0vGqdnioiiSgUkJzT15IYBG6aYYoCXvdth3ML3OywLCsW1tPkcDiH17riyfwYR8zWYqhrVHkGe81g0gRDP6C/dwj6rkeR5/A6DiM6mh7f+4G2vWPuOsw8cCeWvee7qqB0ApOlKIm1LVoSHPuBpqrPrXbWG7dY1+3UfTvguOkP+7/Hgd99x3NZ8PK68ietxdLUMEmCmecn/vIffmmmzObArZAAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="version"
+        title=""
+        src="/static/59aba9e08c910e34956ae216b01e2444/2b72d/version.png"
+        srcset="/static/59aba9e08c910e34956ae216b01e2444/232f7/version.png 245w,
+/static/59aba9e08c910e34956ae216b01e2444/9319d/version.png 490w,
+/static/59aba9e08c910e34956ae216b01e2444/2b72d/version.png 980w,
+/static/59aba9e08c910e34956ae216b01e2444/814a3/version.png 1470w,
+/static/59aba9e08c910e34956ae216b01e2444/93e1d/version.png 1672w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>이 문제를 해결하기 위해 각 팀에서 사용하는 <code class="language-text">Git branch 관리 방식은 동일하게 유지</code>하되, CI 자동화를 위해 <strong>Git tag가 push</strong> 될 때 event를 감지하여 CI Pipeline이 자동으로 실행하도록 적용하였습니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy">when <span class="token punctuation">{</span>
+    anyOf <span class="token punctuation">{</span>
+        <span class="token function">buildingTag</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token function">changeRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        triggeredBy <span class="token string">'UserIdCause'</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<h3 id="buildingtag"><a href="#buildingtag" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>buildingTag</h3>
+<p><code class="language-text">Git tag</code>가 있을 때만 Stage의 내용이 실행됩니다. 내용은 생략됐지만 tag명이 <a href="https://semver.org/lang/ko/">유의적 버전</a>의 Convention을 따를 때만 실행됩니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy">environment <span class="token punctuation">{</span>
+    <span class="token comment">// Docker environment</span>
+    DOCKER_TAG <span class="token operator">=</span> <span class="token string gstring">"<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>BRANCH_NAME<span class="token punctuation">}</span></span>-<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>GIT_COMMIT<span class="token punctuation">[</span><span class="token number">0</span><span class="token operator">..</span><span class="token number">7</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span>"</span>
+    DOCKER_IMAGE_ORIGIN_NAME <span class="token operator">=</span> <span class="token string gstring">"<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>JOB<span class="token punctuation">}</span></span>:<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>DOCKER_TAG<span class="token punctuation">}</span></span>"</span>
+    DOCKER_IMAGE_REMOTE_NAME <span class="token operator">=</span> <span class="token string gstring">"<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>ECR_URL<span class="token punctuation">}</span></span>/<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>args<span class="token operator">.</span>ecrRepoName<span class="token punctuation">}</span></span>:<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>DOCKER_TAG<span class="token punctuation">}</span></span>"</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">container</span><span class="token punctuation">(</span><span class="token string">'docker'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    sh <span class="token string gstring">"docker build -t <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKER_IMAGE_ORIGIN_NAME<span class="token punctuation">}</span></span> <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKERFILE_PATH<span class="token punctuation">}</span></span>"</span>
+    sh <span class="token string gstring">"docker tag <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKER_IMAGE_ORIGIN_NAME<span class="token punctuation">}</span></span> <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKER_IMAGE_REMOTE_NAME<span class="token punctuation">}</span></span>"</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>빌드 된 모든 Docker image는 ECR에 Push 되며 Image의 tag는 자동으로 <code class="language-text">{Git tag name}-{Git short hash}</code> (ex. <strong>1.1.0-df0423</strong>) 형태로 기입됩니다.</p>
+<h3 id="changerequest"><a href="#changerequest" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>changeRequest</h3>
+<p>Pull request event가 감지됐을 때 Stage의 내용이 실행됩니다. PR 발생 시 Sonarqube 연동을 위해 sonar-scanner-cli라는 Container를 통해 연동된 Sonarqube에 <strong>코드 정적 분석</strong> 및 <code class="language-text">Github Pull Request decoration</code>을 요청합니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"><span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'sonarqube'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    when <span class="token punctuation">{</span>
+        <span class="token function">changeRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    steps <span class="token punctuation">{</span>
+        <span class="token function">container</span><span class="token punctuation">(</span><span class="token string">'sonar-scanner'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">withSonarQubeEnv</span><span class="token punctuation">(</span><span class="token string">'SonarQube Server'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                sh <span class="token string gstring">"""
+sonar-scanner \
+  -Dsonar.projectName=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>JOB<span class="token punctuation">}</span></span> \
+  -Dsonar.projectKey=meshkorea_<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>JOB<span class="token punctuation">}</span></span> \
+  -Dsonar.language=java \
+  -Dsonar.sources=src/main/java \
+  -Dsonar.java.binaries=build/classes \
+  -Dsonar.scm.provider=git \
+  -Dsonar.projectBaseDir=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>WORKSPACE<span class="token punctuation">}</span></span> \
+  -Dsonar.host.url=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>SONAR_HOST_URL<span class="token punctuation">}</span></span> \
+  -Dsonar.login=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>SONAR_AUTH_TOKEN<span class="token punctuation">}</span></span> \
+  -Dsonar.issuesReport.console.enable=true \
+  -Dsonar.pullrequest.github.repository=meshkorea/<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>JOB<span class="token punctuation">}</span></span> \
+  -Dsonar.pullrequest.key=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>CHANGE_ID<span class="token punctuation">}</span></span> \
+  -Dsonar.pullrequest.base=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>CHANGE_TARGET<span class="token punctuation">}</span></span> \
+  -Dsonar.pullrequest.branch=<span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>CHANGE_BRANCH<span class="token punctuation">}</span></span>
+"""</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 86.12244897959182%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAARCAYAAADdRIy+AAAACXBIWXMAAAsTAAALEwEAmpwYAAACeElEQVQ4y51Uy46cMBCc/z/nj3LKKTlkI2022scMMLzB+IkNVMpmZpJVlKyySEUbMOV2d5UP/V0LKRTOVYMyom4hpEI/CrT9iG4Q0MbB+QA3eyL8Aes8xKTgw4JDUB7GWLRti65r0cTYD/AkCJwQJy3LimX9N+LcGA/gVYsSn/JvaCdAc8WVH95zbdu2ExZ9ho/HL7g/b7gvHfyy3Sb8LxKhUQLHesKPmrUwy42M91/YLsD2Roa8aW/Qa4deLSz+mj6saUXc4u9Y1+2vOMT1PLsUrIU1ktBQSkKIAX3fpXGMdV2haWqMY0/WhT+HhI2Iz9g43tgU+fABp+4rvtfP0NOEYWhhtORkz+7OKa7LjvTMuCWCWJrY2QWKCUkbv3scVvWMVpd4KDOcsjOejidULTOj9iZlCGasGaUmFEY1Y9ALwkVKPqww80pSvgvz3pTZ8Yd2QFPVaCluJSSctjAkcVx9F/UV/gZ7iYrZCUXxz3YnnPozxOMTZFlBFhznZ8hzidD13Nnypv4MGznZdd8yq4rgZ9ptRl61OBUl8rJGEW3YdCg47mm/phswMnN7sdoVhpi9pykctE0ZrpiZalcKZFmFl6zAkcjPFX3N7nYjGno6ktckjbVVdmacb1Ez5p2BZK1ThrO3eOGPWdmg4uEQs4qEERWJ2uH1QXHN7IpYy0bcMgQexTM+n+5QZiVOeY68KPDCbp+ynNrjIhVrK6erH16552q5/TnWkANHp3RCUMwyycNYbouSkYqd9luShSaM4/ZcIJaE6Koon4SwJp0mwsAt9308vhoWfkg11Xoi+QRB+YwkH0gu6ZqRutzfcTHnSMTDxO9YFoef/Ecm5pPqifAAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="sonarqube"
+        title=""
+        src="/static/09dd8f66bd40ed49699f7d333c7f988f/2b72d/sonarqube.png"
+        srcset="/static/09dd8f66bd40ed49699f7d333c7f988f/232f7/sonarqube.png 245w,
+/static/09dd8f66bd40ed49699f7d333c7f988f/9319d/sonarqube.png 490w,
+/static/09dd8f66bd40ed49699f7d333c7f988f/2b72d/sonarqube.png 980w,
+/static/09dd8f66bd40ed49699f7d333c7f988f/704a2/sonarqube.png 1060w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<h3 id="triggeredby-useridcause"><a href="#triggeredby-useridcause" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>triggeredBy ‘UserIdCause’</h3>
+<p>Manual 실행 방식입니다. 사용자가 수동으로 Pipeline 실행 시 ECR에 push 된 Docker image가 있을 경우 Build 과정을 스킵하고 <code class="language-text">다른 환경에 배포(Sync)</code> 할 수 있도록 구성하였습니다.</p>
+<p>여러 Event 별로 실행해야 하는 내용들을 적용하고 Jenkinsfile에 들어가는 argument를 통해 <strong>최대한 사용하기 쉽고 확장성을 가진 공용 CI Pipeline을 개발</strong>하였습니다. 특히 <code class="language-text">Git tag push</code>를 통해 버전 네이밍 Convention을 통합하고 <code class="language-text">CI 자동화</code>를 적용했다는 점은 굉장히 유의미했습니다. 다만 앞으로 고려해야 할 점은 사용자가 통합 CI의 기능 외 별도의 기능이 필요한 경우(ex. E2E test), 직접 Jenkinsfile을 작성하여 적용해야 합니다. 이 점은 사용자/서비스별 customization이 용이하도록 해야 하는 숙제이기도 합니다.</p>
+<p>위에서 <code class="language-text">배포(Sync)</code>를 언급하였습니다. Mesh Korea의 대부분의 서비스는 EKS(MSA), Elastic Beanstalk(EC2), S3(web frontend)에 배포됩니다. 여기서 EB, S3는 Jenkins에서 고도화된 plugin들이 많아 적용하기 어렵지 않습니다. 집중했던 내용은 EKS에 배포되는 MSA를 위한 <code class="language-text">CD Tool</code>입니다.</p>
+<hr>
+<h1 id="argo-cd"><a href="#argo-cd" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Argo CD</h1>
+<p>그동안 <a href="https://aws.amazon.com/ko/eks/?whats-new-cards.sort-by=item.additionalFields.postDateTime&#x26;whats-new-cards.sort-order=desc&#x26;eks-blogs.sort-by=item.additionalFields.createdDate&#x26;eks-blogs.sort-order=desc">EKS</a>(Elastic Kubernetes Service)에 MSA를 운영하면서 가장 까다로웠던 점은 <strong>인프라 변경 사항에 대한 추적</strong>입니다. 저희는 <code class="language-text">개발자가 오너쉽을 갖고 서비스 개발 및 운영</code>까지 전담하는 경우가 많습니다. 다행이었던 점은 Application code와 Kubernetes manifest code가 repo 단위로 분리되어 Git history를 통해 manifest 변경 사항에 대해 추적이 가능한 점입니다. 다만 개발자가 서비스 개발에만 집중하기도 벅찬 환경에서 manifest까지 작성하고 수정하는 건 생산성 감소와 직결되며 <code class="language-text">잦은 휴먼 에러</code>를 발생할 수 있는 요인이라고 판단하였습니다. 특히 manifest code는 중복되는 코드가 너무도 많기에 CD Tool 도입 전, 앞서 언급된 문제를 해결해야 했습니다.</p>
+<h2 id="helm-chart"><a href="#helm-chart" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Helm chart</h2>
+<p><a href="https://helm.sh">Helm</a>은 복잡한 k8s application을 관리, 정의할 수 있는 강력한 도구 중 하나입니다. Deployment, Ingress, ServiceAccount 등 개발자가 manifest를 직접 작성하지 않고 Workload를 구성할 수 있도록 <strong>공용으로 사용할 수 있는 Helm chart</strong>를 구성하였습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 57.14285714285714%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAAAsTAAALEwEAmpwYAAACAElEQVQoz32STWsTURSG5ze4UlBcRIRCsSQGC1KJRBfiyj9QcOGiaPxo3UWwUBF159aVf8FfIBIsXVoqtS3VgjZJTTKZ7687M3ce70zS6MLmMC/3zNw57/l6NU6wLMsK5Ob7PrquY9s2pmkomFiWhSlMbByMzMRLfRUEWpqm/A85mZSSQJE5rsdhz6I9cOjpFq7rYjsKgYsbq3vhEQqBCGM0plhOHEVRcQZ+QCQSwkiQpJIkkaQKYaiIgoSDYZsvRztoqy9WaTy+z9pak7fv3/D63Uuar5p8290tSKMoJI5TOn2Dge0W6JmqTTfAiWIMLyj8A73Hvt5BK1+rc+Z8iYXKFeYULpbnOTszx6fP6+P5BQiZMHDU7DwLPw4ViY3u5AnUN98hlIIgjghEhFa7fYfSbIXaQp3q1evM129Rrd2ktb5REMpUTEYg8yWpZy/bZ1NujZZH9u8q8wpvcOpcieqly1Rmy1xQ1Z0uzfCxNapw80fIhw2/+JlxsI2FgT5JIuUYyteePnvO4r0llh+tsPJwmQeNJ9xdarC1vVMEfO8IWl9DOsOUti752Y850jO6A9R7QpyO5JWTJcqfumWZ/W2n/dtke++Qbt/F8iVDN8XyZFHZRBXKn6rDgrRoBSxzSLfzi0Qt5USZySkVHhPmp5Kdkk6iEo3IJzMbz+0YOeEfrc0cac0hgn4AAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="helm"
+        title=""
+        src="/static/018c5df32342fea3f8fc15e906c79f26/2b72d/helm.png"
+        srcset="/static/018c5df32342fea3f8fc15e906c79f26/232f7/helm.png 245w,
+/static/018c5df32342fea3f8fc15e906c79f26/9319d/helm.png 490w,
+/static/018c5df32342fea3f8fc15e906c79f26/2b72d/helm.png 980w,
+/static/018c5df32342fea3f8fc15e906c79f26/3a5c0/helm.png 1410w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p><code class="language-text">vroong-workload</code> 라는 공용 Helm chart를 통해 개발자는 <code class="language-text">values.yaml</code>에 필요한 내용을 기입하여 manifest 작성 없이 k8s resource(workload)를 구성합니다. Helm chart repositiory 관리를 위해 <a href="https://chartmuseum.com">Chartmuseum</a>, <a href="https://goharbor.io">Harbor</a> 등을 검토하였지만 관리해야하는 Chart가 아직 많지 않아 <code class="language-text">Github private repository를 만들고 차트 저장소로 사용</code>했습니다.</p>
+<p>해당 Chart를 통해 DevOps에선 중복되는 manifest code를 줄일 수 있고 무엇보다 기능 도입 시 공용 Chart에 내용을 업데이트하면 됩니다. 특히 앞으로 계획 중인 <code class="language-text">Blue/green</code>, <code class="language-text">canary deployment</code>는 Argo CD에선 <code class="language-text">CRD(Custom Resource Definition)</code>로 제공하고 있습니다. 만약 Helm을 사용하지 않은 상황에서 적용해야 한다면 모든 manifest가 저장된 repository에 업데이트를 해야 하지만 <strong>공용 Chart만 업데이트하고 개발자들에게 특정 차트 버전으로 업데이트</strong>를 부탁드리면 됩니다.</p>
+<h3 id="gitops"><a href="#gitops" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>GitOps</h3>
+<p>Mesh Korea의 DevOps는 <code class="language-text">IaC(Infrastructure as Code)</code>로 인프라에 대한 생성, 변경, 삭제 등 코드로 인프라를 관리하는 데 익숙합니다. 특히 Code 기반으로 k8s resource를 관리하길 희망했고, CD Tool을 검토할 때 아래와 같은 기능이 필요했습니다.</p>
+<ul>
+<li>Code로 k8s resource를 생성, 변경 등 관리에 용이</li>
+<li>k8s resource에 대한 시각화</li>
+<li>RBAC, LDAP 등 권한 분리에 대한 기능 제공</li>
+</ul>
+<p>특히 <strong>GitOps</strong>에 집중하였습니다. GitOps란 용어 자체는 <a href="https://www.weave.works/blog/gitops-operations-by-pull-request">Weaveworks</a> 에서 창안되었습니다. GitOps는 특정 도구가 아닌 <strong>방법론</strong>에 가깝습니다. GitOps의 메인은 <code class="language-text">코드로 표현한 환경</code>, 즉 Git 저장소에 저장된 k8s manifest와 같은 파일을 사용하여 선언적으로 기술한다는 개념입니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 42.44897959183673%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAABVklEQVQoz21S4UrCUBTeq+Q7RA8QEkEFQc8URX/qKYokoR/RD+uHgoTRMh3bDAohMk2b5tXNzd17v+65SZvaYZednXvOx/edb4aUEkL8Hsop0u/FXKZzfSUxDjkqjRDDIIaBVAjVwTlX4CIBQQI6V0vVW94U+6d9vLQjGFa9hqppwrasNHYCIvWDIBjDHzPMSM3dKX1ovn+DSw7jsnCH86sictdlFEr3uMjn4boN3R+LWLHlemjkmGBPZRB3QXUpFID+Qqs/xVGO4ZUYrmZ3sba+he2dPWxkN7GSyeDg+EQDhnGkBykcs4KH0q0GF4oJnwESOz+KUax6YLTDupJas+pwbAvPDRe266DT7SayybSImn302Qix2nFaMgWbcNw8+vBGC6b8v0MJNvzAW+8L7QHDJIyWzOoMpjg866H5qSRzLv6cpbPsMu0S4GL5V0p6lGylQE3jB4R2XTQ3m9q2AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="gitops"
+        title=""
+        src="/static/94e36affd31e6e86199f377f1ffeb349/2b72d/gitops.png"
+        srcset="/static/94e36affd31e6e86199f377f1ffeb349/232f7/gitops.png 245w,
+/static/94e36affd31e6e86199f377f1ffeb349/9319d/gitops.png 490w,
+/static/94e36affd31e6e86199f377f1ffeb349/2b72d/gitops.png 980w,
+/static/94e36affd31e6e86199f377f1ffeb349/814a3/gitops.png 1470w,
+/static/94e36affd31e6e86199f377f1ffeb349/96fc5/gitops.png 1882w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>GitOps 구현체 중 하나인 <code class="language-text">Argo CD</code>를 통해 도식화하였습니다. Git에 저장된 <code class="language-text">values.yaml</code>에 replicaCount를 2로 설정 후 Push합니다. Argo CD는 해당 Repository의 변경 사항을 확인하고 k8s Cluster 내 구성된 resource와 비교합니다. Code와 k8s resource 상황이 다르니 상태는 <code class="language-text">OutOfSync</code>로 표기됩니다. Code에 맞게 상태를 업데이트하기 위해 자동 혹은 수동으로 k8s resource를 변경합니다. 이를 <strong>Synchronize</strong> 라고 합니다.</p>
+<p>이처럼 Code로 사용자가 원하는 배포 상태를 선언하면 실제 배포 환경을 그에 맞게 유지되고 있는지 체크하고 업데이트하는 배포 주체, 즉 <strong>GitOps 구현체인 Argo CD를 CD Tool로 도입</strong>하였습니다. 해당 도구를 통해 저희는 아래와 같은 이점을 가질 수 있었습니다.</p>
+<ul>
+<li>
+<p><strong>Git을 이용한 배포 버전 관리</strong></p>
+<ul>
+<li><code class="language-text">Argo CD</code>를 통해 k8s에 서비스 배포를 위해선 Git repository에 배포에 관한 모든 내용이 <strong>선언</strong>되어야 합니다. 업데이트를 위해선 Code를 변경하고 commit &#x26; push를 해야 하므로 <code class="language-text">모든 배포 내역이 Git에 기록</code>됩니다. 이를 기반으로 <strong>변경 사항에 대한 추적, 롤백(Git revert)</strong> 이 용이해졌습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>배포 자동화</strong></p>
+<ul>
+<li><code class="language-text">Git의 변경이 발생하면 배포 주체인 Argo CD가 k8s cluster 내 resource 상태와 비교 후 자동으로 Synchronize</code>를 진행합니다. 기존처럼 배포를 명령하는 것이 아닌 <strong>선언적 방식</strong>을 취함으로써 <code class="language-text">휴먼 에러를 줄이고 지속적 배포</code>를 가능하게 합니다. 다만 Production 환경에서 Auto sync가 활성화되면 담당자가 Git에 잘못된 Code를 Push했을 때 바로 Sync되어 이슈가 발생할 여지가 있으므로 상용 환경은 LDAP + RBAC을 통해 권한이 있는 담당자만 수동으로 Sync 할 수 있도록 허용하였습니다.</li>
+</ul>
+</li>
+</ul>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 74.28571428571428%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAAsTAAALEwEAmpwYAAACbUlEQVQ4y3VTa2/TQBDM7y+kbSCqqqogBB8QP4QPqEKq6IumaeL4HL/ubJ8dx02gZJg9NyGBYml9e6/Z2dm9Trf7EmdXtxj5U6hY48u3K3y9uMH59QCfzy9wdtn6svZ96EG+1WqF7W+x/IFmsUTz8xGdvYN93E8jFLZCPqtxPhxh4CkEYYKz4RAXYw+TIIIXhIi1wXPfavVLfs7vdA97eHgEsnJGwDnCvISh3yyXsE2D6mGBrKrdmozazmBoWVk/2bZfo/PioAdfl7j1I9ypBAM/JuMEUV6gJOO6WWCSZBhHGpPYwKfvcZSzd8G/1tnrHiAqaoKkGNIEcBxqMi3IijIwqgAEBMo5t9UMYWbd+RHP/W0EPISfWgxUzIUUXmTaTTISIJXkjp1KDBnPyfgBKs03gDJuW6fbe43LcYgbFTp9Cl6StAKTI2WhNnMCVvXcVTOmzsPgPwz3e32mN8OI6KKBMBVGCS/pokTC9Jx2NMuiFCyCBHguZcfwsH+EIKsYMXELIrYAxoV1muUEmCTGMRSwjKzXgGvd175j+OroeBeQo+hoKH7FtpEURbNQ55jNG6dhaOyTrpSCe7K/Ydg/PtkAyqKMUmVpG2NLNnPuGKnUsM8q6KxwYD4Za+4nWkCNK6IDPDo53QUU6jSPF6amwIQH3ZzPMiNrQ11FUwka6ILZCIm41VEAj0/fsqJ/ALf1uJ+2AdrLGSyrLDoGum2lKTshYlAJvEn5zbv3UKbcAXSNzdS0vG9WVjmdWBRhmFsngZx1xZHO4CvbAH74+AlK2x3ACYuishwJNSsIOHZNrt3LSbO2IMLeZbPVMjL+BgeET8AyzkDzAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="argocd"
+        title=""
+        src="/static/1d1ed8b053fd6d48b70728da460f3ebb/2b72d/argocd.png"
+        srcset="/static/1d1ed8b053fd6d48b70728da460f3ebb/232f7/argocd.png 245w,
+/static/1d1ed8b053fd6d48b70728da460f3ebb/9319d/argocd.png 490w,
+/static/1d1ed8b053fd6d48b70728da460f3ebb/2b72d/argocd.png 980w,
+/static/1d1ed8b053fd6d48b70728da460f3ebb/814a3/argocd.png 1470w,
+/static/1d1ed8b053fd6d48b70728da460f3ebb/8162a/argocd.png 1581w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>무엇보다 화면처럼 Argo application 별로 관리되는 <code class="language-text">k8s resource에 대한 시각화</code>입니다. 위에서 언급된 것 처럼, 공용 Helm chart를 사용하여 사용자가 필요한 values.yaml만 지정하여 resource에 대해 원하는 배포 상황을 선언합니다. helm cli도 훌륭한 도구이지만 chart에 구성되는 resource를 한눈에 파악하기 어렵습니다. Argo CD에선 구성되는 Kubernetes resource를 파악하기 용이하며 Ingress - service - pod로 연결되는 selector 등 UI를 통해 확인하기 좋았습니다.</p>
+<h3 id="application"><a href="#application" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Application</h3>
+<p>기존 MSA 들은 두 개의 Git 저장소를 사용하였습니다. 애플리케이션 소스 코드를 관리하는 app 저장소와 kubernetes manfest 코드를 관리하는 manifests 저장소입니다. CD tool을 Argo CD로 이전하기 위해 Argo application이 바라봐야 하는 values.yaml을 관리하는 <code class="language-text">helm-values</code> 라는 Git repository를 생성합니다.</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml">├── dev1
+│   ├── Chart.yaml
+│   ├── requirements.yaml
+│   └── values.yaml
+├── prod
+│   ├── Chart.yaml
+│   ├── requirements.yaml
+│   └── values.yaml
+├── qa1
+│   ├── Chart.yaml
+│   ├── requirements.yaml
+│   └── values.yaml
+└── values.yaml</code></pre></div>
+<p>환경(dev, qa…)별 Directory 내 values.yaml, Chart.yaml, requirements.yaml이 포함되며 Argo CD application 별로 <code class="language-text">환경에 맞는 Directory 내 파일</code>을 바라보고 있습니다.</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token comment"># requirements.yaml</span>
+<span class="token key atrule">dependencies</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> vroong<span class="token punctuation">-</span>workload
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> 0.2.0
+    <span class="token key atrule">repository</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//raw.githubusercontent.com/meshkorea/helm<span class="token punctuation">-</span>charts/master/
+
+<span class="token comment"># /values.yaml</span>
+<span class="token key atrule">vroong-workload</span><span class="token punctuation">:</span>
+  <span class="token key atrule">service</span><span class="token punctuation">:</span>
+    <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+      <span class="token key atrule">service.beta.kubernetes.io/aws-load-balancer-backend-protocol</span><span class="token punctuation">:</span> http
+
+<span class="token comment"># dev1/values.yaml</span>
+<span class="token key atrule">service</span><span class="token punctuation">:</span>
+    <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+      <span class="token key atrule">external-dns.alpha.kubernetes.io/hostname</span><span class="token punctuation">:</span> dev1.meshdev.io</code></pre></div>
+<p><code class="language-text">requirements.yaml</code>은 Helm sub chart 형태로 Mesh Korea 차트 저장소인 Github private repository를 바라보고 있습니다. 전 환경에서 적용해야 할 Chart value를 위해 root에 있는 values.yaml과 특정 환경의 디렉토리 내 values.yaml을 선언합니다. Argo Application은 환경별로 생성되며 두 개의 values.yaml을 조합하여 아래와 같은 <code class="language-text">Desired manifest</code> 로 선언됩니다.</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token comment"># Example. (Service) prime-api-dev1</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service.beta.kubernetes.io/aws-load-balancer-backend-protocol</span><span class="token punctuation">:</span> http <span class="token comment"># dev1/values.yaml</span>
+    <span class="token key atrule">external-dns.alpha.kubernetes.io/hostname</span><span class="token punctuation">:</span> dev1.meshdev.io <span class="token comment"># values.yaml</span>
+<span class="token punctuation">...</span></code></pre></div>
+<p>예를 들어 <code class="language-text">Service(Type: Loadbalancer)</code>는 EKS에 구성되며 Control plane의 Cloud-controller-manager에 의해 ELB로 구성됩니다. 전 환경에서 ELB의 backend protocol은 동일하게 http로 구성되므로 root의 values.yaml에 작성하여 전 환경에 적용하며, dev1 환경에서만 특정 DNS로 묶어주기 위해 dev1/values.yaml에 작성합니다.</p>
+<h2 id="배포하기"><a href="#%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>배포하기</h2>
+<p>이제부터 저희 k8s resource는 <code class="language-text">선언적 배포 방식</code>으로 <strong>Argo CD에 의해 관리, 제어</strong>됩니다. Git 저장소의 코드 수정은 리소스를 변경하기 위해 사용되지만 초기 세팅 이후 업데이트할 일은 그리 많지 않을 겁니다. 다만 빈번히 발생되는 건 Deployment, Statefulset 등 manifest의 <code class="language-text">Container image tag 변경</code> 입니다. helm-values에선 각 환경별 values.yaml에 <code class="language-text">image.tag</code> 값으로 관리됩니다.</p>
+<p>Jenkins CI에서 application code 변경(Git tag push)이 감지되면 자동으로 CI Pipeline이 실행되고 Docker image build 이후 ECR에 push까지 완료됩니다. 완료되면 Slack에 Image tag가 포함된 alert가 발생되며 개발자는 해당 값을 복사하여 helm-values의 원하는 환경의 values.yaml 내 image.tag를 업데이트하여 push하면 되지만, 굉장히 번거로운 과정이라고 판단하였습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 46.12244897959184%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAACIElEQVQoz3WSX0uUURDG3+taEWFFst1YRTQwZN2LBa81hLxqd7VNQwU/gh+ji4LIwEq7sdCFiIKSEKygbrSkwA+QSK67+7rv///v/jp7KuiiHhhmmHPOzDPPHAWBKAoJPJtWq8UfWG6IagY0jIC6sJoeoBqePDs6OmJpaYn5+XkWFhakn5ubY3l5GUVe+PaV5/duy8txHIsGEbZloesWhu2haiI2HZqaQRS32N//zODgIJlMhr7+PlLplIyz2SxKu8DBlwO2NiucVqsEQYDneTiOw5lhC4YemhNi+xGGacqme3t7smDqYopEsoPO3k4S5xMyJxnW6jXqjTqqqvI3vp8cc1z9QVWtiXGb2I4r84eHh1ydmGBsbIzR0Sy5XI7h4WEKhQJKqVSSQbFYZHp6mvGJcfL5PFNTUzytVNjYqrCzu8tpU+Ok0aTW1FF1E81yMF1PMA+wvQDL84nECpSBgQHaNnR5iJErI3Sc60BRFLq6urh7f4XVR2u82X4rluSLhz5uEOKKIo6wtnfbOd/HET4II5S2mOl0mt4LvfRc6iHZ302iM0F3spuHa+tsCG1fvt7GF9qGYShHDkUciCL/grK4uEi5XGb25izFconrtwpMXpvkxswMDx6vc2dllcqLV5KB81tDzbA4qamcidEbus6p1qSua4Rx9Gsp/8POuw88ebbJ+4+fBMNQfKdY5h2hnWHZmLaLbttotim8JTSM+QlvQjTzWV+OJAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="jenkinsAndargo"
+        title=""
+        src="/static/e3929eb78b88f06f4d2cea6967a1a781/2b72d/jenkinsAndargo.png"
+        srcset="/static/e3929eb78b88f06f4d2cea6967a1a781/232f7/jenkinsAndargo.png 245w,
+/static/e3929eb78b88f06f4d2cea6967a1a781/9319d/jenkinsAndargo.png 490w,
+/static/e3929eb78b88f06f4d2cea6967a1a781/2b72d/jenkinsAndargo.png 980w,
+/static/e3929eb78b88f06f4d2cea6967a1a781/ab12d/jenkinsAndargo.png 1436w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>이 과정을 자동화하기 위해, Jenkins가 ECR에 push 한 Docker image tag를 Argo CD가 바라보는 helm-values git repo 내 <code class="language-text">image.tag</code> 값을 업데이트합니다. dev/qa 환경은 Auto sync가 활성화되어 Argo CD가 변경이 감지되면 자동으로 synchronize를 진행하지만, 상용 환경은 이슈가 발생할 수도 있어 권한을 가진 사용자만 Argo CD app 화면에서 Sync 버튼을 누를 수 있도록 구성되었습니다.</p>
+<hr>
+<h1 id="jenkins--argo-cicd-pipeline-정리"><a href="#jenkins--argo-cicd-pipeline-%EC%A0%95%EB%A6%AC" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Jenkins + Argo CI/CD Pipeline 정리</h1>
+<p>Jenkins CI와 Argo CD가 연동되는 CI/CD Pipeline에서 단계별로 실행되는 내용에 대해 소개합니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 44.48979591836735%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAABdElEQVQoz5WRuUoDQRjH53m8BUW08SXUaBePQrxARPAhNGkSxSJgIh7Y2Wvw6tL4AFpYCGrM7uxmd87N/p2ZJGIlOvDjO+ab38yyZOt0DDsXk9g+G8dapd8wgNVyH1aOerBS7nX5WmkEq6VhbBwPYd3sr1cGO/kgNk9GsX0+4aLtkeLtAgo3WeSqs9i7nsH+3SIO7peQr865ung3j8OHZRRus67OXWfMbMbFfLWd715NGaYdJE1T2CWFAhMRhOSI4hARa4JzYeCIeRNCMMS2J2LQwHP4AUXDb0Ap7RwwKmJ9VqqkRsQpuIzRZNQIQ/i+b6B4b7zCo3XTC4w87BCgEQao008kOnEOC8Evy29+OHkQeQhjD39ZRKsEUkq0Wi335u5N6XeO797PfZtL3UIkEujE5iZqDfL89oggCE2h3KAV/wV7E5MJaKydmJl/wDkDqb1cwvN880rxL6ElTdtiGy32S8nTRw2cCVcopTqD/xN3see/APFwhzInTFgfAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="cipipeline"
+        title=""
+        src="/static/d5d496a7ac52ebd628e00435c262897f/2b72d/cipipeline.png"
+        srcset="/static/d5d496a7ac52ebd628e00435c262897f/232f7/cipipeline.png 245w,
+/static/d5d496a7ac52ebd628e00435c262897f/9319d/cipipeline.png 490w,
+/static/d5d496a7ac52ebd628e00435c262897f/2b72d/cipipeline.png 980w,
+/static/d5d496a7ac52ebd628e00435c262897f/78687/cipipeline.png 1212w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<ul>
+<li>
+<p><strong>Init</strong></p>
+<ul>
+<li>Git checkout, argocd-cli init, env 등 CI/CD Pipeline을 실행하기 위해 필요한 내용들을 진행합니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>Check the docker image</strong></p>
+<ul>
+<li>Jenkins pipeline을 사용자가 수동으로 실행할 경우만 진행됩니다. ECR에 이미 push 된 Docker image가 있는지 확인 후 <code class="language-text">Choose the environment</code> 단계로 이동합니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>Gradle build</strong></p>
+<ul>
+<li>Gradle build script가 실행됩니다. openjdk:8-alpine 또는 corretto:11-alpine container에서 jdk version에 맞게 실행됩니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>Code review</strong></p>
+<ul>
+<li>
+<p><code class="language-text">sonarqube</code></p>
+<ul>
+<li>Pull request event에서만 실행됩니다. 코드 정적 분석을 위해 sonarqube에 triggering 이후 분석 결과와 함께 Github pr decoration이 진행됩니다.</li>
+</ul>
+</li>
+<li>
+<p><code class="language-text">unit test</code></p>
+<ul>
+<li>JUnit 등 단위테스트가 실행됩니다.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Docker</strong></p>
+<ul>
+<li>
+<p><code class="language-text">docker build</code></p>
+<ul>
+<li>docker build … 라는 script가 실행되며 docker image build를 진행합니다.</li>
+</ul>
+</li>
+<li>
+<p><code class="language-text">ecr login</code></p>
+<ul>
+<li>build 된 docker image를 업로드하기 위해 ECR(private) docker login을 진행합니다.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>ECR push</strong></p>
+<ul>
+<li>docker build 단계에서 build 된 docker image를 ECR에 push 합니다. 완료되면 로컬에 있는 이미지를 삭제합니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>Choose the environment</strong></p>
+<ul>
+<li>Argo CD가 바라보는 helm-values 레포 내 values.yaml의 image.tag 값을 업데이트하기 위해 환경을 선택합니다.</li>
+<li>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 39.59183673469388%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAuElEQVQoz62QwQrCMBBE8///40d48uRFxJZiI62arSHZREHGTbQoFdoKHiaT7G4ew6qCLGJgeO/BzAghIMYIlvexbaC1hrU211JvSiodPSh5Agdx6ix2ZYWyLEBEuZ96Y0r/VQ95i3PiU+dRt12+9zPJp6SGwzmhQMzFQbdG0vpZsK+En41rZOizw7YmXF/79RMpx4ECOQhw3xDuN/5DQgE2xmG5MdndYMc/A5879FisDNaVlfp84AN0P2lIleTf2gAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="choosetheenvironment"
+        title=""
+        src="/static/0efc0b9214d23e66ac76309dc9c41bfc/2b72d/choosetheenvironment.png"
+        srcset="/static/0efc0b9214d23e66ac76309dc9c41bfc/232f7/choosetheenvironment.png 245w,
+/static/0efc0b9214d23e66ac76309dc9c41bfc/9319d/choosetheenvironment.png 490w,
+/static/0efc0b9214d23e66ac76309dc9c41bfc/2b72d/choosetheenvironment.png 980w,
+/static/0efc0b9214d23e66ac76309dc9c41bfc/2eb74/choosetheenvironment.png 1191w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </li>
+</ul>
+</li>
+<li>
+<p><strong>ArgoCD trigger</strong></p>
+<ul>
+<li>
+<p>Choose the environment 단계에서 선택된 환경의 values.yaml을 업데이트 이후 git push를 진행합니다. 스크립트는 아래와 같습니다.</p>
+<div class="gatsby-highlight" data-language="groovy"><pre class="language-groovy"><code class="language-groovy"><span class="token punctuation">...</span>
+args<span class="token operator">.</span>argocdTargetEnvironment<span class="token operator">.</span>each <span class="token punctuation">{</span> environment <span class="token operator">-></span>
+sh <span class="token string gstring">"""
+...
+sed -i 's/tag:.*/tag: <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKER_TAG<span class="token punctuation">}</span></span>/g' <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>environment<span class="token punctuation">}</span></span>/values.yaml &amp;&amp; \
+...
+git commit -m '[Argo] Docker image tag: <span class="token expression"><span class="token punctuation">$</span><span class="token punctuation">{</span>env<span class="token operator">.</span>DOCKER_TAG<span class="token punctuation">}</span></span>' &amp;&amp; \
+git push -u origin master
+"""</span>
+<span class="token punctuation">}</span></code></pre></div>
+</li>
+</ul>
+</li>
+</ul>
+<p>sh """
+…
+git commit -m ’[Argo] Docker image tag: ${env.DOCKER_TAG}’ &#x26;&#x26; <br>
+git push -u origin master
+"""
+…</p>
+<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">CI/CD Pipeline이 성공적으로 수행되면 아래와 같이 Slack에 alert가 발생합니다. `누가` 실행했는지, `성공/실패/중단` 여부, `Docker image tag`, `선택한 argo 환경` 등 메세지만 보고 배포 상황에 대해 판단할 수 있도록 제공합니다.
+
+![](./alert.png)
+
+---
+
+# CI/CD Pipeline을 적용하기 위한 자동화 과정
+
+신규 및 기존 프로젝트에 변경되는 CI/CD Pipeline을 적용하기 위해 아래와 같은 작업이 필요합니다.
+- `Jenkinsfile` 작성 후 프로젝트에 추가
+- helm-values git repository 생성
+- Argo 환경별 application 생성
+- Sonarqube project 생성
+
+이건 꽤나 귀찮은 작업입니다. 특히 저희는 서비스별로 `dev`, `qa1~4`, `prod` 환경이 필요합니다. 만약 이전해야 하는 서비스가 10개라고 가정한다면 하나의 서비스당 6개의 `Argo app`이 필요하고 총합 60개를 생성해야 합니다.
+![](./app.png)
+Argo CD는 application 생성 시 화면처럼 UI에서 생성하는 방법과 `선언적 방식`을 제공합니다.
+```yaml
+# app.yaml
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ARGOCD_APP_NAME
+  annotations:
+    recipients.argocd-notifications.argoproj.io: slack:TEAM-build-alerts
+spec:
+  destination:
+    name: CLUSTER_NAME
+    namespace: NAMESPACE_TARGET
+    server: &#39;&#39;
+  source:
+    path: ENVIRONMENT_TARGET
+    repoURL: ARGOCD_GIT_REPO_URL
+    targetRevision: master
+    helm:
+      valueFiles:
+        - ../values.yaml
+        - values.yaml
+  project: ARGOCD_PROJECT_NAME
+  syncPolicy:
+    automated: null</code></pre></div>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token comment"># app.yaml 파일로 Argo application 생성</span>
+
+$ argocd login <span class="token variable">$ARGOCD_URL</span> --grpc-web --username <span class="token variable">$USERNAME</span> --password <span class="token variable">$PASSWORD</span>
+$ argocd app create -f ./app-<span class="token variable">${target_val}</span>.yaml</code></pre></div>
+<p>꽤나 많은 서비스의 CI/CD Pipeline을 이전해야 하고 신규 서비스에 적용 시 관리 이슈를 줄이기 위해 <code class="language-text">Jenkins CI</code>를 통해 자동화하기로 합니다.</p>
+<h2 id="argo-repo-initialize"><a href="#argo-repo-initialize" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>argo-repo-initialize</h2>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 48.9795918367347%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAABYlAAAWJQFJUiTwAAABjElEQVQoz52S/U4aQRTF94GogqnY1miT1vRlBBXQhBjb+CgmSmsrkjb6h0Gsb6CiL6AuK990aYUFZnZ/zo7QFkw08SYnZ2bOvWfOJGMk029Zy8yRTM+y8u018e0wie1XRFPjRLYCzG8GiH15SSI1TWRjgsjmCxaUFk2NEd0a030LqSCLn0Mkvk5hfNx7x6e99yS/vyGeDrGSCav9HMuZSWI7QZZ2xln9McP6/geWdyf1PpYO9hHSHNcc0mzkC4fkCzl8PitkFQ45t464sI4V57R2bv3kzMxxcqV0M0vePNJ9J5cHnF5n+7P3MBgtD4QDt20b0XWxbZtm08Zp9SjXLGQXqo0iruJLq0il1sDr/Rs3XE+i4d6zdAVC9OiIFo7TptK4oVy3cDoOXdlCSIEjblW/4E+nTbvnINXZwGMooed5Q2Fd6SmzAqW6iRQuj9Vg1hg98Hmw9k3851XqNyq1HNIfoK8Zj93mG5ZqJsXq9d+Eo68YrScNf/2uavyf8FmGg8F6s6xQ6n8A70nDO9yyyQtC08kgAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="init"
+        title=""
+        src="/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/2b72d/init.png"
+        srcset="/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/232f7/init.png 245w,
+/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/9319d/init.png 490w,
+/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/2b72d/init.png 980w,
+/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/814a3/init.png 1470w,
+/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/baffc/init.png 1960w,
+/static/bf16ae951c5d3bd2fd7e5f5e2c97567b/819be/init.png 2150w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<ul>
+<li>
+<p><code class="language-text">Setup app info</code></p>
+<ul>
+<li>argo app을 생성 시 필요한 내용을 수동으로 입력</li>
+<li>요청자, 환경, Helm chart 등</li>
+</ul>
+</li>
+<li>
+<p><code class="language-text">Declarative file setup</code></p>
+<ul>
+<li>앞서 입력한 내용대로 <code class="language-text">app-{environment}.yaml</code> 생성</li>
+</ul>
+</li>
+<li>
+<p><code class="language-text">Git repo initialize</code></p>
+<ul>
+<li>해당 파이프라인을 통해 생성되는 Argo app이 바라봐야 하는 Github repo(<code class="language-text">helm-values</code>) 생성 및 초기화</li>
+<li><a href="https://github.com/cli/cli">github-cli</a> 사용</li>
+</ul>
+</li>
+<li>
+<p><code class="language-text">ArgoCD app create</code></p>
+<ul>
+<li>선언된 <code class="language-text">app.yaml</code>을 <code class="language-text">argocd app create -f ./app-${target_val}.yaml</code> 명령어를 실행하여 Argo app 생성</li>
+</ul>
+</li>
+</ul>
+<p>해당 파이프라인이 성공적으로 수행되면 아래와 같은 alert가 발생합니다.
+
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 63.6734693877551%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB5klEQVQ4y52T2XKbMBSG/RapkW2EEAibReyLMeAFJ+k07UWv+/6v8VfIseu0yUymF98cCWb+859Fs1/fX/Dz5Ru68xO67oA8LxEGEr7ngVsUtmXBphScMXDbAedc4cCybBgLCrK03jD7cXrE+HRGNY7Y70eU7QCZN0jiCDIKEIUBQkUU+Ig2ArEvIH0PruNgTqgWvWf2ZW7iQbjwmxpJUoJmPWh5Ass6WPmgI6uOYHGtXTHGYSlMamOxYlgqFnfMiGGCTOWlKbK0QpyWCMIEocwgkwJJWoC7G6woB2UCFvc07ANmZLLtCWzqCufxK7rhhFb1ctv2aBTH8RllvdOJojiH7ax1Au6u9fkerrg5FEWOIEgg1iFc4cNeSywnR7b7xsHk9D1My9Eoh6Z2GGwbVGWLom6RFzUcWYH6mRakzFVRaCbR61nfX+NVWAtODt08Q6qGkpWN7l0YxpAyRZJX+p6pJGl+6bHubXb5fm3FpQ2bPyVPglINYvop1gFMvoFpf1zi30xVTOihzIVAOgw4Hh7R9gc02x6rZAfDCUEW5j/L+x63PbwJ7ge92O1uQNF0mEcNiCVgkM8J3l7KVTAZehwOZ+zUytS7PYjcgjAP5H8EDSUY951+y5VyV1YtTNnA4MGnS77yG5pAfZVF0T7JAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="initalert"
+        title=""
+        src="/static/257e245950d53fa97499654b963253a4/2b72d/initalert.png"
+        srcset="/static/257e245950d53fa97499654b963253a4/232f7/initalert.png 245w,
+/static/257e245950d53fa97499654b963253a4/9319d/initalert.png 490w,
+/static/257e245950d53fa97499654b963253a4/2b72d/initalert.png 980w,
+/static/257e245950d53fa97499654b963253a4/94f3c/initalert.png 1116w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<hr>
+<h1 id="마치며"><a href="#%EB%A7%88%EC%B9%98%EB%A9%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>마치며</h1>
+<p>이렇게 CI/CD 도구 및 방법론 도입기가 끝이 났습니다!
+처음 이 프로젝트를 시작했던 이유는 CI/CD 자동화였는데요. 문제 해결을 위해 단순히 기존 Bamboo + Spinnaker를 잘 연결하고 끝낼 수도 있었지만 그러기엔 쌓여있는 기술 부채가 많았습니다. 직면했던 문제만이 아닌 근본적인 이슈를 해결하기 위해 파이프라인 코드를 통합하고 k8s workload를 위해 공용 helm chart를 만들고 연결하기 위해 새로운 도구들을 도입하였습니다.</p>
+<p><code class="language-text">배포</code>는 조직의 기술적 스펙트럼을 넓힐 수 있는 가장 강력한 수단이라고 생각합니다! 검증된 코드를 손 쉽게 배포하고 롤백할 수 있는 환경은 비즈니스의 요구 사항에 따라 사용자들에게 빠르게 가치를 전달할 수 있게 됩니다. 기술 부채를 해결하기 위해 다양한 도구 및 방법론을 도입하며 우려했던 부분은 업무 프로세스에 대한 변경이었습니다. 배포 방식이 달라진다는 건 사용자들의 업무 방식이 바뀐다는 것이고, 이는 반발심을 부를 수도 있기 때문입니다. 하지만 기존 프로세스를 유지하며 해결하기엔 ❗ 엄청난 고통이 따라올 수 있음을 직감😱 ❗ 했기 때문에 새로운 도구와 방법론을 도입하게 됐습니다.</p>
+<p>더불어 DevOps는 단순히 도구 도입에서 끝나면 안된다고 생각합니다. <strong>상황과 환경에 맞게 도구를 선택하는 것도 중요하지만 사용자들의 편의성 또한 고려</strong>되어야 합니다. 그래서 이번 프로젝트를 진행하며 많은 분들과 인터뷰를 진행하였고, 방법론을 적용하면서 의견 취합 역시 활발하게 진행했습니다!
+DevOps의 고객은 조직의 엔지니어이기때문에 불편한 점에 대한 의견을 경청하고, 다양한 도구와 방법론으로 개선해야합니다. 멋진 도구는 아름답지만 사용하기 어렵다면 그 의미는 퇴색되기 마련입니다. 때문에 지속적인 온보딩과 세션을 진행하고, 피드백을 통해 조직에서 좀 더 사용하기 좋은 방법을 고민하고 적용해서 발전시켜야합니다. 그런 의미로 이번 프로젝트를 위해 도와주셨던 많은 분들께 이 글을 통해 감사 인사를 전합니다! 🙇‍♂️</p>
+<h2 id="메쉬코리아는-채용-중"><a href="#%EB%A9%94%EC%89%AC%EC%BD%94%EB%A6%AC%EC%95%84%EB%8A%94-%EC%B1%84%EC%9A%A9-%EC%A4%91" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>메쉬코리아는 채용 중!</h2>
+<p>현재 Mesh Korea의 플랫폼실은 소규모 인원으로 많은 영역을 커버하고 있는데요. 인력 자원이 부족하다보니 IaC 등을 활용해서 지속적으로 자동화하여 관리 비용을 줄이려는 노력을 하고 있습니다👨‍💻 플랫폼실은 <code class="language-text">AWS</code>, <code class="language-text">Kubernetes</code>, <code class="language-text">Database</code>, <code class="language-text">Test automation</code> 등 분야와 영역을 막론하고 좀 더 좋은 방식에 대해 고민하고 적용하는 조직으로, 이러한 여정을 함께하고 같이 성장하실 분들을 기다리고 있습니다! 메쉬코리아의 문은 언제나 열려있으니 많은 지원 부탁드립니다 :)
+긴 글 읽어주셔서 감사합니다!</p></article></article></div></div></main><style data-emotion="css 2jxy3p-Wrapper">.css-2jxy3p-Wrapper{padding-bottom:1.187rem;}</style><footer class="css-2jxy3p-Wrapper e1tbim063"><style data-emotion="css u2k6lz-FooterContainer">.css-u2k6lz-FooterContainer{border-top:1px solid #E2E4EB;padding-top:2.187rem;}</style><style data-emotion="css 1al4zm4-StyledContainer-FooterContainer">.css-1al4zm4-StyledContainer-FooterContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;border-top:1px solid #E2E4EB;padding-top:2.187rem;}.css-1al4zm4-StyledContainer-FooterContainer::before,.css-1al4zm4-StyledContainer-FooterContainer::after{content:"";display:table;}.css-1al4zm4-StyledContainer-FooterContainer::after{clear:both;}@media (max-width: 38.125em){.css-1al4zm4-StyledContainer-FooterContainer{padding-left:16px;padding-right:16px;}}</style><div class="e1tbim062 css-1al4zm4-StyledContainer-FooterContainer e1ig3f2t0"><style data-emotion="css 1gbez60-CompanyLogo">.css-1gbez60-CompanyLogo{float:left;width:160px;}@media (max-width: 48em){.css-1gbez60-CompanyLogo{float:none;width:auto;}}</style><div class="css-1gbez60-CompanyLogo e1tbim061"><style data-emotion="css 1636f4y-IconWrapper">.css-1636f4y-IconWrapper{position:relative;display:inline-block;line-height:16px;color:#0971ce;}.css-1636f4y-IconWrapper>svg{vertical-align:top;}.css-1636f4y-IconWrapper>svg{fill:#0971ce;}</style><i class="css-1636f4y-IconWrapper e12rwrnm0" height="16" color="#0971ce"><svg width="121.15" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.29 18"><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53"></polygon></svg></i></div><style data-emotion="css dtdcvy-CompanyDesc">.css-dtdcvy-CompanyDesc{margin-left:160px;}@media (max-width: 48em){.css-dtdcvy-CompanyDesc{margin-left:0;margin-top:1.5rem;}}@media (max-width: 38.125em){.css-dtdcvy-CompanyDesc{font-size:0.875rem;}}</style><div class="css-dtdcvy-CompanyDesc e1tbim060"><p>프리미엄 배달대행 부릉을 운영하는 메쉬코리아는 투명하고 유연하게 라이더를 연결하는 물류플랫폼을 지향합니다.<br/>물류플랫폼을 함께 만들어갈 능력있는 사람들과 함께할 사람들을 찾습니다.</p><p><a href="https://www.meshkorea.net/kr/career/" target="_blank">지금 지원하러 가기 <i class="css-1anhml5-IconWrapper e12rwrnm0" height="16"><svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M12,8a1,1,0,0,1-.29.71l-5,5a1,1,0,0,1-1.42-1.42L9.59,8,5.29,3.71A1,1,0,0,1,6.71,2.29l5,5A1,1,0,0,1,12,8Z"></path></svg></i></a></p></div></div></footer></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script>
+  
+  function gaOptout(){document.cookie=disableStr+'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC;path=/',window[disableStr]=!0}var gaProperty='UA-71371143-19',disableStr='ga-disable-'+gaProperty;document.cookie.indexOf(disableStr+'=true')>-1&&(window[disableStr]=!0);
+  if(!(navigator.doNotTrack == "1" || window.doNotTrack == "1")) {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  }
+  if (typeof ga === "function") {
+    ga('create', 'UA-71371143-19', 'auto', {});
+      ga('set', 'anonymizeIp', true);
+      }
+      </script><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/20210208-dev-notes-002-ci-cd/";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-dfda8d059abd9d0298c4.js"],"app":["/app-22865dd68e8243d4cdbd.js"],"component---src-pages-404-tsx":["/component---src-pages-404-tsx-15fbe9adb4b555b35bae.js"],"component---src-pages-index-tsx":["/component---src-pages-index-tsx-2c7f676ccec1bfcd3101.js"],"component---src-templates-pages-tsx":["/component---src-templates-pages-tsx-faf52131eb81a2acc5f6.js"],"component---src-templates-post-tsx":["/component---src-templates-post-tsx-1bf9ab989079ec585ec1.js"],"component---src-templates-tags-tsx":["/component---src-templates-tags-tsx-f9a749b633c17bb4de81.js"]};/*]]>*/</script><script src="/polyfill-dfda8d059abd9d0298c4.js" nomodule=""></script><script src="/component---src-templates-post-tsx-1bf9ab989079ec585ec1.js" async=""></script><script src="/commons-dcdf0d39b8604fc9401a.js" async=""></script><script src="/e0525e89-740ce12359b8b303d957.js" async=""></script><script src="/styles-e9d24b1846c7d6eb9685.js" async=""></script><script src="/app-22865dd68e8243d4cdbd.js" async=""></script><script src="/framework-da68acf1b9295dbf7273.js" async=""></script><script src="/webpack-runtime-0532c3bcc2cd869e8d80.js" async=""></script></body></html>
