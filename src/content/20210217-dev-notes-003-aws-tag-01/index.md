@@ -3,9 +3,9 @@ layout: post
 title: "AWS Tag 적용 가이드와 활용 - 1부"
 date: "2021-02-17"
 tags: ["Dev Notes", "AWS", "Tag", "config", "resource group", "AWS Governance", "Tagging", "infra", "scp", "tag policy", "guardduty"]
+titleImage: "./title.png"
 author: 백수현
 authorDesc: "플랫폼실 백수현"
-titleImage: "./title.png"
 ---
 
 안녕하세요! 메쉬코리아 플랫폼실에서 DevOps를 담당하고 있는 백수현입니다. 이번에 AWS Tag 적용 가이드와 활용 방안에 대해 공유해 드리고자 글을 작성하게 되었습니다.
