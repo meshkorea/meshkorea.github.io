@@ -119,7 +119,7 @@ AWS 리소스를 관리하는 방법으로 Terraform을 주로 사용하는데 �
 
     - 구성
 
-        구성을 보면 repo에서 모듈 선언은 아래와 같이 terraform_repo_name만 변수로 넘겨줬습니다. terraform_repo_name은 TerraformRepo Tag를 통해 어떤 repo에서 리소스가 관리되는지 보여주기 위함입니다.
+        구성을 보면 repo에서 모듈 선언은 아래와 같이 `terraform_repo_name`만 변수로 넘겨줬습니다. `terraform_repo_name`은 TerraformRepo Tag를 통해 어떤 repo에서 리소스가 관리되는지 보여주기 위함입니다.
 
         ```
         module "common_tags" {
