@@ -302,7 +302,12 @@ const TagItem = styled.li`
   }
 `;
 
-const predefinedCategories = ["Dev Notes", "People & Culture", "Bookshelf", "Newsroom"];
+const predefinedCategories = [
+  "Dev Notes",
+  "People & Culture",
+  "Bookshelf",
+  "Newsroom",
+];
 
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
@@ -322,6 +327,8 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
   const filteredTags = data.tagsGroup.tags.filter(({ tag }) =>
     predefinedCategories.includes(tag),
   );
+
+  console.log(mostRecentPost.frontmatter);
 
   return (
     <IndexLayout>
