@@ -328,8 +328,6 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
     predefinedCategories.includes(tag),
   );
 
-  console.log(mostRecentPost.frontmatter);
-
   return (
     <IndexLayout>
       <Page>
