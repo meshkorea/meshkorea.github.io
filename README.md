@@ -138,11 +138,15 @@ playstore: (play store 앱 페이지 링크, optional)
 `youtube: [스크린 리더나 로봇을 위한 대체 텍스트](유튜브 링크 주소)`
 ```
 
-또는, YouTube 영상 -> 공유 -> 퍼가기 버튼을 누르면 나오는 코드를 직접 입력하셔도 됩니다.
+이 방식으로 영상을 삽입할 경우 YouTube 외의 일부 다른 서비스의 영상도 삽입할 수 있습니다. [이 페이지를 참고해주세요](https://www.gatsbyjs.com/plugins/gatsby-remark-embed-video/?=video)
+
+플러그인이 지원하지 않는 서비스의 영상을 삽입하고 싶으신 경우, iframe을 직접 삽입하실 수도 있습니다. 예시로 YouTube 영상을 iframe으로 삽입하는 법을 알아보자면, YouTube 영상 하단의 공유 버튼 -> 퍼가기 버튼을 누르면 아래와 같은 코드가 나옵니다.
 
 ```html
 <iframe width="560" height="315" src="https://www.youtube.com/embed/jNQXAC9IVRw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
+
+이 코드를 글에 복사해 넣으시면 됩니다.
 
 ### 이미지를 삽입하고 싶어요! 어떻게 해야 하나요?
 
