@@ -12,7 +12,7 @@ linkDesc: YouTube 동영상 보러가기
 
 이 글의 내용은 메쉬코리아 x 레이니스트 기술교류 세미나에서 같은 주제로 발표되었습니다. 아래 영상에서 프레젠테이션과 함께 확인하실 수 있습니다.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/gvWbVkT_d7Q" frameborder="0" allowfullscreen></iframe>
+`youtube: [세미나 영상 보기](https://youtu.be/gvWbVkT_d7Q)`
 
 필자는 최근 8개월간 VROONG TMS의 첫 번째 패키징을 제작하고 있었다. 이중 '매니저웹'이라 불리는 관리자 페이지는, 보통 어드민 페이지 치고는 복잡한 기능들이 많이 들어가있는 편이었다. 실시간 기사 위치 관제, 구간별 인센티브 설정, 엑셀로 오더 추가, 배차 결과 엑셀로 내보내기, 페이지별 권한 설정... 현장에서 요구하는 기능이 꽤 많았다. 기능들을 그때그때 추가하고, 복잡한 설정들을 저장하고 여러 페이지에서 참조해야 했다. React와 Redux가 없었다면 아마 꽤 힘들었을 것이다.
 

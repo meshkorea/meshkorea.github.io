@@ -30,6 +30,17 @@ module.exports = {
       options: {
         plugins: [
           {
+            resolve: "gatsby-remark-embed-video",
+            options: {
+              width: 800,
+              ratio: 1.77,
+              height: 400,
+              related: false,
+              noIframeBorder: true,
+              containerClass: "embedVideo-container",
+            },
+          },
+          {
             resolve: "gatsby-remark-responsive-iframe",
             options: {
               wrapperStyle: "margin: 1.5em -70px",
