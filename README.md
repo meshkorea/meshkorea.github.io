@@ -126,3 +126,29 @@ playstore: (play store 앱 페이지 링크, optional)
 #### 2. 커맨드 라인에 익숙하지 않으신가요?
 
 주위 개발자에게 도움을 요청하세요!
+
+## FAQ
+
+### YouTube 영상을 삽입하고 싶어요! 어떻게 해야 하나요?
+
+1. YouTube 영상 링크를 복사합니다.
+2. 다음과 같이 유튜브 링크를 삽입하시면 자동으로 삽입됩니다.
+
+```markdown
+`youtube: [스크린 리더나 로봇을 위한 대체 텍스트](유튜브 링크 주소)`
+```
+
+또는, YouTube 영상 -> 공유 -> 퍼가기 버튼을 누르면 나오는 코드를 직접 입력하셔도 됩니다.
+
+```html
+<iframe width="560" height="315" src="https://www.youtube.com/embed/jNQXAC9IVRw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
+### 이미지를 삽입하고 싶어요! 어떻게 해야 하나요?
+
+1. 먼저 글을 작성하는 폴더에 이미지를 복사해주세요. (ex. foo.png)
+2. 다음과 같이 이미지를 삽입해주세요.
+
+```markdown
+![스크린 리더나 로봇을 위한 대체 텍스트](./foo.png)
+```
