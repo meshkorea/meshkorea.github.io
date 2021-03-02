@@ -127,6 +127,10 @@ const ShareSheetTitles = styled.h5`
 const Article = styled.article`
   ${articleStyle} padding: 0 70px;
 
+  .embedVideo-iframe {
+    border: 0;
+  }
+
   @media (min-width: ${getEmSize(
       breakpoints.xs,
     )}em) and (max-width: ${getEmSize(breakpoints.md)}em) {
