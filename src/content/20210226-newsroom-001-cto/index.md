@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "메쉬코리아, AI 물류 시스템 확대 위해 김명환 CTO 선임"
-date: "2021-02-25"
+date: "2021-02-26"
 tags: ["Newsroom", "CTO", "AI", "Big Data"]
 titleImage: "./title.jpg"
 author: Vroong Tech
