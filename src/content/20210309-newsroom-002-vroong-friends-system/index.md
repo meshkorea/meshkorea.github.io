@@ -2,7 +2,7 @@
 layout: post
 title: "메쉬코리아, 일반인 배송 플랫폼 서비스 ‘부릉프렌즈’ 시스템 개편"
 date: "2021-03-09"
-tags: ["Newsroom", "Vroong Friends", "AI"]
+tags: ["Newsroom", "Vroong Friends", "refactoring", "AI"]
 titleImage: "./title.png"
 author: Vroong Tech
 authorDesc: "Vroong Tech"
