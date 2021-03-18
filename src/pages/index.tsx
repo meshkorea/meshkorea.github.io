@@ -7,6 +7,7 @@ import AuthorInfo, {
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
+import Hero from "../components/Hero";
 import Icon from "../components/Icon";
 import { NavigationWrapper, NavigationLink } from "../components/Navigation";
 import Page from "../components/Page";
@@ -75,80 +76,6 @@ interface IndexPageProps {
 interface BackgroundFigureProps {
   src?: string;
 }
-
-const RecentPageWrapper = styled.div`
-  position: relative;
-  height: 280px;
-  overflow: hidden;
-  color: ${colors.white};
-  word-break: keep-all;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-
-  @media (max-width: ${getEmSize(breakpoints.md)}em) {
-    height: 360px;
-  }
-
-  @media (max-width: ${getEmSize(breakpoints.sm)}em) {
-    height: 480px;
-  }
-`;
-
-const RecentPageContainer = styled(Container)`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 20px;
-`;
-
-const BackgroundContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  background-color: ${colors.gray60};
-  background-position: 50% 50%;
-  background-size: cover;
-  background-image: ${(props: BackgroundFigureProps) =>
-    props.src ? `url(${props.src})` : "none"};
-  filter: brightness(85%);
-  transition: transform 0.5s;
-
-  div:hover > & {
-    transform: scale(1.05);
-  }
-`;
-
-const RecentBadge = styled.aside`
-  flex: 1;
-  font-size: 0.875rem;
-
-  > strong {
-    font-weight: 500;
-  }
-`;
-
-const RecentTitle = styled.h2`
-  font-size: 2.5rem;
-
-  > sup {
-    margin-left: 20px;
-    font-size: 1rem;
-    top: -1.2rem;
-  }
-
-  @media (max-width: ${getEmSize(breakpoints.xl)}em) {
-    font-size: 2rem;
-
-    > sup {
-      top: -0.8rem;
-    }
-  }
-`;
-
-const RecentExcerpt = styled.summary`
-  max-width: 620px;
-`;
 
 const PostList = styled.ul`
   display: flex;
@@ -233,8 +160,8 @@ const GridWrapper = styled.div`
 
 const TagListWrapper = styled.aside`
   position: absolute;
-  right: 0;
-  width: 140px;
+  right: -10px;
+  width: 150px;
   font-size: 0.875em;
 
   @media (max-width: ${getEmSize(breakpoints.xl)}em) {
@@ -274,7 +201,7 @@ const TagItem = styled.li`
 
   &::before {
     content: "-";
-    margin-right: 10px;
+    margin-right: 5px;
     color: ${colors.gray60};
   }
 
@@ -296,8 +223,8 @@ const TagItem = styled.li`
   @media (max-width: ${getEmSize(breakpoints.xl)}em) {
     display: inline-block;
 
-    & + & {
-      margin-left: 20px;
+    &:not(:last-of-type) {
+      margin-right: 20px;
     }
   }
 `;
@@ -320,9 +247,8 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
       </IndexLayout>
     );
   }
-  const mostRecentPost = data.posts.edges[0].node;
-  const posts = data.posts.edges.filter((_, idx) => idx > 0 && idx < 10);
-  const isNextPageExist = data.posts.edges.length > 10;
+  const posts = data.posts.edges.filter((_, idx) => idx < 9);
+  const isNextPageExist = data.posts.edges.length > 9;
 
   const filteredTags = data.tagsGroup.tags.filter(({ tag }) =>
     predefinedCategories.includes(tag),
@@ -331,30 +257,7 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
   return (
     <IndexLayout>
       <Page>
-        <Link to={mostRecentPost.fields.slug}>
-          <RecentPageWrapper>
-            <BackgroundContainer
-              src={
-                mostRecentPost.frontmatter.titleImage.childImageSharp.original
-                  .src
-              }
-            />
-            <RecentPageContainer>
-              <RecentBadge>
-                <strong>RECENT</strong>
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                {(mostRecentPost.frontmatter.tags || [])
-                  .map(x => `#${x.trim()}`)
-                  .join(" ")}
-              </RecentBadge>
-              <RecentTitle>
-                {mostRecentPost.frontmatter.title}
-                <sup>by {mostRecentPost.frontmatter.author.id}</sup>
-              </RecentTitle>
-              <RecentExcerpt>{mostRecentPost.longerExcerpt}</RecentExcerpt>
-            </RecentPageContainer>
-          </RecentPageWrapper>
-        </Link>
+        <Hero />
         <Container>
           <GridWrapper>
             <PostList>

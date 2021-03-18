@@ -75,7 +75,7 @@ const Title = styled.h1`
     vertical-align: top;
   }
 
-  @media (max-width: ${getEmSize(breakpoints.xxs)}em) {
+  @media (max-width: ${getEmSize(breakpoints.xxxs)}em) {
     font-size: 0.875rem;
   }
 `;
@@ -198,50 +198,6 @@ const HomepageLink = styled(Link)`
   }
 `;
 
-// const TagAndSearch = styled.div`
-//   display: flex;
-//   margin-top: 19px;
-// `;
-
-// const TagList = styled.ul`
-//   flex: 1;
-//   margin: 0;
-//   padding: 0;
-//   list-style: none;
-//   list-style-image: none;
-//   font-weight: 500;
-//   color: ${colors.gray80};
-// `;
-
-// const TagItem = styled.li`
-//   display: inline-block;
-//   margin-right: 20px;
-// `;
-
-// const Search = styled.div`
-//   position: relative;
-// `;
-
-// const SearchLabel = styled.label`
-//   position: absolute;
-//   top: 6px;
-//   left: 11px;
-//   line-height: 16px;
-//   color: ${colors.gray50};
-// `;
-
-// const SearchInput = styled.input`
-//   width: 200px;
-//   height: 28px;
-//   padding-left: 36px;
-//   border: 0;
-//   border-radius: 14px;
-
-//   &:focus {
-//     outline: none;
-//   }
-// `;
-
 interface HeaderProps {
   title: string;
   home?: boolean;
@@ -296,7 +252,7 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
                     viewboxTop={18}
                     title="MESH KOREA | VROONG"
                   />
-                  Tech Blog
+                  테크 블로그
                 </span>
               </SmallTitle>
             </Link>
@@ -327,26 +283,10 @@ class Header extends React.PureComponent<HeaderProps, HeaderState> {
                 </Logo>
                 <Title>
                   {this.state.isMobile && "MESH KOREA | VROONG "}
-                  Tech Blog
+                  테크 블로그
                 </Title>
               </HomepageLink>
             </LogoContainer>
-            {/* <TagAndSearch>
-            <TagList>
-              <TagItem>#lorem_ipsum</TagItem>
-              <TagItem>#dolor</TagItem>
-              <TagItem>#sit</TagItem>
-              <TagItem>
-                <Icon name="MORE" width={18} height={18} />
-              </TagItem>
-            </TagList>
-            <Search>
-              <SearchLabel>
-                <Icon name="SEARCH" width={16} height={16} />
-              </SearchLabel>
-              <SearchInput />
-            </Search>
-          </TagAndSearch> */}
           </Container>
         </StyledHeader>
       </>
