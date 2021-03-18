@@ -22,7 +22,7 @@ authorDesc: "Vroong Tech"
 
 ## How Mesh Korea Built an A/B Test Platform on AWS
 
-메쉬코리아 Data Science실 김경오님께서 **‘How Mesh Korea Built an A/B Test Platform on AWS’**라는 주제로 발표를 하셨는데요.
+메쉬코리아 Data Science실 김경오님께서 ‘How Mesh Korea Built an A/B Test Platform on AWS’ 라는 주제로 발표를 하셨는데요.
 
 - A/B Testing Platform에 대한 설명
 - 어떻게 3주 만에 A/B Test Platform을 구축할 수 있었는가?
