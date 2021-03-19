@@ -247,7 +247,7 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
       </IndexLayout>
     );
   }
-  const posts = data.posts.edges.filter((_, idx) => idx < 9);
+  const posts = data.posts.edges.slice(0, 9);
   const isNextPageExist = data.posts.edges.length > 9;
 
   const filteredTags = data.tagsGroup.tags.filter(({ tag }) =>
@@ -327,7 +327,7 @@ export const pageQuery = graphql`
     }
     posts: allMarkdownRemark(
       sort: { fields: [frontmatter___date], order: DESC }
-      limit: 11
+      limit: 10
     ) {
       edges {
         node {

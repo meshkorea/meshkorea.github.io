@@ -49,6 +49,10 @@ const HeroWrapper = styled.div`
   @media (max-width: ${getEmSize(breakpoints.xs)}em) {
     height: 400px;
   }
+
+  @media (max-width: ${getEmSize(breakpoints.xxxs)}em) {
+    height: 360px;
+  }
 `;
 
 const HeroItemWrapper = styled(Container)`
