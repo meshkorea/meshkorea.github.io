@@ -140,7 +140,7 @@ exports.createPages = async ({ graphql, actions }) => {
     createPage: createPage,
     pageTemplate: "./src/templates/pages.tsx",
     pathPrefix: "pages",
-    pageLength: 10,
+    pageLength: 9,
     context: {
       totalItems: allMarkdown.data.allMarkdownRemark.edges.length,
     },

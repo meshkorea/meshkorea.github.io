@@ -34,18 +34,19 @@ export const colors = {
 
 export const fonts = {
   sansSerif:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif',
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif',
   serif: 'Georgia, "Times New Roman", Times, serif',
   monospace:
     'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, monospace',
 };
 
 export const breakpoints = {
-  xxs: 370,
+  xxxs: 370,
+  xxs: 400,
   xs: 480,
   sm: 610,
   md: 768,
-  lg: 992,
+  lg: 960,
   xl: 1200,
 };
 
