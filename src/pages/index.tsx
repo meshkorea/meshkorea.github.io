@@ -17,6 +17,7 @@ import IndexLayout from "../layouts";
 import { getEmSize, resetUl } from "../styles/mixins";
 import { breakpoints, colors } from "../styles/variables";
 import { transformTags } from "../utils/tag";
+import RecruitBanner from "../components/RecruitBanner";
 
 interface IndexPageProps {
   data: {
@@ -236,6 +237,8 @@ const predefinedCategories = [
   "Newsroom",
 ];
 
+const isRecruitPeriod = new Date() < new Date(2021, 4, 1);
+
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
   if (!data.posts || !data.posts.edges.length) {
@@ -257,7 +260,7 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
   return (
     <IndexLayout>
       <Page>
-        <Hero />
+        {isRecruitPeriod ? <RecruitBanner /> : <Hero />}
         <Container>
           <GridWrapper>
             <PostList>
