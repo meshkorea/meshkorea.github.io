@@ -23,7 +23,7 @@ authorDesc: "김창규"
 
 이 시스템은 2017년에 구축되어 2021년 현재까지 잘 사용되고 있는데요! AWS의 API Gateway와 Lambda를 사용하여 구현되고 있고, Lambda 구현체에 따라 실시간 서비스에 사용하기 위한 Redis, S3에 데이터를 적재하기 위한 Kinesis Firehose, 모바일 디버깅 자료를 조회하기 위한 Elasticsearch로 전송합니다.
 
-![Untitled.png](Untitled.png)
+  ![AWS_Diagram](./image00.png)
 
 API Gateway에 연결된 서비스
 
@@ -66,7 +66,7 @@ API별 호출량은 다음과 같다.
 
 약 월간 1.5B (15억) 회 API Gateway의 호출이 일어나고 있었고, API Gateway 타입 중 REST API를 사용하고 있었습니다.
 
-![Untitled1.png](Untitled1.png)
+![API_Pricing](./image01.png)
 
 API Gateway 중 REST API의 비용
 
@@ -88,7 +88,7 @@ Application Loadbalancer로 변환 시 월간 $22.84 으로, 99.5% 를 절감할
 
 Lambda의 비용 구조는 (memory 크기 * 사용 시간) 과 요청에 따라 과금됩니다.
 
-![Untitled2.png](Untitled2.png)
+![Lambda_Pricing](./image02.png)
 
 Lambda 비용
 
@@ -110,7 +110,7 @@ Lambda 비용
 
 ## Lambda 쓰로틀링으로 인한 오류 방지
 
-![Untitled3.png](Untitled3.png)
+![Lambda_throttling](./image03.png)
 
 피크 시간이 아닐 때도 쓰로틀링이 발생할 수 있다.
 
@@ -130,7 +130,7 @@ API Gateway에서 한 Host로 path prefix에 따라 다른 환경(stage)으로 �
 
 또한 Application Loadbalancer는 동일한 요청이라도, weight 기반으로 여러 개의 Target Group으로 부하를 분산할 수 있습니다. 이 기능을 이용하여, 기존 API-Gateway + Lambda와 쿠버네티스의 워크로드간에 점진적 배포가 가능합니다.
 
-![Untitled4.png](Untitled4.png)
+![Canary_Deployment.png](./image04.png)
 
 ALB를 이용하여 기존의 API Gatway와 Kubernetes Pods 간 점진적 배포
 
@@ -150,9 +150,9 @@ ALB를 이용하여 기존의 API Gatway와 Kubernetes Pods 간 점진적 배포
 
 1000RPS (request per second) 정도를 기록하였고, CPU는 2core, Memory 500 MB 수준으로 기록되었습니다. 다만, 시간이 지난 이후 Error Rate가 올라오는 것을 확인할 수 있었습니다.
 
-![Untitled5.png](Untitled5.png)
+![Stress_Test_01](./image05.png)
 
-![Untitled6.png](Untitled6.png)
+![Stress_Test_02](./image06.png)
 
 서버 로그를 확인하자, 다음과 같은 오류가 발생한 것을 확인할 수 있었습니다.
 
@@ -164,7 +164,7 @@ s3에 데이터를 기록하기 위해 사용했던 Firehose에서 Slow Down 이
 
 ### 기존 상용 트래픽과의 비교
 
-![Untitled7.png](Untitled7.png)
+![Traffic_Comparison](./image07.png)
 
 상용 서비스 Lambda의 분당 처리(rpm) 및 처리 시간(ms)
 
@@ -178,7 +178,7 @@ s3에 데이터를 기록하기 위해 사용했던 Firehose에서 Slow Down 이
 
 개선된 애플리케이션은 상용에 배포하고, 모니터링을 진행하였습니다. 큰 문제는 없었지만 종종 요청이 timeout이 기록되어 response time에 대한 통계를 내 보았습니다.
 
-![Untitled8.png](Untitled8.png)
+![Response_Time_Histogram](./image08.png)
 
 전체 API에 대해 response time histogram
 
