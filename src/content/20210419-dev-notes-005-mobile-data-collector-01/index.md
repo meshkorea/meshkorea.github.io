@@ -3,7 +3,7 @@ layout: post
 title: "모바일 기기 데이터 수집 서버 개선기 1부 : 서버 아키텍처 개선"
 date: "2021-04-19"
 tags: ["Dev Notes", "API Gateway", "AWS Lambda", "Kubernetes", "AWS Cost Optimization"]
-titleImage:
+titleImage: "./title.png"
 author: 김창규
 authorDesc: "김창규"
 ---
