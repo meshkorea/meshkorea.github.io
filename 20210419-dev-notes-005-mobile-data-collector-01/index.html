@@ -1,0 +1,438 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><style data-href="/styles.2072d913c063a542f3b5.css" id="gatsby-global-css">/*! modern-normalize | MIT License | https://github.com/sindresorhus/modern-normalize */html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}:root{-moz-tab-size:4;-o-tab-size:4;tab-size:4}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}hr{height:0}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{padding:0}progress{vertical-align:baseline}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}</style><meta name="generator" content="Gatsby 2.28.1"/><style type="text/css">
+    .anchor {
+      float: left;
+      padding-right: 4px;
+      margin-left: -20px;
+    }
+    h1 .anchor svg,
+    h2 .anchor svg,
+    h3 .anchor svg,
+    h4 .anchor svg,
+    h5 .anchor svg,
+    h6 .anchor svg {
+      visibility: hidden;
+    }
+    h1:hover .anchor svg,
+    h2:hover .anchor svg,
+    h3:hover .anchor svg,
+    h4:hover .anchor svg,
+    h5:hover .anchor svg,
+    h6:hover .anchor svg,
+    h1 .anchor:focus svg,
+    h2 .anchor:focus svg,
+    h3 .anchor:focus svg,
+    h4 .anchor:focus svg,
+    h5 .anchor:focus svg,
+    h6 .anchor:focus svg {
+      visibility: visible;
+    }
+  </style><script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var hash = window.decodeURI(location.hash.replace('#', ''))
+      if (hash !== '') {
+        var element = document.getElementById(hash)
+        if (element) {
+          var offset = element.offsetTop
+          // Wait for the browser to finish rendering before scrolling.
+          setTimeout((function() {
+            window.scrollTo(0, offset - 0)
+          }), 0)
+        }
+      }
+    })
+  </script><link rel="canonical" href="https://meshkorea.github.io/20210419-dev-notes-005-mobile-data-collector-01/" data-baseprotocol="https:" data-basehost="meshkorea.github.io"/><title data-react-helmet="true">모바일 기기 데이터 수집 서버 개선기 1부 : 서버 아키텍처 개선:: Mesh Korea Makers Blog</title><link data-react-helmet="true" rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon.png" sizes="1024x1024"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16"/><link data-react-helmet="true" rel="mask-icon" href="/mask-icon.svg" color="#1b3993"/><link data-react-helmet="true" rel="shortcut icon" href="/favicon.ico"/><meta data-react-helmet="true" name="description" content="안녕하세요. 이번에 최근 진행했던 모바일 기기 데이터 수집 서버 개선 프로젝트에 대한 글을 쓰게 된 플랫폼실 김창규입니다😃 본 내용은 총 2부로 나누어서 풀어나가려고 하는데요. 이번  1부에서는 서버 아키텍처 개선 에 관한 내용을 다루고,…"/><meta data-react-helmet="true" name="keywords" content="Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, Dev Notes,API Gateway,AWS Lambda,Kubernetes,AWS Cost Optimization"/><meta data-react-helmet="true" property="og:url" content="https://meshkorea.github.io/20210419-dev-notes-005-mobile-data-collector-01/"/><meta data-react-helmet="true" property="og:title" content="모바일 기기 데이터 수집 서버 개선기 1부 : 서버 아키텍처 개선
+            :: Mesh Korea Makers Blog"/><meta data-react-helmet="true" property="og:description" content="안녕하세요. 이번에 최근 진행했던 모바일 기기 데이터 수집 서버 개선 프로젝트에 대한 글을 쓰게 된 플랫폼실 김창규입니다😃 본 내용은 총 2부로 나누어서 풀어나가려고 하는데요. 이번  1부에서는 서버 아키텍처 개선 에 관한 내용을 다루고,…"/><meta data-react-helmet="true" property="og:type" content="article"/><meta data-react-helmet="true" property="og:image" content="https://meshkorea.github.io/static/c08f39d2dcd33fa59cf31953fdfd2b96/eeb1b/title.png"/><link rel="manifest" href="/manifest.webmanifest" crossorigin="anonymous"/><meta name="theme-color" content="#1b3993"/><link rel="apple-touch-icon" sizes="192x192" href="/android-icon-192x192.png"/><link rel="apple-touch-icon" sizes="384x384" href="/android-icon-384x384.png"/><link as="script" rel="preload" href="/webpack-runtime-ffe42b6e880799e3a046.js"/><link as="script" rel="preload" href="/framework-da68acf1b9295dbf7273.js"/><link as="script" rel="preload" href="/app-3e2eb7a34aa1df5dc5cc.js"/><link as="script" rel="preload" href="/styles-e9d24b1846c7d6eb9685.js"/><link as="script" rel="preload" href="/e0525e89-83ec71d4e59d23f4872d.js"/><link as="script" rel="preload" href="/commons-7d5f1a90cd4689983181.js"/><link as="script" rel="preload" href="/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js"/><link as="fetch" rel="preload" href="/page-data/20210419-dev-notes-005-mobile-data-collector-01/page-data.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/sq/d/1963140206.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/app-data.json" crossorigin="anonymous"/></head><body><div id="___gatsby"><div style="outline:none" tabindex="-1" id="gatsby-focus-wrapper"><style data-emotion="css x35p1m-StyledLayoutRoot">.css-x35p1m-StyledLayoutRoot{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;min-height:100vh;background:#fff;}</style><div class="css-x35p1m-StyledLayoutRoot e3awmat0"><style data-emotion="css-global qoovf3">@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");html{box-sizing:border-box;}*,*::before,*::after{box-sizing:inherit;}html{font-size:16px!important;line-height:1.5!important;}body{width:100%;overflow-x:hidden;overflow-y:scroll;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#4B5058;background-color:#EFF0F5;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}a{color:#0971ce;-webkit-text-decoration:none;text-decoration:none;}a:hover,a:focus{-webkit-text-decoration:none;text-decoration:none;}img{max-width:100%;object-fit:contain;}figure{margin:2rem 0;}figcaption{font-size:80%;}table{width:100%;margin-bottom:1rem;border:1px solid #f5f3f7;font-size:85%;border-collapse:collapse;}td,th{padding:0.25rem 0.5rem;border:1px solid #f5f3f7;}th{text-align:left;}tbody tr:nth-of-type(odd) td{background-color:#fbfafc;}tbody tr:nth-of-type(odd) tr{background-color:#fbfafc;}h1,h2,h3,h4,h5,h6{margin-top:1.414rem;margin-bottom:0.5rem;color:inherit;font-weight:700;line-height:1.2;text-rendering:optimizeLegibility;}h1{margin-top:0;font-size:2.441rem;}h2{font-size:1.953rem;}h3{font-size:1.563rem;}h4,h5,h6{font-size:1.25rem;}p{margin-top:0;margin-bottom:1rem;}strong{color:inherit;}ul,ol,dl{margin-top:0;margin-bottom:1rem;}dt{font-weight:bold;}dd{margin-bottom:0.5rem;}hr{position:relative;margin:1.5rem 0;border:0;border-top:1px solid #f5f3f7;}blockquote{margin:0.8rem 0;padding:0.5rem 1rem;border-left:0.25rem solid #f5f3f7;}blockquote p:last-child{margin-bottom:0;}@media (min-width: 48em){blockquote{padding-right:5rem;padding-left:1.25rem;}}code[class*="language-"],pre[class*="language-"]{color:black;background:none;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}@media print{code[class*="language-"],pre[class*="language-"]{text-shadow:none;}}pre[class*="language-"]{padding:1em;margin:0.5em 0;overflow:auto;}:not(pre)>code[class*="language-"]{padding:0.1em;border-radius:0.3em;white-space:normal;}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray;}.token.punctuation{color:#999;}.namespace{opacity:0.7;}.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol,.token.deleted{color:#905;}.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#690;}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string{color:#9a6e3a;background:hsla(0, 0%, 100%, 0.5);}.token.atrule,.token.attr-value,.token.keyword{color:#07a;}.token.function,.token.class-name{color:#dd4a68;}.token.regex,.token.important,.token.variable{color:#e90;}.token.important,.token.bold{font-weight:bold;}.token.italic{font-style:italic;}.token.entity{cursor:help;}</style><style data-emotion="css jaqxp9-SmallTitleBox">.css-jaqxp9-SmallTitleBox{z-index:105;position:fixed;top:0;left:0;right:0;margin:0;height:75px;padding-top:26px;font-size:1.125rem;font-weight:700;line-height:1.2;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-jaqxp9-SmallTitleBox{height:44px;padding-top:0;left:50px;}}</style><div class="css-jaqxp9-SmallTitleBox e1obetcm3"><style data-emotion="css 1mfk7pj-SmallTitleContainer">.css-1mfk7pj-SmallTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-1mfk7pj-SmallTitleContainer >a{color:inherit;}</style><style data-emotion="css eduyk7-StyledContainer-SmallTitleContainer">.css-eduyk7-StyledContainer-SmallTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-eduyk7-StyledContainer-SmallTitleContainer::before,.css-eduyk7-StyledContainer-SmallTitleContainer::after{content:"";display:table;}.css-eduyk7-StyledContainer-SmallTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-eduyk7-StyledContainer-SmallTitleContainer{padding-left:16px;padding-right:16px;}}.css-eduyk7-StyledContainer-SmallTitleContainer >a{color:inherit;}</style><div class="e1obetcm5 css-eduyk7-StyledContainer-SmallTitleContainer e1ig3f2t0"><a href="/"><style data-emotion="css 282isq-SmallTitle">.css-282isq-SmallTitle{padding-top:7px;font-size:inherit;color:#05cd82;cursor:pointer;-webkit-transition:color 0.5s ease-in;transition:color 0.5s ease-in;}.css-282isq-SmallTitle .link-text{color:#4B5058;opacity:1;-webkit-transition:opacity 0.5s ease-in;transition:opacity 0.5s ease-in;}.css-282isq-SmallTitle i{margin-right:10px;}@media (max-width: 38.125em){.css-282isq-SmallTitle{display:none;}}</style><h1 class="css-282isq-SmallTitle e1obetcm4"><span class="link-text"><style data-emotion="css 1anhml5-IconWrapper">.css-1anhml5-IconWrapper{position:relative;display:inline-block;line-height:16px;color:inherit;}.css-1anhml5-IconWrapper>svg{vertical-align:top;}.css-1anhml5-IconWrapper>svg{fill:currentColor;}</style><i class="css-1anhml5-IconWrapper e12rwrnm0" height="16" title="MESH KOREA | VROONG"><svg width="242" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i>테크 블로그</span></h1></a><div style="flex:1"></div><style data-emotion="css 22578y-RecruitLinks">.css-22578y-RecruitLinks{font-size:1rem;text-align:right;color:#0971ce;}.css-22578y-RecruitLinks >a{display:inline-block;min-width:36px;height:36px;padding-top:6px;text-align:center;line-height:24px;border-radius:18px;-webkit-transition:color 0.3s,background 0.5s;transition:color 0.3s,background 0.5s;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#fff;-webkit-text-decoration:none;text-decoration:none;background:#0971ce;}@media (max-width: 38.125em){.css-22578y-RecruitLinks >a{color:#5B5E62;margin:4px 0;border-radius:5px;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#4B5058;background:#E2E4EB;}}</style><div class="css-22578y-RecruitLinks e1obetcm2"><a href="https://github.com/meshkorea" target="_blank"><style data-emotion="css g8nddb-IconWrapper">.css-g8nddb-IconWrapper{position:relative;display:inline-block;line-height:24px;color:inherit;}.css-g8nddb-IconWrapper>svg{vertical-align:top;}.css-g8nddb-IconWrapper>svg{fill:currentColor;}</style><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,0A12,12,0,0,0,8.21,23.39c.6.11.82-.26.82-.58s0-1,0-2c-3.34.72-4-1.61-4-1.61A3.21,3.21,0,0,0,3.64,17.4c-1.09-.74.08-.73.08-.73a2.55,2.55,0,0,1,1.84,1.24,2.56,2.56,0,0,0,3.49,1,2.59,2.59,0,0,1,.76-1.61C7.15,17,4.34,16,4.34,11.37A4.63,4.63,0,0,1,5.58,8.15,4.28,4.28,0,0,1,5.7,5s1-.33,3.3,1.23a11.18,11.18,0,0,1,6,0C17.3,4.65,18.3,5,18.3,5a4.28,4.28,0,0,1,.12,3.17,4.63,4.63,0,0,1,1.23,3.22c0,4.61-2.8,5.63-5.47,5.92A2.88,2.88,0,0,1,15,19.52c0,1.6,0,2.89,0,3.29s.21.69.82.58A12,12,0,0,0,12,0Z"></path></svg></i></a><style data-emotion="css 17ctmwo-RecruitLink">.css-17ctmwo-RecruitLink{margin-left:12px;padding-top:5px!important;padding-left:1.25rem;padding-right:1.25rem;font-weight:600;border:1px solid #0971ce;}@media (max-width: 38.125em){.css-17ctmwo-RecruitLink{margin-left:0.6rem;margin-right:-0.625rem;padding-left:0.625rem;padding-right:0.625rem;line-height:26px;font-weight:400;color:#5B5E62;border:none;}}</style><a href="https://www.meshkorea.net/kr/career/" target="_blank" class="css-17ctmwo-RecruitLink e1obetcm1">지금 지원하러 가기</a></div></div></div><style data-emotion="css 1492abv-StyledHeader">.css-1492abv-StyledHeader{position:fixed;top:-125px;left:0;right:0;z-index:100;height:215px;padding:110px 0 0;color:#4B5058;border-bottom:1px solid #E2E4EB;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-1492abv-StyledHeader{top:-51px;height:96px;padding-top:58px;-webkit-transition:height 0.3s;transition:height 0.3s;}}</style><header class="css-1492abv-StyledHeader e1obetcm9"><style data-emotion="css 2028mn-StyledContainer">.css-2028mn-StyledContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;}.css-2028mn-StyledContainer::before,.css-2028mn-StyledContainer::after{content:"";display:table;}.css-2028mn-StyledContainer::after{clear:both;}@media (max-width: 38.125em){.css-2028mn-StyledContainer{padding-left:16px;padding-right:16px;}}</style><div class="css-2028mn-StyledContainer e1ig3f2t0"><style data-emotion="css 1htaa58-LogoContainer">.css-1htaa58-LogoContainer{white-space:nowrap;overflow:hidden;}@media (min-width: 38.125em){.css-1htaa58-LogoContainer{display:none;}}</style><div class="css-1htaa58-LogoContainer e1obetcm8"><style data-emotion="css 93x8qt-HomepageLink">.css-93x8qt-HomepageLink{color:inherit;}.css-93x8qt-HomepageLink:hover,.css-93x8qt-HomepageLink:focus{-webkit-text-decoration:none;text-decoration:none;}</style><a class="css-93x8qt-HomepageLink e1obetcm0" href="/"><style data-emotion="css l9mnzg-Logo">.css-l9mnzg-Logo{width:133px;height:24px;}@media (max-width: 38.125em){.css-l9mnzg-Logo{display:inline-block;width:26px;height:30px;overflow:hidden;color:#05cd82;}}</style><div class="css-l9mnzg-Logo e1obetcm7"><style data-emotion="css vi10os-IconWrapper">.css-vi10os-IconWrapper{position:relative;display:inline-block;line-height:18px;color:inherit;}.css-vi10os-IconWrapper>svg{vertical-align:top;}.css-vi10os-IconWrapper>svg{fill:currentColor;}</style><i class="css-vi10os-IconWrapper e12rwrnm0" height="18"><svg width="271.53" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i></div><style data-emotion="css yek61y-Title">.css-yek61y-Title{font-size:3rem;margin:6px 0 0;font-weight:700;line-height:1.2;letter-spacing:-0.015em;}@media (max-width: 38.125em){.css-yek61y-Title{display:inline-block;margin:0 0 0 14px;font-size:1.125rem;line-height:30px;vertical-align:top;}}@media (max-width: 23.125em){.css-yek61y-Title{font-size:0.875rem;}}</style><h1 class="css-yek61y-Title e1obetcm6">테크 블로그</h1></a></div></div></header><style data-emotion="css 1gp6gx1-StyledLayoutMain">.css-1gp6gx1-StyledLayoutMain{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-flex:1;-ms-flex:1;flex:1;padding-top:90px;}@media (max-width: 38.125em){.css-1gp6gx1-StyledLayoutMain{padding-top:97px;}}</style><main class="css-1gp6gx1-StyledLayoutMain ewf609k0"><style data-emotion="css 1scz8kd-StyledPage">.css-1scz8kd-StyledPage{display:block;-webkit-flex:1;-ms-flex:1;flex:1;position:relative;padding:0;margin-bottom:3rem;}</style><div class="css-1scz8kd-StyledPage e9n6qsq0"><style data-emotion="css 13j9qe4-Wrapper">.css-13j9qe4-Wrapper{height:360px;font-size:1.125em;color:#fff;text-shadow:0 2px 4px rgba(0, 0, 0, 0.5);background-color:#7A7F86;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/c08f39d2dcd33fa59cf31953fdfd2b96/eeb1b/title.png);}</style><div style="background-position:50% 50%" class="css-13j9qe4-Wrapper e140x8tc2"><style data-emotion="css fqnm68-PostTitleContainer">.css-fqnm68-PostTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-fqnm68-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-fqnm68-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-fqnm68-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-fqnm68-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><style data-emotion="css bb5jcx-StyledContainer-PostTitleContainer">.css-bb5jcx-StyledContainer-PostTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-bb5jcx-StyledContainer-PostTitleContainer::before,.css-bb5jcx-StyledContainer-PostTitleContainer::after{content:"";display:table;}.css-bb5jcx-StyledContainer-PostTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}.css-bb5jcx-StyledContainer-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-bb5jcx-StyledContainer-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><div class="e140x8tc1 css-bb5jcx-StyledContainer-PostTitleContainer e1ig3f2t0"><style data-emotion="css 1g33qqm-PostTitle">.css-1g33qqm-PostTitle{font-size:2.5rem;margin:0;word-break:keep-all;}@media (max-width: 48em){.css-1g33qqm-PostTitle{font-size:2rem;}}</style><h1 class="css-1g33qqm-PostTitle e140x8tc0">모바일 기기 데이터 수집 서버 개선기 1부 : 서버 아키텍처 개선</h1><div><style data-emotion="css 1muk9kd-StyledLink">.css-1muk9kd-StyledLink{display:inline-block;word-break:break-all;color:inherit;-webkit-transition:text-shadow 0.3s;transition:text-shadow 0.3s;}.css-1muk9kd-StyledLink:not(:last-of-type){margin-right:0.5em;}</style><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/Dev Notes">#<!-- -->Dev Notes</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/API Gateway">#<!-- -->API Gateway</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/AWS Lambda">#<!-- -->AWS Lambda</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/Kubernetes">#<!-- -->Kubernetes</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/AWS Cost Optimization">#<!-- -->AWS Cost Optimization</a></div></div></div><style data-emotion="css sz93qs-PostContainer">.css-sz93qs-PostContainer{position:relative;}</style><style data-emotion="css nokxz1-StyledContainer-PostContainer">.css-nokxz1-StyledContainer-PostContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;position:relative;}.css-nokxz1-StyledContainer-PostContainer::before,.css-nokxz1-StyledContainer-PostContainer::after{content:"";display:table;}.css-nokxz1-StyledContainer-PostContainer::after{clear:both;}@media (max-width: 38.125em){.css-nokxz1-StyledContainer-PostContainer{padding-left:16px;padding-right:16px;}}</style><div class="edaxc5g8 css-nokxz1-StyledContainer-PostContainer e1ig3f2t0"><style data-emotion="css m5nmoe-ShareSheet">.css-m5nmoe-ShareSheet{position:absolute;top:40px;right:50%;font-size:0.75rem;font-weight:500;text-align:right;color:#90959B;-webkit-transform:translateX(550px);-moz-transform:translateX(550px);-ms-transform:translateX(550px);transform:translateX(550px);}.css-m5nmoe-ShareSheet a,.css-m5nmoe-ShareSheet .SocialMediaShareButton{position:relative;display:block;margin-left:auto;margin-bottom:0.625rem;width:24px;color:#B9BDC1;cursor:pointer;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-m5nmoe-ShareSheet a:hover,.css-m5nmoe-ShareSheet .SocialMediaShareButton:hover{color:#90959B;}.css-m5nmoe-ShareSheet a:focus,.css-m5nmoe-ShareSheet .SocialMediaShareButton:focus{outline:0;}.css-m5nmoe-ShareSheet a:hover::before{position:absolute;top:0.5rem;right:26px;width:0;height:0;content:attr(title);color:rgba(0, 0, 0, 0);overflow:hidden;border-left:4px solid rgba(0, 0, 0, 0.5);border-top:4px solid transparent;border-bottom:4px solid transparent;}.css-m5nmoe-ShareSheet a:hover::after{position:absolute;top:0.125rem;right:30px;content:attr(title);padding:0 10px;font-size:1.167em;white-space:nowrap;color:#fff;border-radius:5px;background:rgba(0, 0, 0, 0.5);}@media (max-width: 75em){.css-m5nmoe-ShareSheet{display:none;}}</style><aside class="css-m5nmoe-ShareSheet edaxc5g7"><style data-emotion="css 766jc8-ShareSheetTitles">.css-766jc8-ShareSheetTitles{margin:1rem 0 5px;font-size:1em;font-weight:inherit;}.css-766jc8-ShareSheetTitles:first-of-type{margin-top:0;}</style><h5 class="css-766jc8-ShareSheetTitles edaxc5g6">Share</h5><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--facebook"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.68,0H1.32A1.32,1.32,0,0,0,0,1.32V22.67A1.33,1.33,0,0,0,1.32,24H12.83V14.72H9.7V11.08h3.13V8.41c0-3.1,1.89-4.79,4.66-4.79.93,0,1.86,0,2.79.14V7H18.37c-1.5,0-1.8.72-1.8,1.77v2.31h3.6l-.47,3.63H16.55V24h6.13A1.33,1.33,0,0,0,24,22.67h0V1.32A1.32,1.32,0,0,0,22.68,0Z"></path></svg></i></div><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--twitter"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.89,21A12.84,12.84,0,0,0,20.82,8.07c0-.2,0-.39,0-.59a9.18,9.18,0,0,0,2.26-2.35,9.08,9.08,0,0,1-2.61.71,4.54,4.54,0,0,0,2-2.51,9.05,9.05,0,0,1-2.88,1.1,4.55,4.55,0,0,0-7.86,3.11,5.1,5.1,0,0,0,.11,1A12.9,12.9,0,0,1,2.47,3.83,4.54,4.54,0,0,0,3.87,9.9a4.59,4.59,0,0,1-2-.57v.06a4.54,4.54,0,0,0,3.64,4.45,4.7,4.7,0,0,1-1.2.16,4.8,4.8,0,0,1-.85-.08,4.54,4.54,0,0,0,4.24,3.15A9.09,9.09,0,0,1,2,19,9.51,9.51,0,0,1,.93,19a12.82,12.82,0,0,0,7,2"></path></svg></i></div></aside><style data-emotion="css 1sykmk4-AuthorInfo-PostAuthorInfo">.css-1sykmk4-AuthorInfo-PostAuthorInfo{margin-top:10px;margin-top:40px;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::before,.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{content:"";display:table;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{clear:both;}@media (min-width: 30em) and (max-width: 48em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:40px;}}@media (max-width: 30em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:0;}}</style><aside class="css-1sykmk4-AuthorInfo-PostAuthorInfo edaxc5g3"><style data-emotion="css kbgl97-AuthorAvatar-PostAuthorAvatar">.css-kbgl97-AuthorAvatar-PostAuthorAvatar{float:left;margin:0;width:3rem;height:3rem;border-radius:1.5rem;background-color:#EFF0F5;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/a322c74bf9f015db896b9105632772b4/a2408/changkyu.kim.png);}@media (max-width: 48em){.css-kbgl97-AuthorAvatar-PostAuthorAvatar{float:none;margin-bottom:0.75rem;width:2.25rem;height:2.25rem;}}</style><figure src="/static/a322c74bf9f015db896b9105632772b4/a2408/changkyu.kim.png" class="css-kbgl97-AuthorAvatar-PostAuthorAvatar edaxc5g4"></figure><style data-emotion="css 1wratvv-AuthorName-PostAuthorName">.css-1wratvv-AuthorName-PostAuthorName{display:block;margin:4px 0 0 60px;font-weight:600;line-height:1.3;color:#4B5058;margin-top:2px;margin-left:70px;font-size:1.125rem;}@media (max-width: 48em){.css-1wratvv-AuthorName-PostAuthorName{margin-left:0;}}</style><strong class="css-1wratvv-AuthorName-PostAuthorName edaxc5g2">김창규</strong><style data-emotion="css 5vph4m-AuthorDesc-PostAuthorDesc">.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;}@media (max-width: 48em){.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:0;}}</style><aside class="css-5vph4m-AuthorDesc-PostAuthorDesc edaxc5g1">서비스개발본부 플랫폼실에서 DevOps를 담당하고 있습니다.</aside><style data-emotion="css sja78i-AuthorDesc-PostAuthorDesc-PostDate">.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;margin-top:1.125rem;margin-bottom:1.5rem;}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:0;}}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-top:0;}}</style><aside class="css-sja78i-AuthorDesc-PostAuthorDesc-PostDate edaxc5g0">2021-04-19</aside></aside><style data-emotion="css 1xa252c-PostWrapper">.css-1xa252c-PostWrapper{font-size:1.25rem;}@media (max-width: 48em){.css-1xa252c-PostWrapper{margin-left:0;}}@media (max-width: 38.125em){.css-1xa252c-PostWrapper{font-size:1.125rem;}}@media (max-width: 30em){.css-1xa252c-PostWrapper{font-size:1rem;}}</style><article id="article" class="css-1xa252c-PostWrapper edaxc5g9"><style data-emotion="css nlx8yd-TOCWrapper">.css-nlx8yd-TOCWrapper{color:#B9BDC1;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-nlx8yd-TOCWrapper:hover{color:#7A7F86;}.css-nlx8yd-TOCWrapper >i{position:absolute;top:auto;margin-top:0.15em;width:30px;line-height:1.5rem;cursor:pointer;}.css-nlx8yd-TOCWrapper >i .short{-webkit-transition:width 0.5s;transition:width 0.5s;}.css-nlx8yd-TOCWrapper >i:hover .short{width:18px!important;}@media (max-width: 38.125em){.css-nlx8yd-TOCWrapper{display:none;}.css-nlx8yd-TOCWrapper >i{display:block;top:44px;left:0;margin-top:0;width:56px;height:50px;z-index:1100;padding:10px 36px 10px 16px;}}</style><nav class="css-nlx8yd-TOCWrapper e12xq6cv1"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="17" width="13" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="5" width="13" height="2" rx="1" ry="1"></rect></svg></i><style data-emotion="css 1nabgxc-TOCList">.css-1nabgxc-TOCList{position:absolute;top:auto;margin-top:-10px;z-index:50;margin-left:30px;width:0;height:0;font-size:1rem;}.css-1nabgxc-TOCList ul{margin:0;padding:0;list-style:none;list-style-image:none;}.css-1nabgxc-TOCList ul p{margin:0;}.css-1nabgxc-TOCList ul a{display:block;margin-left:-0.5rem;margin-right:-0.5rem;padding:0.3rem 0.5rem;border-radius:0.5rem;-webkit-transition:background-color 0.5s;transition:background-color 0.5s;}.css-1nabgxc-TOCList ul a:hover{background-color:#EFF0F5;}.css-1nabgxc-TOCList ul:not(:first-of-type){padding-left:1rem;}.css-1nabgxc-TOCList >ul{visibility:hidden;opacity:0;-webkit-transition:visibility 0s 0.5s,opacity 0.5s;transition:visibility 0s 0.5s,opacity 0.5s;width:320px;max-height:360px;overflow-y:auto;padding:0.5rem 1rem;background:#fff;border-radius:10px;box-shadow:0px 2px 4px rgba(0, 0, 0, 0.5);}@media (max-width: 38.125em){.css-1nabgxc-TOCList{top:89px;left:0;right:0;margin-top:0;margin-left:0;width:100%;}.css-1nabgxc-TOCList >ul{width:100%;box-shadow:none;border-radius:0;border-bottom:1px solid #E2E4EB;}}</style><div class="css-1nabgxc-TOCList e12xq6cv0"><ul>
+<li>
+<p><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EC%99%9C-%EA%B0%9C%EC%84%A0%EC%9D%84-%ED%95%B4%EC%95%BC%ED%95%A0%EA%B9%8C">왜 개선을 해야할까?</a></p>
+<ul>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EA%B3%BC%EB%8F%84%ED%95%9C-%EC%84%9C%EB%B2%84-%EC%9A%B4%EC%98%81%EB%B9%84%EC%9A%A9">과도한 서버 운영비용</a></li>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#lambda-%EC%93%B0%EB%A1%9C%ED%8B%80%EB%A7%81%EC%9C%BC%EB%A1%9C-%EC%9D%B8%ED%95%9C-%EC%98%A4%EB%A5%98-%EB%B0%A9%EC%A7%80">Lambda 쓰로틀링으로 인한 오류 방지</a></li>
+</ul>
+</li>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EC%96%B4%EB%96%BB%EA%B2%8C-%EA%B0%9C%EC%84%A0%EC%9D%84-%ED%95%A0%EA%B9%8C">어떻게 개선을 할까?</a></li>
+<li>
+<p><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EA%B0%9C%EC%84%A0%ED%95%9C-%EA%B2%B0%EA%B3%BC%EB%8A%94-%EC%96%B4%EB%96%A8%EA%B9%8C">개선한 결과는 어떨까?</a></p>
+<ul>
+<li>
+<ul>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EA%B8%B0%EC%A1%B4-%EC%83%81%EC%9A%A9-%ED%8A%B8%EB%9E%98%ED%94%BD%EA%B3%BC%EC%9D%98-%EB%B9%84%EA%B5%90">기존 상용 트래픽과의 비교</a></li>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EB%B9%84%EC%9A%A9-%EC%A6%9D%EA%B0%90-%EC%98%88%EC%B8%A1">비용 증감 예측</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#2%EB%B6%80-%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0">2부 미리보기</a></li>
+<li><a href="/20210419-dev-notes-005-mobile-data-collector-01/#%EB%A7%88%EC%B9%98%EB%A9%B0">마치며</a></li>
+</ul></div></nav><style data-emotion="css 2u5l10-Article">.css-2u5l10-Article{padding:0 70px;}.css-2u5l10-Article >*{margin:1.5em 0;}.css-2u5l10-Article .image-wrapper{margin-left:-70px;margin-right:-70px;text-align:center;}.css-2u5l10-Article .image-caption{margin-top:0.75em;font-size:0.833em;text-align:center;color:#7A7F86;}.css-2u5l10-Article >p{line-height:1.75;}.css-2u5l10-Article li>p,.css-2u5l10-Article li>ul{margin-bottom:0;}.css-2u5l10-Article pre,.css-2u5l10-Article code,.css-2u5l10-Article kbd,.css-2u5l10-Article samp{padding:0.125em 0.3125em;white-space:pre-wrap;font-size:0.889rem;background:#F7F8FC;border-radius:3px;}.css-2u5l10-Article p>code,.css-2u5l10-Article li>code{vertical-align:1px;word-break:break-word;}.css-2u5l10-Article pre{padding-top:0.5em;padding-bottom:0.5em;}.css-2u5l10-Article pre code{background:none;padding:0;}.css-2u5l10-Article a:hover,.css-2u5l10-Article a:active{-webkit-text-decoration:underline;text-decoration:underline;}.css-2u5l10-Article a.anchor{margin-left:-1.5rem;padding-right:0.5rem;line-height:1.1;color:#90959B;}.css-2u5l10-Article a.anchor >svg{fill:#90959B;}.css-2u5l10-Article .embedVideo-iframe{border:0;}@media (min-width: 30em) and (max-width: 48em){.css-2u5l10-Article{padding-left:40px;padding-right:40px;}.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-60px!important;margin-right:-60px!important;}}@media (min-width: 30em) and (max-width: 38.125em){.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-56px!important;margin-right:-56px!important;}}@media (max-width: 30em){.css-2u5l10-Article{padding-left:0;padding-right:0;}.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-16px!important;margin-right:-16px!important;}}</style><article class="css-2u5l10-Article edaxc5g5"><p>안녕하세요. 이번에 최근 진행했던 모바일 기기 데이터 수집 서버 개선 프로젝트에 대한 글을 쓰게 된 플랫폼실 김창규입니다😃</p>
+<p>본 내용은 총 2부로 나누어서 풀어나가려고 하는데요. 이번 <strong>1부에서는 서버 아키텍처 개선</strong>에 관한 내용을 다루고, 2부에서는 성능 개선에 관한 내용을 다뤄보려고 합니다!</p>
+<p>특히 오늘은 서버 아키텍처를 개선해야 했던 이유부터 개선 결과까지 모두 공유해드릴 예정이니, 끝까지 읽어주시면 감사하겠습니다!</p>
+<p>들어가기에 앞서, 현재 메쉬코리아의 부릉 모바일 애플리케이션에서는 다양한 정보를 수집하여 웹서버를 통해 전송하고 있는데요.</p>
+<ul>
+<li>기기의 위치 정보</li>
+<li>배달 주문 주행 정보</li>
+<li>중요 시스템 로그
+등을 HTTP 프로토콜로 서버로 전송하고 있습니다. 이렇게 수집된 정보로 <strong>해당 위치에서 수행할 수 있는 배달 주문을 노출하고, 머신러닝을 통해 주문을 추천하며 시스템 로그로 장애가 발생했을 때 디버깅 자료로 활용</strong>합니다.</li>
+</ul>
+<p>이 시스템은 2017년에 구축되어 2021년 현재까지 잘 사용되고 있는데요! AWS의 API Gateway와 Lambda를 사용하여 구현되고 있고, Lambda 구현체에 따라 실시간 서비스에 사용하기 위한 Redis, S3에 데이터를 적재하기 위한 Kinesis Firehose, 모바일 디버깅 자료를 조회하기 위한 Elasticsearch로 전송합니다.</p>
+<p>  
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 60.40816326530612%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAAAsTAAALEwEAmpwYAAAB4UlEQVQoz21T227TQBDN94JU1J/hDyrxggQCoSKBUJQGpCKRpqFNmyZugGDiS+y4tteX2d3DXhzXibrSemdmZ87MmR33JIDdFlK2p5ACesXBb0y+vERVPHTu5J5/d/eMg1Yax9ZJSgPoLi/RP3mOIguNLiH3gZv4XVzvqWxaruoaRVkiSVO4ros0y4yu7d2kh/G9rsLVRwexwgZyIYydVRZE69qu77WfeKJVbYUynIPivyCpM9v+GYpUglYXkHhc+p50Af4MMl3vV6ib74Vb/PvlwFvdI2OFCSJVTUkcYeDB/3OHcLNBLSSI26pTRso+x3q1NG1BW6GWyhC8CCwFwcHiCAVjSHwfVBNYkqJWVLPIA8szUBEBtfU3bVItaQG1cDbuY3R3boybmymGx0fwL0b4evwC3ugHhkfPEDtLFN9fQSzOMXJ+4tt134Loeq4+gU0+WspQ1KZrH7deYBySKMJkOEQSxxgPBtgqquOzAfIsBy+3EPkWThjh0vUMGw1SBQ4qb9aZQyJITu1slZzbzM1ZEJlk9+/fKAbX9mHqyry6YXV7g2gxN3LvcNJl+5Ly8Wzk5edTbGbTtl+iAXTevcbiw1sLKA7+kK7etZOqMlHzl+S5kXfJSbGIle1B3ZFi+R/sA53B0NPmVAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="AWS_Diagram"
+        title=""
+        src="/static/b955509adb0a016f14d349ab253ccace/2b72d/image00.png"
+        srcset="/static/b955509adb0a016f14d349ab253ccace/232f7/image00.png 245w,
+/static/b955509adb0a016f14d349ab253ccace/9319d/image00.png 490w,
+/static/b955509adb0a016f14d349ab253ccace/2b72d/image00.png 980w,
+/static/b955509adb0a016f14d349ab253ccace/8d0e6/image00.png 1462w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>API Gateway에 연결된 서비스</p>
+<p>데이터 수집은 크게 세 가지 API를 통해 이루어집니다.</p>
+<ul>
+<li>
+<p>Trace API</p>
+<ul>
+<li>모바일 기기의 GPS좌표를 수집</li>
+<li>GPS좌표를 사용하는 서비스들의 Redis에 갱신</li>
+<li>머신러닝을 위한 학습데이터로 가공 후 Firehose를 이용하여 S3에 데이터를 저장</li>
+<li>Business Insight를 얻기 위해 가공 한 뒤 Elasticsearch에 저장</li>
+</ul>
+</li>
+<li>
+<p>Actions API</p>
+<ul>
+<li>배달 수행 정보로부터 Insight 도출하기 위한 지표 수집</li>
+<li>Firehose를 통하여 S3에 저장</li>
+</ul>
+</li>
+<li>
+<p>Metadata API</p>
+<ul>
+<li>모바일에서 일어나는 다양한 로그를 수집</li>
+<li>ElasticSearch에 저장하여 디버깅 시 검색하여 사용</li>
+</ul>
+</li>
+</ul>
+<p>그렇다면 왜 서버 아키텍처를 개선해야할까요? 🤔</p>
+<h1 id="왜-개선을-해야할까"><a href="#%EC%99%9C-%EA%B0%9C%EC%84%A0%EC%9D%84-%ED%95%B4%EC%95%BC%ED%95%A0%EA%B9%8C" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>왜 개선을 해야할까?</h1>
+<h2 id="과도한-서버-운영비용"><a href="#%EA%B3%BC%EB%8F%84%ED%95%9C-%EC%84%9C%EB%B2%84-%EC%9A%B4%EC%98%81%EB%B9%84%EC%9A%A9" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>과도한 서버 운영비용</h2>
+<p>첫 번째로 서버 운영비입니다.</p>
+<p>이 시스템을 구성하는 API Gateway의 REST API와 Lambda는 데이터 수집과 같은 심플하지만 대용량 요청을 처리 해야 하는 시스템에서는 가성비가 매우 떨어집니다. 초기엔 큰 비용적인 부담이 없었지만, 17년부터 꾸준히 사업이 성장함에 따라 비용이 급격하게 증가하였습니다.</p>
+<p><strong>API Gateway 비용분석</strong></p>
+<p>API Gateway의 역할은 API Key를 체크하고 Lambda를 단순 호출합니다. 따라서 Lambda의 실행 횟수로 역산하여 각 API별로 호출량을 계산하였습니다. (API Gateway의 전체 호출량도 당연히 지표로 알 수 있다.)</p>
+<p>API별 호출량은 다음과 같다.</p>
+<ul>
+<li>
+<p>Trace API</p>
+<ul>
+<li>월간 500~600 M call</li>
+</ul>
+</li>
+<li>
+<p>Actions API</p>
+<ul>
+<li>월간 15~17M call</li>
+</ul>
+</li>
+<li>
+<p>Metadata API</p>
+<ul>
+<li>월간 800~1000 M call</li>
+</ul>
+</li>
+</ul>
+<p>약 월간 1.5B (15억) 회 API Gateway의 호출이 일어나고 있었고, API Gateway 타입 중 REST API를 사용하고 있었습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 954px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 58.77551020408164%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAAAsTAAALEwEAmpwYAAABYklEQVQoz31S23aEMAj0/7+wPds9ahI13qK5ad8oUOOqa/swB5OZDAhkj1zAx1cBom7BxRVmH8GGhUHfsw9g3+5euN5nqumgUDWopoVunBjtYPaoEf1koTfzzu8gbrsfUMOGuh9BVg0INCWUqoJcKIw15JWGUg8gdbfzArWy1hwLWf2+wUg+VGlGGbgSvDDWcxaKxnmY6OwCTBuImw5nAmkTx4b8GEFlk3ki5oA9uenZCTeajIyaDn+rbriPqUquwId/DVNlJ0Pq1+fjyRMmpIml819mpPPL99vks9SH64Nym/ydqcU76vuzEBxPa2PDtkuHzLQOuZCQlxJ/y+8PjhozO54yrcuRz3xcIC4LBAJ+L+sKo5lAKgVVVYMPAfmVubhpKHosRLf4B/7F85Qd9SKe4VCscEgdrlJA8ZVPGt31uFaeNS7shhEFkTMySIxZ+3HkStkgxDM2/YC8RW1KQO37AT+jkcrlEal7AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="API_Pricing"
+        title=""
+        src="/static/c612ef3abc74f50626b8579bad733c13/cc0a2/image01.png"
+        srcset="/static/c612ef3abc74f50626b8579bad733c13/232f7/image01.png 245w,
+/static/c612ef3abc74f50626b8579bad733c13/9319d/image01.png 490w,
+/static/c612ef3abc74f50626b8579bad733c13/cc0a2/image01.png 954w"
+        sizes="(max-width: 954px) 100vw, 954px"
+      />
+    </span>
+  </span>
+  </p>
+<p>API Gateway 중 REST API의 비용</p>
+<p>이 호출량을 서울 리전 가격표에 대입해 보면</p>
+<p><em>(333 * 3.50) + (667 * 3.19) +( 500 * 2.71) = 4648.23</em></p>
+<p>약 5천불의 금액이 매달 청구되고 있었습니다.</p>
+<p>REST API가 아닌, 일반 HTTP API로 변경했을 때에는 월간 $1,390 으로, 약 70% 를 절감 할 수 있고,</p>
+<p><em>(400 * 1.00) +  (1100 * 0.90) = 1,390</em></p>
+<p>Application Loadbalancer로 변환 시 월간 $22.84 으로, 99.5% 를 절감할 수 있습니다.</p>
+<p>(Application Loadbalancer로 Lambda 를 실행할 수 있습니다.)</p>
+<p><strong>Lambda 비용분석</strong></p>
+<p>Lambda의 비용 구조는 (memory 크기 * 사용 시간) 과 요청에 따라 과금됩니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 43.265306122448976%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA2ElEQVQoz52Riw6DIAxF+f//1KgIqFHnCzsOGWYzuixrcu3D2wstShsr1jWiaxtgxFgn+77/DTXNs4zjQ/q+D36UZV1vyf4XwWEcpG1bKctS2q4T7/2tEHb1/0NQTnZFSkLTNN1yDsFlWb6SMDhN04gLQBTxux4FkQaIc9jnFaqqkizLJM/z6Nk3PWfetm2i+PjTwtOe/CvmoRBI2EKNOr3voKY4VWsdH4UYT07MzRLquo514qIoYu6cO0C+hoMVAWMbYw6QUye21sYYT2PiMDa3QmR9TcBUTxGivsdPrOoTAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Lambda_Pricing"
+        title=""
+        src="/static/61162c2a1361e7a8b6bddeed846f4905/2b72d/image02.png"
+        srcset="/static/61162c2a1361e7a8b6bddeed846f4905/232f7/image02.png 245w,
+/static/61162c2a1361e7a8b6bddeed846f4905/9319d/image02.png 490w,
+/static/61162c2a1361e7a8b6bddeed846f4905/2b72d/image02.png 980w,
+/static/61162c2a1361e7a8b6bddeed846f4905/814a3/image02.png 1470w,
+/static/61162c2a1361e7a8b6bddeed846f4905/b1797/image02.png 1704w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>Lambda 비용</p>
+<p>각 API별 사용량을 집계해 보았을 때 다음의 수치가 나왔습니다.</p>
+<ul>
+<li>
+<p>Trace API</p>
+<ul>
+<li>요청량 비용 : 월 $113.98</li>
+<li>사용량 비용 : 월 $657.96</li>
+</ul>
+</li>
+<li>
+<p>Actions API</p>
+<ul>
+<li>요청량 비용 : 월 $3.38</li>
+<li>사용량 비용 : 월 $ 25.11</li>
+</ul>
+</li>
+<li>
+<p>Metadata API</p>
+<ul>
+<li>요청량 비용 : $ 166.04</li>
+<li>사용량 비용 : $ 689.08</li>
+</ul>
+</li>
+</ul>
+<p>총합 월 $1,655.55</p>
+<p>위 금액이면, c5.xlarge(4core/8G mem) 인스턴스를 on-demand로 11.98 대 RI로 19대를 상시 운영 가능한 금액입니다.</p>
+<h2 id="lambda-쓰로틀링으로-인한-오류-방지"><a href="#lambda-%EC%93%B0%EB%A1%9C%ED%8B%80%EB%A7%81%EC%9C%BC%EB%A1%9C-%EC%9D%B8%ED%95%9C-%EC%98%A4%EB%A5%98-%EB%B0%A9%EC%A7%80" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Lambda 쓰로틀링으로 인한 오류 방지</h2>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 856px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 56.734693877551024%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAAAsTAAALEwEAmpwYAAABgUlEQVQoz6WT207DMAyG+/4Pxg0S54EQSINua7uu5yZNmkN/7LQr4wokLEWRnebz79iNmqZBlmWI4xht18FPE6y1cM79eVnevYfSGpGUEkVRoKoqaAr8x8ZxRNT3PdI0XYOsEJgwTX9fPuwLUCkFIQQ8SeZDPpHakv8L5OLcOo9OWRhjEHHtZwviyPJOL0q/Y5fGZ+1gVt8SoxQjLAOHYcApz0NGNkHqDvWAy0T+QtnZ56SLDBhSeGw1NZOA3Agh+iBbG4dGjgHI1ikTMs9KZxhfNtZjexIrkO9mZyC3PHxIH50oa1xJPOxqJM2Au7jGS9qhpiQM5He6/azxSrHNoVkr4Dffc1UM9N7BUHcSCtwT4HFX4eajJNi8b/Y1nvYNil7jPetw9ZbjelsStKVqNCqh8Zw0iEsJ7ywioUa0UgU6yz+mCUY1l+zMiCI/rp3pWoJU5aospW8Fjd2POcxbiW1a4nTMMNAI8VVHb+KW6ecGzL4Po8Xr/IfM4zP7vHM/vgDL0Vp/6VfcKQAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Lambda_throttling"
+        title=""
+        src="/static/31b2d3c77f77474fa00cdd29163c1666/f7ecb/image03.png"
+        srcset="/static/31b2d3c77f77474fa00cdd29163c1666/232f7/image03.png 245w,
+/static/31b2d3c77f77474fa00cdd29163c1666/9319d/image03.png 490w,
+/static/31b2d3c77f77474fa00cdd29163c1666/f7ecb/image03.png 856w"
+        sizes="(max-width: 856px) 100vw, 856px"
+      />
+    </span>
+  </span>
+  </p>
+<p>피크 시간이 아닐 때도 쓰로틀링이 발생할 수 있다.</p>
+<p>lambda의 동시성(concurrency)에는 제약이 있습니다. 처음 500 동시성까지는 버스트 할당량으로, 제한 없이 사용이 가능하지만, 그 이상은 scaling 되는 속도가 분당 500으로 제한되어 있습니다. [<a href="https://docs.aws.amazon.com/ko_kr/lambda/latest/dg/invocation-scaling.html">링크</a>] 만약 동시 실행 중인 요청이 500개 이상이고, 신규로 들어오는 요청이 scaling 속도보다 빠를 때 쓰로틀이 발생합니다.</p>
+<p>갱신 주기가 겹쳐 우연히 초당 요청 수가 폭증할 할 때도 쓰로틀이 발생할 수 있지만, 더 치명적인 것은 연결되어 있는 다른 시스템의 Response Time이 조금이라도 증가해도 쓰로틀이 많이 발생할 수 있습니다. 다시 말하면, 처리 시간이 증가하여 완료되는 요청보다 새로 들어오는 요청이 더 많다면, 동시성이 증가하고, 이는 쓰로틀을 야기할 수 있습니다. 예를 들어, 연결된 Elasticsearch에서 Data node 중 하나가 이상이 생겨 Rebalancing이 일어나며 CPU 사용률이 증가하거나, JVM GC로 인해 Response time이 증가할 수 있습니다. 이 실행 시간이 늘어난 요청을 처리하는 중 새로운 요청이 들어오면 그만큼 많은 concurrency가 필요로 하게 되고, 쓰로틀링으로 이어집니다.</p>
+<p>이 쓰로틀링은 API Gateway에 500 Error로 응답이 모바일로 전송이 되기 때문에 개선이 필요합니다.</p>
+<h1 id="어떻게-개선을-할까"><a href="#%EC%96%B4%EB%96%BB%EA%B2%8C-%EA%B0%9C%EC%84%A0%EC%9D%84-%ED%95%A0%EA%B9%8C" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>어떻게 개선을 할까?</h1>
+<p>변경 목표는 명확했습니다. 먼저, API Gateway + Lambda를 Application Loadbalancer + Kubernetes Pod 서버로 변경하여 비용을 대폭 낮추고자 했습니다. 또한 Spring WebFlux 에 reactor-netty를 사용하여, Async / non-blocking 서버를 구현하고자 했습니다.</p>
+<p><strong>Application Load Balancer</strong></p>
+<p>API Gateway에서 한 Host로 path prefix에 따라 다른 환경(stage)으로 애플리케이션이 실행됩니다. Vroong이 공용으로 사용하는 쿠버네티스는 환경에 따라 클러스터와 포트가 분리되어 있기 때문에 Host 와 Path에 따라 다른 Target Group으로 트래픽을 전달해야 할 필요성이 있습니다. Application Loadbalancer는 L7 LB 로, HTTP의 header에 따라 routing이 가능하여, 환경별로 다른 클러스터를 바라보게 하는 것이 가능합니다.</p>
+<p>또한 Application Loadbalancer는 동일한 요청이라도, weight 기반으로 여러 개의 Target Group으로 부하를 분산할 수 있습니다. 이 기능을 이용하여, 기존 API-Gateway + Lambda와 쿠버네티스의 워크로드간에 점진적 배포가 가능합니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 66.93877551020408%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAAAsTAAALEwEAmpwYAAACIUlEQVQ4y21TTW/UMBDNP4UfwhVxKQeEOIIqDlwoF7bSqqKCUzlQWLW0S7sq2221X8lm8+3EsRP7MXZC2N0ykuXx+PnNePzsaACyquAHAaKUwQsipGkKE1da22H8v2szCymxWC6xThhmno8gDLt9R2uFWmnkLEPa30N6cQxBuyb+X0IbA6q6hjjZh5ycQpn9FusoVcOYpjn9+BTi6rNdK6UsaLe6LgHhk4MnKH/2G7xu8E5Fu0xUmLsrcCGQlwK8LB+QbFZbyMriJM/heh5YXrSkRAjBwOY3CL25DXLO7XUs0WZFrW+sSn2UeWp9b7VCQWc6wuj6K7we9W48sIeqSm5VaEhr6m9dFDYmKVl49BLsdmBJGGPw18E/wpQCa/OyGetIuM3YPICx8tUe5OEH6wtK5i2mCMOGpKZeL12v6SGtnbqWKPKIKhNojlOP6FDMpCWckTyuz88wGg6xpH7ZBIJ3PTXmui5yXlrfufp2gOM3jzG9PGzpFM7vajx7z5AUiq6UIs4yJDQyuk1VV/j0+hGmv446/HCq8aKXE54I729+YPBlH4vJWQvQuBgt8K4/IrHH2DXzCU56zzEbf+8IL3/7eNu/xzrK4BQkmTgnGXBpumZFmyQRwsAlObAHsjEVJkW9gdfwfQ/z2QRRHNFPEfSC61sokTfy0Hqrom3ZqEY2wR10xdv4Nt5RRQy1HkOVWUe4K+TOb2WkViMonjyo3ow/mEnoSzK1ROAAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Canary_Deployment.png"
+        title=""
+        src="/static/6d555e130deb900deeed548a78b69689/2b72d/image04.png"
+        srcset="/static/6d555e130deb900deeed548a78b69689/232f7/image04.png 245w,
+/static/6d555e130deb900deeed548a78b69689/9319d/image04.png 490w,
+/static/6d555e130deb900deeed548a78b69689/2b72d/image04.png 980w,
+/static/6d555e130deb900deeed548a78b69689/1d4c8/image04.png 1412w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>ALB를 이용하여 기존의 API Gatway와 Kubernetes Pods 간 점진적 배포</p>
+<p><strong>Kubernetes</strong></p>
+<p>쿠버네티스는 Vroong 시스템에서 공용으로 사용하고 있는 서버 환경입니다. 쿠버네티스를 사용해야 하는 이유는 셀 수 없이 많지만, 가장 유효했던 이유는 공용으로 사용하기 위해 만들어진 CI / CD 파이프라인이 존재하여 빠르게 신규 서비스를 구축할 수 있었던 점과, 운영하기 전까지 트래픽을 얼마나 견딜지 예측할 수 없는 상황이었기 때문에 유동적으로 자원을 할당해 줄 수 있다는 점이 가장 컸습니다.</p>
+<p><strong>Spring Webflux 와 reactor-netty</strong></p>
+<p>데이터 수집 서버는 대부분의 요청이 Transform 이후 다른 시스템으로 전달하는 기능을 가지고 있습니다. 이때, 타 시스템과 Blocking IO를 한다면, 그 시간 동안 해당 쓰레드는 타 시스템의 응답을 기다리기 위해 기다리게 됩니다. 쓰레드의 수가 제한된다면, Lambda와 마찬가지로, Concurrency가 일정 이상 늘어나기 어렵습니다. 하지만 async/non-blocking인 webflux로 구현했을 때는 컴퓨팅 리소스가(cpu, memory, os limit) 허용되는 범위에서 수많은 요청을 동시에 처리할 수 있습니다.</p>
+<p>다른 시스템에 연결할 라이브러리 또한 Webflux 사용에 상용 수준의 지원을 하고 있습니다. Webflux의 기존의 문제로 지적됐던 버전 호환성 문제가 시간이 지남으로써 많은 부분 해결이 되었습니다. AWS SDK 도 v2가 출시되면서 non-blocking을 지원하게 되었고, Redis를 연결하는 Lecttuce도 충분히 검증되었습니다. 아직 출시한 지 얼마 안 된 R2DBC 사용은 프로젝트가 RDB에 연결하지 않기 때문에 호환성 측면에서는 큰 걱정을 하지 않아도 되었습니다.</p>
+<h1 id="개선한-결과는-어떨까"><a href="#%EA%B0%9C%EC%84%A0%ED%95%9C-%EA%B2%B0%EA%B3%BC%EB%8A%94-%EC%96%B4%EB%96%A8%EA%B9%8C" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>개선한 결과는 어떨까?</h1>
+<p>개발 환경에서 Webflux로 개발한 Agenttrace 서버 1대에 대해 부하 테스트를 진행하였습니다.</p>
+<p>1000RPS (request per second) 정도를 기록하였고, CPU는 2core, Memory 500 MB 수준으로 기록되었습니다. 다만, 시간이 지난 이후 Error Rate가 올라오는 것을 확인할 수 있었습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 798px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 121.22448979591836%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAYCAYAAAD6S912AAAACXBIWXMAAAsTAAALEwEAmpwYAAADvUlEQVQ4y6WTW2wUVRjH5130wYDddrvtXHZnZ3f23mzL1pCAIBjQlyJCJQVjIkbDxZZrRRGib7747pMPikBLoQUlITyYGKm97FarS9MC7faC0HYrUblZ4O/3nZlZ1xaaqA+//L/b+eZ855yRGhq3o6FpB95o3oON27dhzZZNeH7zBrywtR5rGjYK2F/d8ErBZ1bW12FV/XpR59RyTJrI38Tvsw+Rv30P+T/u4M5D4Le7s5gFcPsBCvonLO7a3KI1t+4D92BBJkan8pBazpxGx/lzOHaqFUdPnkDb12fwBenx9jYcbWtB69l2HO9oE3qi45SIH2s/KfwW4svTrQLu8+nnn0Fa9xpteQuP9TJefH0z1m7dhNCqZfAvX4rAihSMFbYW/NR8/zlLOSb1XxnG8I0pXL52A5dyY8hNz2D4+iTG6Sg4Pj5zU/hj+V8xQv7o1AxGJqeRo/Fyk3mKTQufx+3JXoJ0sbcH/QNZdPZ245vvvkVXJi3o/qEPneke0gwuUq6rLyN8zrF2pnttevB9ppfyaXx14Tyk5RtewrK6tVj9ah2S61ZCSUWJGNTaOGGp9mwCXkITdtyySTVRE4e8NAK5JgKV1kndg0NID17GTzTu4PUpZMcmkBm6goGJXzBEI/5Mft/VEUFXdgDdA4PC/nFkFNnxa6KmfziH/qs5dPLIH37yMfZ9dAi73t+PpsPv4u0DTXhrfyN2HNyL3UcOovGDZrxz6IDwt+3ZiTf37sLO9/aJOOPUNPLa5t2QvLTV8pgfT/s9WByoFPqk6hI8oZRgkQ37T2mlArYXFeUcOCepVSYCqQT8NTGBRr7b1OAOeQXlER/K2TZtnHjYJ3KFmGnFJDkeEIElegVKgjLKYpSMUXHcwh21/GLKHZtyTl1ZxIvSoArJE9VFZ1dQEYlSU4UroIgkw/Zcf6G4VBkz4Anr9AUak79SVPQoXI/DaVgR9cPNO4yoeMaQF0QsWgiaTiqjC9BrwtATQfhiAeh0pj4bPR4sqJ4wRY2f1KCLY3Vsxktr+YNSGd1URdyAbKMkAgJ5jjJcx0/MQzoPirvpPiRfTRRGLT2bFP1KybB1HuYj4DM0Ga1ItX/E3M6zqYwa4NEZ5/b+C4VL0RLGvGfwb3E5l+Khhl5q6A7ZY/2fhkG7oUyHWUENl/hllBhKEX/7LuMxoxbFxQ7dIR/dpB++amqc0KFU2cyxtSTVJA2qMwrqpRjDtsJ/WdB+h95qeoepMN00E4FBsG3U2kq+Vh2CkjShMmSrts1x9uWqoNjhX/yxpI+Al2ucAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Stress_Test_01"
+        title=""
+        src="/static/654725ee3e53f2b747c1880542a4b762/d009f/image05.png"
+        srcset="/static/654725ee3e53f2b747c1880542a4b762/232f7/image05.png 245w,
+/static/654725ee3e53f2b747c1880542a4b762/9319d/image05.png 490w,
+/static/654725ee3e53f2b747c1880542a4b762/d009f/image05.png 798w"
+        sizes="(max-width: 798px) 100vw, 798px"
+      />
+    </span>
+  </span>
+  </p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 794px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 121.22448979591836%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAYCAYAAAD6S912AAAACXBIWXMAAAsTAAALEwEAmpwYAAAEAElEQVQ4y41V228UZRTfF+ltb7Mzs3OfnZmdy+5Od9uFUiiGBB5aGiyg8KCJMeEuD9Bo21TURB6EbRVsjDHxUUV9MCpgIN7i//bznG+23W5LhIdfzvnmfPP7znduX860XQRhjNbkFMoVBWPjeYxPFHYwOjaBAyNjGBkdH/q+GxP5Il45MIoobiBXKstglCWFCFVIu8AHuF4dUdKCF0SQFBUVpZpBHUBWNeSLElppGznT9qBqFsHch6puwSFCL0hgmj4KBQWlkopiURV6IZ+hVKoKZyY708i5fjhEkEmCYUGSNNqsoBb7mDnZxbHFI5g5cRBH5g/j+NLcDuYWZqFoOlIKW86uBUOEGhFVZE14MjXXwdU7b+Luz+/hwbN1bP15G/efruOLPz7Al39/KPDVvx+j98sKLM9Fs9WhKzsesRMheaWZNopE5CV1vLN+Hp/9voatv24LufFoFb1HK9h4vEr6Cnq/reDer+9j88kqPnl4c0BouwF0JpR1SAUVR08ewt2flvH1Px/h/uM1fE5ED56sPRds3yKPP/1xGWbN2Sb0EXo+jh6bxts3lnDv25vYpA0sNx4uo/f9LQHW9657393C5g/LuPPNjYGHmunAi0NE7QZmjs+i2W3TlUMErRidwwfhN0K4kY9Wt4PG9CSc0EfQjJEemspscYCknUK33CwpotYoMbVaHeWiDM8L4Tg+xVKmWqRykKgey2om9+r9Ne8rlCpESB5alBSfOsWvx9QxCZSqIcqGi5cPk2T1hajIVSrsckbokHdh3ETUSKkjUkGmGTZtrPa758Vg0nyhT1ijwm6kFJ9Wm7zSYNo10Upc+Xyy9BLg//jKk+1pbj1X9CsTsSyVK3RaaRfKe+R+FOi6I6MTSBot5AzOMjW+TbGsRw1KhjQ0cVhn8NR5qWnDVxPThmJRopix+7Kqi6TodFja7iKhcKSdrmjNbTuHZRtKVUeRONL2FGfZh0cZVqqDKcM6Z5unENt5IlnUUUwo03dh39nHbWuRQ9Vs2ljUKXxVy7IEbNsW0jQz3TRNGIYhpGXZz93nOI5IjkiKqEPy0KByMegkk0qGpU5rodP0MYROUtj277NoqIh5yITcMpwU3sCwKG4W67R5SO/bTN0WEHrfZpvuwMOArssxlGgGShUtk4SKzIn5f0iUIJayagw85MB7YYRXT8/i1Fsn8Ma10zhzaQFLF+dx/vprBF7P4/Uri7jw7hLOku3s5QVcINu5K6dw5vI8zl1ahEFxbFGD5DirQZQgTJqUSapFqiXDcWnYWqLHvXpIz4EJu5bZdEoMw49i8Y1tblCHJkqMyobrjfu5Rl0i0xWymsxePa5L7mfxAkr9tXgNt22DF5JfPe7l/wD0ZbrcWefF1gAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Stress_Test_02"
+        title=""
+        src="/static/70f90970f3b01aec48d32e6481b2060e/99a0d/image06.png"
+        srcset="/static/70f90970f3b01aec48d32e6481b2060e/232f7/image06.png 245w,
+/static/70f90970f3b01aec48d32e6481b2060e/9319d/image06.png 490w,
+/static/70f90970f3b01aec48d32e6481b2060e/99a0d/image06.png 794w"
+        sizes="(max-width: 794px) 100vw, 794px"
+      />
+    </span>
+  </span>
+  </p>
+<p>서버 로그를 확인하자, 다음과 같은 오류가 발생한 것을 확인할 수 있었습니다.</p>
+<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">java.util.concurrent.CompletionException: software.amazon.awssdk.services.firehose.model.ServiceUnavailableException: Slow down. (Service: Firehose, Status Code: 500 ...</code></pre></div>
+<p>s3에 데이터를 기록하기 위해 사용했던 Firehose에서 Slow Down 이라는 메시지와 함께 500 error를 리턴한 것을 확인할 수 있었습니다. <a href="https://docs.aws.amazon.com/firehose/latest/dev/limits.html">Firehose의 제한사항</a>을 확인해 보면, put record는 서울 리전에서 초당 1000회로 제한된다는 것을 알 수 있습니다. 따라서 RPS가 1000 이상 올라가지 않는 이유는 Firehose의 제약 사항으로, 서버 자체의 성능과는 무관했고, 1000RPS 까지는 충분한 성능을 보여준다고 평가할 수 있었습니다.</p>
+<h3 id="기존-상용-트래픽과의-비교"><a href="#%EA%B8%B0%EC%A1%B4-%EC%83%81%EC%9A%A9-%ED%8A%B8%EB%9E%98%ED%94%BD%EA%B3%BC%EC%9D%98-%EB%B9%84%EA%B5%90" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>기존 상용 트래픽과의 비교</h3>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 34.69387755102041%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAABP0lEQVQoz31S2W7EIAzM/3/fal+adHMqF+EKJECOqUHbqi+t0cgGzDA2ZDNjEJzjui7CjZP8fd8J19tHDMMAtjDccVDed37Ke5/x3iOTUsI5R0S0cF5wx4mD4t8WSRhd3C89lFMJ2mmsfsUWNlhvYIOFD0QYQkAgIk9EUV0g78KJzR9pHu086ZLjwGQnfIpPPOYHWtWiEAUa1WA0I3KewziDbN83/GX+uJLyWI7dLfjOUa01nssTvelRyAK1rsB2hlzmSXVmtx3rqqEEh1RUjpIEDa4tjLEQFMccFxy4WtDNLcrphbJ/oWENPoYaHetQzSXkKpFNXIJNI9QygQsBEUF9TSTUW+9d8sZutCdRtjXabkjQ6wbGFTbaO3zAvjtkfFlIicF/FkvWmlTTb+iGFlXbYZwZ5oVjGKefhzuo1193GBvYlVKWPAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Traffic_Comparison"
+        title=""
+        src="/static/bba9d9a78d38dbec0e6e9e9e1038a0cb/2b72d/image07.png"
+        srcset="/static/bba9d9a78d38dbec0e6e9e9e1038a0cb/232f7/image07.png 245w,
+/static/bba9d9a78d38dbec0e6e9e9e1038a0cb/9319d/image07.png 490w,
+/static/bba9d9a78d38dbec0e6e9e9e1038a0cb/2b72d/image07.png 980w,
+/static/bba9d9a78d38dbec0e6e9e9e1038a0cb/ed466/image07.png 1269w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>상용 서비스 Lambda의 분당 처리(rpm) 및 처리 시간(ms)</p>
+<p>상용데이터는 피크 시간에 초당 500RPS, 평균 Response time이 150ms 정도 기록한다는 것을 알 수 있습니다. 새로 개편한 서버가 2코어 수준의 서버로 2배의 트래픽을 더 낮은 response time으로 처리할 수 있음을 알 수 있었습니다.</p>
+<h3 id="비용-증감-예측"><a href="#%EB%B9%84%EC%9A%A9-%EC%A6%9D%EA%B0%90-%EC%98%88%EC%B8%A1" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>비용 증감 예측</h3>
+<p>2배의 트래픽을 처리하기 위한 성능이 2core 0.5GB 정도입니다. 실제 구동 환경은 Kubernetes에서 공용 서버 리소스로 함께 사용하여 정확한 계산은 어렵지만, EC2로 비교하면, c5.large 정도의 수준입니다. 해당 EC2인스턴스를 1달 동안 상시 유지했을 때 on-demand 기준 $69.12 , RI 기준 $40.32 으로, Lambda 비용 대비 97.5% 절감할 수 있고, HA구성을 위해 2대를 띄우더라도 95.1% 절감 가능합니다.</p>
+<h1 id="2부-미리보기"><a href="#2%EB%B6%80-%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2부 미리보기</h1>
+<p>개선된 애플리케이션은 상용에 배포하고, 모니터링을 진행하였습니다. 큰 문제는 없었지만 종종 요청이 timeout이 기록되어 response time에 대한 통계를 내 보았습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 70.20408163265306%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnElEQVQ4y+WSWwvCMAyF9///nm7P3joUca1ru85ecsxEX6ZUwT4IBg4NaflySFoZ75GIMAXdz2+iWsoTXIzlgI3qGBjKAevSDmvZ/Tyw+FLk3y1l9g9fKnc3U9VMDlPKdn08/sjhgh1aawB9RrIayfQ3EefUK9DonsBZh2IYoPYCfreCbrdQYg3JuedabDeIxwMuIcC5EYFnHd/oCp5zU92C3L77AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="Response_Time_Histogram"
+        title=""
+        src="/static/67c9f0db66d6f099b67067a72a2a8e17/2b72d/image08.png"
+        srcset="/static/67c9f0db66d6f099b67067a72a2a8e17/232f7/image08.png 245w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/9319d/image08.png 490w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/2b72d/image08.png 980w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/814a3/image08.png 1470w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/13e26/image08.png 1630w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>전체 API에 대해 response time histogram</p>
+<p>99% 이상의 요청이 100ms 이내로 완료가 되었지만, 1% 미만의 요청이 1초 이상으로 response time이 튀는 현상이 지속적으로 발생하였습니다.</p>
+<p>2부에서는 이 원인을 분석하기 위해 모니터링 지표를 추가하고 원인을 추적, 해결했던 과정을 소개해드리겠습니다!</p>
+<h1 id="마치며"><a href="#%EB%A7%88%EC%B9%98%EB%A9%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>마치며</h1>
+<p>이렇게 <code class="language-text">모바일 기기 데이터 수집 서버 개선기 1부</code>가 마무리되었습니다🙂 이번 작업으로 인해 많은 것을 배울 수 있었는데요.</p>
+<ol>
+<li>큰 고민 없이 AWS 서비스를 사용했을 때, 큰 비용 낭비를 초래할 수 있다는 점</li>
+<li>AWS 서비스 용량 제한으로 서비스 장애를 초래할 수 있다는 점</li>
+</ol>
+<p>특히 큰 고민 없이 AWS 서비스를 사용했을 때, 얼마나 큰 비용 낭비를 초래할 수 있는지 확실하게 알게 되었습니다. Lambda에서 쓰로틀링이 많이 발생하며 오류 발생률이 높아지지 않았다면, 저 역시 이 레거시 시스템에 손을 대려고 하지 않았을 겁니다.</p>
+<p>또한 AWS 서비스 용량 제한으로 서비스 장애를 초래할 수 있다는 점도 항상 유의해야 합니다! 우리 시스템에서는 Labmda의 동시성 scaling 속도 제한으로 인해 쓰로틀링을 겪었고, 요청량이 2배가 많았으면, Firehose 호출량 제한에 도달하여 높은 에러 발생률을 기록했을 것입니다.</p>
+<p>AWS 서비스를 잘 사용하면 빠르게 서비스를 구축할 수 있지만, 성능과 비용을 최적화하려면 이 시스템이 적절한 구성을 가지고 있는지, 애플리케이션 구조를 개선할 수 있을지 끊임없는 고민과 노력이 필요하다는 것을 명심해야합니다!</p>
+<p>이 글이 많은 분들께 도움이 되길 바라며, 조만간 성능 개선에 관한 내용을 다루는 2부로 다시 찾아뵐테니 많은 관심 부탁드립니다 :) 감사합니다!</p></article></article></div></div></main><style data-emotion="css 2jxy3p-Wrapper">.css-2jxy3p-Wrapper{padding-bottom:1.187rem;}</style><footer class="css-2jxy3p-Wrapper e1tbim063"><style data-emotion="css u2k6lz-FooterContainer">.css-u2k6lz-FooterContainer{border-top:1px solid #E2E4EB;padding-top:2.187rem;}</style><style data-emotion="css 1al4zm4-StyledContainer-FooterContainer">.css-1al4zm4-StyledContainer-FooterContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;border-top:1px solid #E2E4EB;padding-top:2.187rem;}.css-1al4zm4-StyledContainer-FooterContainer::before,.css-1al4zm4-StyledContainer-FooterContainer::after{content:"";display:table;}.css-1al4zm4-StyledContainer-FooterContainer::after{clear:both;}@media (max-width: 38.125em){.css-1al4zm4-StyledContainer-FooterContainer{padding-left:16px;padding-right:16px;}}</style><div class="e1tbim062 css-1al4zm4-StyledContainer-FooterContainer e1ig3f2t0"><style data-emotion="css 1gbez60-CompanyLogo">.css-1gbez60-CompanyLogo{float:left;width:160px;}@media (max-width: 48em){.css-1gbez60-CompanyLogo{float:none;width:auto;}}</style><div class="css-1gbez60-CompanyLogo e1tbim061"><style data-emotion="css 1636f4y-IconWrapper">.css-1636f4y-IconWrapper{position:relative;display:inline-block;line-height:16px;color:#0971ce;}.css-1636f4y-IconWrapper>svg{vertical-align:top;}.css-1636f4y-IconWrapper>svg{fill:#0971ce;}</style><i class="css-1636f4y-IconWrapper e12rwrnm0" height="16" color="#0971ce"><svg width="121.15" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.29 18"><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53"></polygon></svg></i></div><style data-emotion="css dtdcvy-CompanyDesc">.css-dtdcvy-CompanyDesc{margin-left:160px;}@media (max-width: 48em){.css-dtdcvy-CompanyDesc{margin-left:0;margin-top:1.5rem;}}@media (max-width: 38.125em){.css-dtdcvy-CompanyDesc{font-size:0.875rem;}}</style><div class="css-dtdcvy-CompanyDesc e1tbim060"><p>프리미엄 배달대행 부릉을 운영하는 메쉬코리아는 투명하고 유연하게 라이더를 연결하는 물류플랫폼을 지향합니다.<br/>물류플랫폼을 함께 만들어갈 능력있는 사람들과 함께할 사람들을 찾습니다.</p><p><a href="https://www.meshkorea.net/kr/career/" target="_blank">지금 지원하러 가기 <i class="css-1anhml5-IconWrapper e12rwrnm0" height="16"><svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M12,8a1,1,0,0,1-.29.71l-5,5a1,1,0,0,1-1.42-1.42L9.59,8,5.29,3.71A1,1,0,0,1,6.71,2.29l5,5A1,1,0,0,1,12,8Z"></path></svg></i></a></p></div></div></footer></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script>
+  
+  function gaOptout(){document.cookie=disableStr+'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC;path=/',window[disableStr]=!0}var gaProperty='UA-71371143-19',disableStr='ga-disable-'+gaProperty;document.cookie.indexOf(disableStr+'=true')>-1&&(window[disableStr]=!0);
+  if(!(navigator.doNotTrack == "1" || window.doNotTrack == "1")) {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  }
+  if (typeof ga === "function") {
+    ga('create', 'UA-71371143-19', 'auto', {});
+      ga('set', 'anonymizeIp', true);
+      }
+      </script><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/20210419-dev-notes-005-mobile-data-collector-01/";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-dfda8d059abd9d0298c4.js"],"app":["/app-3e2eb7a34aa1df5dc5cc.js"],"component---src-pages-404-tsx":["/component---src-pages-404-tsx-a784631a3269b148b831.js"],"component---src-pages-index-tsx":["/component---src-pages-index-tsx-25f12fc53c01122a0885.js"],"component---src-templates-pages-tsx":["/component---src-templates-pages-tsx-faf52131eb81a2acc5f6.js"],"component---src-templates-post-tsx":["/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js"],"component---src-templates-tags-tsx":["/component---src-templates-tags-tsx-f9a749b633c17bb4de81.js"]};/*]]>*/</script><script src="/polyfill-dfda8d059abd9d0298c4.js" nomodule=""></script><script src="/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js" async=""></script><script src="/commons-7d5f1a90cd4689983181.js" async=""></script><script src="/e0525e89-83ec71d4e59d23f4872d.js" async=""></script><script src="/styles-e9d24b1846c7d6eb9685.js" async=""></script><script src="/app-3e2eb7a34aa1df5dc5cc.js" async=""></script><script src="/framework-da68acf1b9295dbf7273.js" async=""></script><script src="/webpack-runtime-ffe42b6e880799e3a046.js" async=""></script></body></html>
