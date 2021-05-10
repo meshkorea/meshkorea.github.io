@@ -32,7 +32,7 @@ authorDesc: "Vroong Tech"
 
 ### 부릉 고객사 인터뷰 | 오티디코퍼레이션 손창현 대표이사
 
-`youtube: [https://youtu.be/bq_Kdu0D-9M](https://youtu.be/bq_Kdu0D-9M))`
+`youtube: [https://youtu.be/bq_Kdu0D-9M](https://youtu.be/bq_Kdu0D-9M)`
 
 ### 부릉 고객사 인터뷰 | KT 임채환 상무
 
