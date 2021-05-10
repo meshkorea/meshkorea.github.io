@@ -231,6 +231,7 @@ const TagItem = styled.li`
 `;
 
 const predefinedCategories = [
+  "About Us",
   "Dev Notes",
   "People & Culture",
   "Bookshelf",
