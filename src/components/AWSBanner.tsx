@@ -26,7 +26,7 @@ const AWSBanner = () => (
         </em>
         <LogoAndButton>
           <AWSButton to="https://forms.gle/Ndj8Adxs7jtuc7KL7">
-            사이트 바로가기
+            경품 받으러 가기
           </AWSButton>
           <LogoImage
             width={289}
