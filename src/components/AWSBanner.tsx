@@ -166,6 +166,7 @@ const AWSButton = styled(Link)`
 `;
 
 const NoBreakWrapper = styled.span`
+  display: inline-block;
   white-space: nowrap;
   margin-right: 0.2em;
 
