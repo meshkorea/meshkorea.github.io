@@ -46,7 +46,7 @@ const AWSBannerWrapper = styled.div`
   margin: 0;
   height: 300px;
   color: ${colors.white};
-  background: #010137 50% 0 url(${awsBg});
+  background: #010137 100% 0 url(${awsBg});
   background-size: cover;
 
   /* portrait phone */
@@ -166,6 +166,7 @@ const AWSButton = styled(Link)`
 `;
 
 const NoBreakWrapper = styled.span`
+  display: inline-block;
   white-space: nowrap;
   margin-right: 0.2em;
 
