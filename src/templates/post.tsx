@@ -337,7 +337,7 @@ class PageTemplate extends React.PureComponent<
         <Helmet>
           <title>
             {post.frontmatter.title}
-            :: Mesh Korea Makers Blog
+            :: MESH KOREA | VROONG 테크 블로그
           </title>
           <meta name="description" content={post.excerpt} />
           <meta
@@ -353,7 +353,7 @@ class PageTemplate extends React.PureComponent<
           <meta
             property="og:title"
             content={`${post.frontmatter.title}
-            :: Mesh Korea Makers Blog`}
+            :: MESH KOREA | VROONG 테크 블로그`}
           />
           <meta property="og:description" content={post.excerpt} />
           <meta property="og:type" content="article" />
