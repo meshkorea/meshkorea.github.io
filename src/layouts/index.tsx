@@ -55,7 +55,10 @@ class IndexLayout extends React.Component {
               content="Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, PO, Product Owner, 기획, 디자인, 개발, QA, 서버, 프론트엔드, 안드로이드, 웹, AWS, 머신러닝"
             />
             <meta property="og:url" content="https://meshkorea.github.io/" />
-            <meta property="og:title" content="Mesh Korea Makers Blog" />
+            <meta
+              property="og:title"
+              content="MESH KOREA | VROONG 테크 블로그"
+            />
             <meta
               property="og:description"
               content={data.site.siteMetadata.description}

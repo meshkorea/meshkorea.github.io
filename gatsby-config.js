@@ -77,7 +77,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: "Mesh Korea Makers Blog",
+        name: "MESH KOREA | VROONG 테크 블로그",
         icons: [
           {
             src: "/android-icon-192x192.png",
@@ -90,7 +90,7 @@ module.exports = {
             type: "image/png",
           },
         ],
-        theme_color: "#1b3993",
+        theme_color: "#EFF0F5",
         background_color: "#fff",
         display: "standalone",
       },

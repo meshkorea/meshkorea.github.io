@@ -1,4 +1,4 @@
-# Mesh Korea Makers Blog
+# MESH KOREA | VROONG 테크 블로그
 
 메쉬코리아에서 기술, 유저 경험 및 공간 디자인, 서비스 기획 등 물류플랫폼을 만들기 위한 과정에 대한 고민과 그 해결을 담은 블로그입니다.
 
@@ -25,7 +25,7 @@
 
 #### 1. markdown 사용에 익숙하지 않으신가요?
 
-Makers Blog는 [Github Flavored Markdown](https://github.github.com/gfm/)을 사용합니다. 문법은 어렵지 않으니, 금방 배우실 수 있을 겁니다.
+테크 블로그는 [Github Flavored Markdown](https://github.github.com/gfm/)을 사용합니다. 문법은 어렵지 않으니, 금방 배우실 수 있을 겁니다.
 
 하지만 처음에는 어색하실 수 있죠. 그럴 때엔 [온라인 마크다운 에디터](https://stackedit.io/app)로 마크다운 문법을 자동으로 삽입해주는 버튼들과 함께 마크다운을 작성해보세요. macOS를 사용하신다면, Bear의 Markdown Compatibility 모드로 작성하셔도 좋습니다.
 
