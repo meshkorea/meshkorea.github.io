@@ -7,6 +7,7 @@ import AuthorInfo, {
   AuthorName,
   AuthorDesc,
 } from "../components/AuthorInfo";
+import AWSBanner from "../components/AWSBanner";
 import Hero from "../components/Hero";
 import Icon from "../components/Icon";
 import { NavigationWrapper, NavigationLink } from "../components/Navigation";
@@ -17,7 +18,6 @@ import IndexLayout from "../layouts";
 import { getEmSize, resetUl } from "../styles/mixins";
 import { breakpoints, colors } from "../styles/variables";
 import { transformTags } from "../utils/tag";
-import RecruitBanner from "../components/RecruitBanner";
 
 interface IndexPageProps {
   data: {
@@ -231,13 +231,14 @@ const TagItem = styled.li`
 `;
 
 const predefinedCategories = [
+  "About Us",
   "Dev Notes",
   "People & Culture",
   "Bookshelf",
   "Newsroom",
 ];
 
-const isRecruitPeriod = new Date() < new Date(2021, 4, 1);
+const isRecruitPeriod = new Date() < new Date(2021, 4, 15);
 
 const IndexPage: React.SFC<IndexPageProps> = props => {
   const data = props.data;
@@ -260,7 +261,7 @@ const IndexPage: React.SFC<IndexPageProps> = props => {
   return (
     <IndexLayout>
       <Page>
-        {isRecruitPeriod ? <RecruitBanner /> : <Hero />}
+        {isRecruitPeriod ? <AWSBanner /> : <Hero />}
         <Container>
           <GridWrapper>
             <PostList>
