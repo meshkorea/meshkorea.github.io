@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[VROONG Culture] 메쉬코리아 서비스개발본부의 Agile 개론"
-date: "2021-03-24"
+date: "2021-06-09"
 tags: ["People & Culture", "Agile", "Scrum", "software development process"]
 titleImage:
 author: Vroong Tech
