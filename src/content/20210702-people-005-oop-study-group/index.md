@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[VROONG Culture] 개인과 팀이 함께 성장하는 메쉬 코리아"
-date: "2021-06-11"
+date: "2021-07-02"
 tags: ["People & Culture", "Study Group", "java", "OOP", "Design Pattern"]
 titleImage: "./title.png"
 author: 민희정
