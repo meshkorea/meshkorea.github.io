@@ -3,7 +3,7 @@ layout: post
 title: "모바일 기기 데이터 수집 서버 개선기 2부 : 성능개선"
 date: "2021-08-20"
 tags: ["Dev Notes", "API Gateway", "AWS Lambda", "Kubernetes", "AWS Cost Optimization"]
-titleImage: "./title.png"
+titleImage: "./title.jpg"
 author: 김창규
 authorDesc: "김창규"
 ---
@@ -20,17 +20,17 @@ authorDesc: "김창규"
 
 ![01](01.png)
 
-API 응답시간이 100ms 가 초과하는 요청의 Histogram 
+API 응답시간이 100ms 가 초과하는 요청의 Histogram
 
 특정 API 가 아닌 모든 API에 영향을 미친다는것은, 특정 로직이 시스템 전반적으로 영향을 미친다는 뜻이었고, 이 원인을 찾기 위해 Deep Dive  보았습니다.
 
 이번 2부 에서는 이러한 API 성능개선을 위해 **AWS Java SDK 의 ClientSide Metrics**을 활용,  **Firehose 성능 개선**을 위한 재설계, **Spring WebFlux**를 이용한 개발 시 주의점을 다뤄 보겠습니다. 그 전에, 1부 내용을 다시 보고 싶으시면 아래 링크를 클릭하세요! 😉
 
- 📍 [1부 다시 보기] ☞ [[클릭]](https://mesh.dev/20210419-dev-notes-005-mobile-data-collector-01/) 
+ 📍 [1부 다시 보기] ☞ [[클릭]](https://mesh.dev/20210419-dev-notes-005-mobile-data-collector-01/)
 
 # Thread Pool Limit 증가
 
-먼저 WebFlux를 구동시키는 Reactor의 지표를 확인하기 위해 [Micrometer에 Reactor Scheduler 메트릭을 활성화](https://github.com/reactor/reactor-core/blob/master/docs/asciidoc/metrics.adoc)하였습니다. Prometheus로 메트릭을 수집하고 Grafana를 통해 Dashboard를 구성하였는데요. 
+먼저 WebFlux를 구동시키는 Reactor의 지표를 확인하기 위해 [Micrometer에 Reactor Scheduler 메트릭을 활성화](https://github.com/reactor/reactor-core/blob/master/docs/asciidoc/metrics.adoc)하였습니다. Prometheus로 메트릭을 수집하고 Grafana를 통해 Dashboard를 구성하였는데요.
 
 ![02](02.png)
 
@@ -45,31 +45,31 @@ Server Reactor Executor Monitoring
 
 ```java
 /**
-	 * Default maximum size for the global {@link #boundedElastic()} {@link Scheduler}, initialized
-	 * by system property {@code reactor.schedulers.defaultBoundedElasticSize} and falls back to 10 x number
-	 * of processors available to the runtime on init.
-	 *
-	 * @see Runtime#availableProcessors()
-	 * @see #boundedElastic()
-	 */
-	public static final int DEFAULT_BOUNDED_ELASTIC_SIZE =
-			Optional.ofNullable(System.getProperty("reactor.schedulers.defaultBoundedElasticSize"))
-					.map(Integer::parseInt)
-					.orElseGet(() -> 10 * Runtime.getRuntime().availableProcessors());
+   * Default maximum size for the global {@link #boundedElastic()} {@link Scheduler}, initialized
+   * by system property {@code reactor.schedulers.defaultBoundedElasticSize} and falls back to 10 x number
+   * of processors available to the runtime on init.
+   *
+   * @see Runtime#availableProcessors()
+   * @see #boundedElastic()
+   */
+  public static final int DEFAULT_BOUNDED_ELASTIC_SIZE =
+      Optional.ofNullable(System.getProperty("reactor.schedulers.defaultBoundedElasticSize"))
+          .map(Integer::parseInt)
+          .orElseGet(() -> 10 * Runtime.getRuntime().availableProcessors());
 ```
 
-BoundedElastic Scheduler에서는 최대 Thread 갯수를 설정 혹은 기본값으로 정하는데, 이때 기본값으로 Available Processor의 수 * 10 으로 기본값이 세팅되는데요. **저희 사례의 경우 별도의 Size를 지정 하지 않았기 때문에 기본값으로 자동 설정, 최대 10개로 제한이 되었던 것**이었습니다. 
+BoundedElastic Scheduler에서는 최대 Thread 갯수를 설정 혹은 기본값으로 정하는데, 이때 기본값으로 Available Processor의 수 * 10 으로 기본값이 세팅되는데요. **저희 사례의 경우 별도의 Size를 지정 하지 않았기 때문에 기본값으로 자동 설정, 최대 10개로 제한이 되었던 것**이었습니다.
 
 그렇다면 Available Processor가 1이었다는 말인데, 구동환경은 8 Core 쿠버네티스 노드였거든요. 도대체 어떻게 된 것일까요? 🤔
 
 ```yaml
 ...
 resource:
-	request:
-		cpu: 300m
-		memory: 1Gi
-	limit:
-		memory: 2Gi
+  request:
+    cpu: 300m
+    memory: 1Gi
+  limit:
+    memory: 2Gi
 ...
 ```
 
@@ -80,36 +80,36 @@ request는 0.3 Core로 설정이 되어 있고 Available Processor는 integer이
 ```yaml
 ...
 resource:
-	request:
-		cpu: 1
-		memory: 1Gi
-	limit:
-		cpu: 3
-		memory: 2Gi
+  request:
+    cpu: 1
+    memory: 1Gi
+  limit:
+    cpu: 3
+    memory: 2Gi
 ...
 ```
 
-적용하고 서버 배포 후 피크시간을 모니터링 한 결과는 어땠을까요? 
+적용하고 서버 배포 후 피크시간을 모니터링 한 결과는 어땠을까요?
 
 ![03](03.png)
 
 설정 변경 전 후 Reactor Executor Monitoring (좌측 2개의 피크는 적용 전 오른쪽 피크가 적용 후)
 
 - ThreadPool은 최대 30개 까지 사용 할 수 있고, 비교적 여유가 있는 것으로 보임
-- 전체적인 Latency는 감소하였음 
+- 전체적인 Latency는 감소하였음
 - 단, 해결되리라 예상했던 Task Execution Latency 는 여전히 Spike를 기록하고 있음
 
-위 사례를 통해 다음과 같이 결론을 정리해볼 수 있었습니다. 
+위 사례를 통해 다음과 같이 결론을 정리해볼 수 있었습니다.
 
 👉 Thread 부족이 Task Latency를 발생시키는 주요 원인은 아니다.
 
-👉 하지만 전체적인 처리 지연을 발생시키고 있어, ThreadPool수를 늘려 전체적인 지연을 감소시켰다. 
+👉 하지만 전체적인 처리 지연을 발생시키고 있어, ThreadPool수를 늘려 전체적인 지연을 감소시켰다.
 
 
 
 # JVM 메모리 증설
 
-이어서 APM으로 메모리와 GC를 확인해보았는데요. Pod Memory가 Limit에 근접하게 가득 찼고, Mark & Sweep 이 지속적으로 발생하고 있어, 아래와 같은 가설을 설정해 보았습니다. 
+이어서 APM으로 메모리와 GC를 확인해보았는데요. Pod Memory가 Limit에 근접하게 가득 찼고, Mark & Sweep 이 지속적으로 발생하고 있어, 아래와 같은 가설을 설정해 보았습니다.
 
 - 가설 : 메모리 부족에 의해서 GC가 발생 →  이러한 GC가 Reactor Scheduler에 영향을 주었을 것
 
@@ -132,7 +132,7 @@ exec java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom \
   -jar "${HOME}/app.jar" "$@"
 ```
 
-Memory를 세 배로 늘린 뒤, 하루 동안 모니터링 해본 결과는 어땠을까요? 
+Memory를 세 배로 늘린 뒤, 하루 동안 모니터링 해본 결과는 어땠을까요?
 
 ![06](06.png)
 
@@ -148,7 +148,7 @@ Memory를 세 배로 늘린 뒤, 하루 동안 모니터링 해본 결과는 어
 
 적용 이후(중간이후) Reactor Executor Monitoring
 
-다음으로 Scheduler를 모니터링 해 보니 큰 변화가 있었습니다. Spike가 여전히 일어나긴 하지만, 그 빈도가 눈에 띄게 줄었습니다. 
+다음으로 Scheduler를 모니터링 해 보니 큰 변화가 있었습니다. Spike가 여전히 일어나긴 하지만, 그 빈도가 눈에 띄게 줄었습니다.
 
 ![09](09.png)
 
@@ -162,14 +162,14 @@ Memory를 세 배로 늘린 뒤, 하루 동안 모니터링 해본 결과는 어
 
 메모리 증설 전후의 GC와 Task Latency비교
 
-확인 해 본 결과 GC의 원인은 증설 전후로 다른 것을 확인할 수 있었는데요,  
+확인 해 본 결과 GC의 원인은 증설 전후로 다른 것을 확인할 수 있었는데요,
 
 - 증설 이전 : Allocation Failure로 Major GC가 무수히 많이 발생
 - 증설 이후 : 여전히 Major GC가 발생, 하지만 Ergonomics로 힙이 가득 찰 때 쯤 자동으로 GC가 발생 +  GC Pause가 줄어 든 만큼 Task Latency Spike 횟수도 눈에 띄게 감소함
 
 # AWS Firehose 성능 분석 및 개선
 
-개발환경에서 부하 테스트를 진행했을 때 초반에는 성능이 잘 나오지만, 3분 이상 지속적으로 부하를 주었을 때 Response Time이 비약적으로 상승하는 것을 발견하였습니다. 
+개발환경에서 부하 테스트를 진행했을 때 초반에는 성능이 잘 나오지만, 3분 이상 지속적으로 부하를 주었을 때 Response Time이 비약적으로 상승하는 것을 발견하였습니다.
 
 ![11](11.png)
 
@@ -199,7 +199,7 @@ PutRecord의 초당 요청수 (분당 요청 수를 60으로 나눔)
 
 PutRecord Response Time
 
-이어서 Call Response Time을 확인해보니 평균 60ms 수준에 최대 8,000ms 까지 소요되고 있었습니다. VPC Endpoint를 사용한 것은 아니나, 동일한 AWS 네트워크 내에서 진행 된 테스트였기 때문에 20ms 수준의 빠른 response time을 기대했거든요. 하지만 부하가 없을 때 빠른 20ms 수준으로 기록하던 Response time은, Quota와 상관 없이 부하가 증가 했을 때 Response time이 증가하고 있었습니다. 
+이어서 Call Response Time을 확인해보니 평균 60ms 수준에 최대 8,000ms 까지 소요되고 있었습니다. VPC Endpoint를 사용한 것은 아니나, 동일한 AWS 네트워크 내에서 진행 된 테스트였기 때문에 20ms 수준의 빠른 response time을 기대했거든요. 하지만 부하가 없을 때 빠른 20ms 수준으로 기록하던 Response time은, Quota와 상관 없이 부하가 증가 했을 때 Response time이 증가하고 있었습니다.
 
 산술적으로 계산했을 때 최대 Concurrency가 50일 때 1,000TPS 가 나오려면, 50ms의 Resposne Time으로 한순간도 쉬지 않고 요청을 보내야 가능합니다. 부하가 증가했을 때 Firehose 자체 Response time이 50ms 이상으로 증가했기 때문에, 오히려 Firehose Quota에 미치지 못하는 성능을 기록하였습니다.
 
@@ -220,10 +220,10 @@ Webflux에서 주기적인 Job을 실행 시키기 위해 Flux interval을 사�
 ```kotlin
 // 어플리케이션이 시작 될 때 job을 시작한다.
 val job = Flux.interval(initialDelay, interval) // interval 마다 tick을 발생한다
-					    .onBackpressureDrop() // 이후의 파이프가 busy 인 경우, tick을 무시한다.
-					    .publishOn(scheduler)
-					    .filter { this.hasMessage() }
-					    .flatMap({ this.putRecordBatch() }, maxConcurrency)
+              .onBackpressureDrop() // 이후의 파이프가 busy 인 경우, tick을 무시한다.
+              .publishOn(scheduler)
+              .filter { this.hasMessage() }
+              .flatMap({ this.putRecordBatch() }, maxConcurrency)
 job.subscribe()
 ```
 
@@ -233,7 +233,7 @@ job.subscribe()
 
 동일한 컴퓨팅 리소스로 부하 테스트 결과
 
-지난 테스트에서 동접 50명으로 진행했을 때에도 Response Time에 따라 심각한 성능 저하를 보이던 API가 동접이 2배 이상으로 늘어났음에도 100ms 이내의 성능을 보였습니다. 초 당 처리량이 1,200~1,500을 기록하여 Firehose Quota Limit보다 높은 TPS를 기록하고 있었는데요! 
+지난 테스트에서 동접 50명으로 진행했을 때에도 Response Time에 따라 심각한 성능 저하를 보이던 API가 동접이 2배 이상으로 늘어났음에도 100ms 이내의 성능을 보였습니다. 초 당 처리량이 1,200~1,500을 기록하여 Firehose Quota Limit보다 높은 TPS를 기록하고 있었는데요!
 
 지난번과 달리 테스트에서는 CPU Limit의 100%를 사용하였는데, 기존에 설정한 3 Core CPU Limit을 늘리면 더욱 높은 TPS를 처리 할 수 있을 것으로 예상됩니다.
 
@@ -319,12 +319,12 @@ fun handleActionRecords(request: ServerRequest): Mono<ServerResponse> {
 @Override
 public Mono<WebSession> createWebSession() {
 
-	// Opportunity to clean expired sessions
-	Instant now = this.clock.instant();
-	this.expiredSessionChecker.checkIfNecessary(now);
+  // Opportunity to clean expired sessions
+  Instant now = this.clock.instant();
+  this.expiredSessionChecker.checkIfNecessary(now);
 
-	return Mono.<WebSession>fromSupplier(() -> new InMemoryWebSession(now))
-			.subscribeOn(Schedulers.boundedElastic());
+  return Mono.<WebSession>fromSupplier(() -> new InMemoryWebSession(now))
+      .subscribeOn(Schedulers.boundedElastic());
 }
 ```
 
@@ -335,7 +335,7 @@ boundedElastic이 어디서 사용하는 지 추적해 보았더니, Spring Secu
 fun springSecurityWebFilterChain(http: ServerHttpSecurity, authFilter: ApiKeyAuthWebFilter): SecurityWebFilterChain {
     return http.csrf().disable()
             .addFilterBefore(authFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-						// ... 중략
+            // ... 중략
             .and()
             .requestCache().disable() // Session 비활성화
             .build()
@@ -351,15 +351,15 @@ fun springSecurityWebFilterChain(http: ServerHttpSecurity, authFilter: ApiKeyAut
 ```kotlin
 fun handleRequestWithBody(request: ServerRequest): Mono<ServerResponse> {
     // boundedEastic에서 실행 됨
-    return request.bodyToMono(String::class.java) 
-							.doOnNext { println(it) /* reactor-netty에서 실행 됨 */ }
+    return request.bodyToMono(String::class.java)
+              .doOnNext { println(it) /* reactor-netty에서 실행 됨 */ }
               .then(ServerResponse.ok().build())
 }
 
 fun handleRequestWithoutBody(request: ServerRequest): Mono<ServerResponse> {
     // boundedEastic에서 실행 됨
     return ServerResponse.ok().build()
-							.doOnNext { println(it) /* boundedEastic에서 실행 됨 */ }
+              .doOnNext { println(it) /* boundedEastic에서 실행 됨 */ }
 }
 ```
 
@@ -388,7 +388,7 @@ protected def calculateMetrics(...): RunSheet = {
 
 피크시간의 heap dump 분석
 
-피크 시간에 Memory GC가 빈번히 발생할 때 Heap Dump를 만들어 분석해 보았습니다. Actions API에서 사용한 Scala의 Vector객체와 RunSheet 객체가 객체가 많은 메모리를 점유하고 있는 것이 보이시나요? Major GC가 빈번하게 발생하는 이유는 바로 이 때 생성된 클래스들이 많은 메모리를 점유해서인데요. 
+피크 시간에 Memory GC가 빈번히 발생할 때 Heap Dump를 만들어 분석해 보았습니다. Actions API에서 사용한 Scala의 Vector객체와 RunSheet 객체가 객체가 많은 메모리를 점유하고 있는 것이 보이시나요? Major GC가 빈번하게 발생하는 이유는 바로 이 때 생성된 클래스들이 많은 메모리를 점유해서인데요.
 
 하위 호환성을 지키기 위해 이식한 Scala 로직이 CPU와 메모리 전부를 포함, 다른 API에도 영향을 미쳤습니다. 상용환경에서 전체 호출 수가 크지 않고, 비즈니스에 큰 영향을 미치지 않는 API라서 안일하게 적용했던 것이 큰 패인이었던 것이죠. 😥
 
@@ -418,7 +418,7 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-	annotations:
+  annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
   name: agenttrace
 spec:
@@ -451,7 +451,7 @@ trace API의 response time histogram과 throughput 그래프
 
 # 마치며
 
-성능을 개선하기 위해 찾아낸 원인과 해결방법을 다시 한번 정리하면, 다음과 같습니다. 
+성능을 개선하기 위해 찾아낸 원인과 해결방법을 다시 한번 정리하면, 다음과 같습니다.
 
 - **(원인 1) Firehose의 성능저하**
 
@@ -459,13 +459,13 @@ trace API의 response time histogram과 throughput 그래프
 
 - **(원인 2)** **레거시 코드에서 그대로 이식한 코드**
 
-✔ 레거시 코드에는 알고리즘을 수행하는 코드가 있는데, 이 코드의 CPU점유로 인해 다른 API 응답시간이 길어진데다가 메모리 점유로 잦은 Major GC를 유발하였습니다. 해결을 위해 이 API 호출을 별도의 서버로 격리, 비즈니스에 큰 영향을 주는 API에 영향을 미치지 않도록 하였는데요. 당장은 하위 호환성을 위해 그대로 코드를 도입했지만, 추후 이 API 자체를 제거하는 방향을 검토하고 있습니다. 
+✔ 레거시 코드에는 알고리즘을 수행하는 코드가 있는데, 이 코드의 CPU점유로 인해 다른 API 응답시간이 길어진데다가 메모리 점유로 잦은 Major GC를 유발하였습니다. 해결을 위해 이 API 호출을 별도의 서버로 격리, 비즈니스에 큰 영향을 주는 API에 영향을 미치지 않도록 하였는데요. 당장은 하위 호환성을 위해 그대로 코드를 도입했지만, 추후 이 API 자체를 제거하는 방향을 검토하고 있습니다.
 
 
 
-위의 원인을 파악하는 과정에서 여러 모니터링 도구를 사용하였는데요. 
+위의 원인을 파악하는 과정에서 여러 모니터링 도구를 사용하였는데요.
 
-먼저, APM과 NginX AccessLog로 기본적인 API 의 응답속도, Throughput 등을 측정하였습니다. Webflux는 APM에서 제공하는 기본 설정으로는 어느 구간에서 병목현상이 발생하는지 파악이 어려워, 추가적인 메타데이터를 추가 하는 작업이 필요했습니다. 
+먼저, APM과 NginX AccessLog로 기본적인 API 의 응답속도, Throughput 등을 측정하였습니다. Webflux는 APM에서 제공하는 기본 설정으로는 어느 구간에서 병목현상이 발생하는지 파악이 어려워, 추가적인 메타데이터를 추가 하는 작업이 필요했습니다.
 
 Scheduler와 JVM내부 메트릭을 확인하고자 Reactor에서 제공하는 Micrometer 메트릭을 활성화하였고, Prometheus로 메트릭을 추출하여 Grafana를 통해 모니터링했습니다. metric으로 Scheduler별로 Task처리량과 지연을 확인 할 수 있었고, JVM Metric으로 GC 종류와 사유를 상세히 확인 할 수 있었습니다.
 
