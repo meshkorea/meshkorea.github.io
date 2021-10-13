@@ -1,0 +1,894 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="ie=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><style data-href="/styles.2072d913c063a542f3b5.css" id="gatsby-global-css">/*! modern-normalize | MIT License | https://github.com/sindresorhus/modern-normalize */html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}:root{-moz-tab-size:4;-o-tab-size:4;tab-size:4}html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}hr{height:0}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{padding:0}progress{vertical-align:baseline}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}</style><meta name="generator" content="Gatsby 2.28.1"/><style type="text/css">
+    .anchor {
+      float: left;
+      padding-right: 4px;
+      margin-left: -20px;
+    }
+    h1 .anchor svg,
+    h2 .anchor svg,
+    h3 .anchor svg,
+    h4 .anchor svg,
+    h5 .anchor svg,
+    h6 .anchor svg {
+      visibility: hidden;
+    }
+    h1:hover .anchor svg,
+    h2:hover .anchor svg,
+    h3:hover .anchor svg,
+    h4:hover .anchor svg,
+    h5:hover .anchor svg,
+    h6:hover .anchor svg,
+    h1 .anchor:focus svg,
+    h2 .anchor:focus svg,
+    h3 .anchor:focus svg,
+    h4 .anchor:focus svg,
+    h5 .anchor:focus svg,
+    h6 .anchor:focus svg {
+      visibility: visible;
+    }
+  </style><script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+      var hash = window.decodeURI(location.hash.replace('#', ''))
+      if (hash !== '') {
+        var element = document.getElementById(hash)
+        if (element) {
+          var offset = element.offsetTop
+          // Wait for the browser to finish rendering before scrolling.
+          setTimeout((function() {
+            window.scrollTo(0, offset - 0)
+          }), 0)
+        }
+      }
+    })
+  </script><link rel="canonical" href="https://meshkorea.github.io/20210820-dev-notes-006-mobile-data-collector-02/" data-baseprotocol="https:" data-basehost="meshkorea.github.io"/><title data-react-helmet="true">모바일 기기 데이터 수집 서버 개선기 2부 : 성능개선:: MESH KOREA | VROONG 테크 블로그</title><link data-react-helmet="true" rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon.png" sizes="1024x1024"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32"/><link data-react-helmet="true" rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16"/><link data-react-helmet="true" rel="mask-icon" href="/mask-icon.svg" color="#1b3993"/><link data-react-helmet="true" rel="shortcut icon" href="/favicon.ico"/><meta data-react-helmet="true" name="description" content="안녕하세요, 플랫폼실 김창규입니다. 🙂 지난 1부에서는 AWS서비스들을 이용하여 구축된 모바일 기기 데이터 수집서버가 가진 문제점을 분석하고, Spring WebFlux…"/><meta data-react-helmet="true" name="keywords" content="Mesh Korea, 메쉬코리아, 블로그, 기술 블로그, tech blog, makers blog, Dev Notes,API Gateway,AWS Lambda,Kubernetes,AWS Cost Optimization"/><meta data-react-helmet="true" property="og:url" content="https://meshkorea.github.io/20210820-dev-notes-006-mobile-data-collector-02/"/><meta data-react-helmet="true" property="og:title" content="모바일 기기 데이터 수집 서버 개선기 2부 : 성능개선
+            :: MESH KOREA | VROONG 테크 블로그"/><meta data-react-helmet="true" property="og:description" content="안녕하세요, 플랫폼실 김창규입니다. 🙂 지난 1부에서는 AWS서비스들을 이용하여 구축된 모바일 기기 데이터 수집서버가 가진 문제점을 분석하고, Spring WebFlux…"/><meta data-react-helmet="true" property="og:type" content="article"/><meta data-react-helmet="true" property="og:image" content="https://meshkorea.github.io/static/2910df7a2629b21d2e0a15d5011ee245/d8255/title.jpg"/><link rel="manifest" href="/manifest.webmanifest" crossorigin="anonymous"/><meta name="theme-color" content="#EFF0F5"/><link rel="apple-touch-icon" sizes="192x192" href="/android-icon-192x192.png"/><link rel="apple-touch-icon" sizes="384x384" href="/android-icon-384x384.png"/><link as="script" rel="preload" href="/webpack-runtime-f8d2cfb60cb2b8fa895f.js"/><link as="script" rel="preload" href="/framework-da68acf1b9295dbf7273.js"/><link as="script" rel="preload" href="/app-6d6a5027655005a92ce4.js"/><link as="script" rel="preload" href="/styles-e9d24b1846c7d6eb9685.js"/><link as="script" rel="preload" href="/e0525e89-155dc6265164ef0cd881.js"/><link as="script" rel="preload" href="/commons-137533670d01b5c35386.js"/><link as="script" rel="preload" href="/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js"/><link as="fetch" rel="preload" href="/page-data/20210820-dev-notes-006-mobile-data-collector-02/page-data.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/sq/d/1963140206.json" crossorigin="anonymous"/><link as="fetch" rel="preload" href="/page-data/app-data.json" crossorigin="anonymous"/></head><body><div id="___gatsby"><div style="outline:none" tabindex="-1" id="gatsby-focus-wrapper"><style data-emotion="css x35p1m-StyledLayoutRoot">.css-x35p1m-StyledLayoutRoot{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;min-height:100vh;background:#fff;}</style><div class="css-x35p1m-StyledLayoutRoot e3awmat0"><style data-emotion="css-global qoovf3">@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");html{box-sizing:border-box;}*,*::before,*::after{box-sizing:inherit;}html{font-size:16px!important;line-height:1.5!important;}body{width:100%;overflow-x:hidden;overflow-y:scroll;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#4B5058;background-color:#EFF0F5;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}a{color:#0971ce;-webkit-text-decoration:none;text-decoration:none;}a:hover,a:focus{-webkit-text-decoration:none;text-decoration:none;}img{max-width:100%;object-fit:contain;}figure{margin:2rem 0;}figcaption{font-size:80%;}table{width:100%;margin-bottom:1rem;border:1px solid #f5f3f7;font-size:85%;border-collapse:collapse;}td,th{padding:0.25rem 0.5rem;border:1px solid #f5f3f7;}th{text-align:left;}tbody tr:nth-of-type(odd) td{background-color:#fbfafc;}tbody tr:nth-of-type(odd) tr{background-color:#fbfafc;}h1,h2,h3,h4,h5,h6{margin-top:1.414rem;margin-bottom:0.5rem;color:inherit;font-weight:700;line-height:1.2;text-rendering:optimizeLegibility;}h1{margin-top:0;font-size:2.441rem;}h2{font-size:1.953rem;}h3{font-size:1.563rem;}h4,h5,h6{font-size:1.25rem;}p{margin-top:0;margin-bottom:1rem;}strong{color:inherit;}ul,ol,dl{margin-top:0;margin-bottom:1rem;}dt{font-weight:bold;}dd{margin-bottom:0.5rem;}hr{position:relative;margin:1.5rem 0;border:0;border-top:1px solid #f5f3f7;}blockquote{margin:0.8rem 0;padding:0.5rem 1rem;border-left:0.25rem solid #f5f3f7;}blockquote p:last-child{margin-bottom:0;}@media (min-width: 48em){blockquote{padding-right:5rem;padding-left:1.25rem;}}code[class*="language-"],pre[class*="language-"]{color:black;background:none;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}@media print{code[class*="language-"],pre[class*="language-"]{text-shadow:none;}}pre[class*="language-"]{padding:1em;margin:0.5em 0;overflow:auto;}:not(pre)>code[class*="language-"]{padding:0.1em;border-radius:0.3em;white-space:normal;}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray;}.token.punctuation{color:#999;}.namespace{opacity:0.7;}.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol,.token.deleted{color:#905;}.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#690;}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string{color:#9a6e3a;background:hsla(0, 0%, 100%, 0.5);}.token.atrule,.token.attr-value,.token.keyword{color:#07a;}.token.function,.token.class-name{color:#dd4a68;}.token.regex,.token.important,.token.variable{color:#e90;}.token.important,.token.bold{font-weight:bold;}.token.italic{font-style:italic;}.token.entity{cursor:help;}</style><style data-emotion="css jaqxp9-SmallTitleBox">.css-jaqxp9-SmallTitleBox{z-index:105;position:fixed;top:0;left:0;right:0;margin:0;height:75px;padding-top:26px;font-size:1.125rem;font-weight:700;line-height:1.2;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-jaqxp9-SmallTitleBox{height:44px;padding-top:0;left:50px;}}</style><div class="css-jaqxp9-SmallTitleBox e1obetcm3"><style data-emotion="css 1mfk7pj-SmallTitleContainer">.css-1mfk7pj-SmallTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-1mfk7pj-SmallTitleContainer >a{color:inherit;}</style><style data-emotion="css eduyk7-StyledContainer-SmallTitleContainer">.css-eduyk7-StyledContainer-SmallTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}.css-eduyk7-StyledContainer-SmallTitleContainer::before,.css-eduyk7-StyledContainer-SmallTitleContainer::after{content:"";display:table;}.css-eduyk7-StyledContainer-SmallTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-eduyk7-StyledContainer-SmallTitleContainer{padding-left:16px;padding-right:16px;}}.css-eduyk7-StyledContainer-SmallTitleContainer >a{color:inherit;}</style><div class="e1obetcm5 css-eduyk7-StyledContainer-SmallTitleContainer e1ig3f2t0"><a href="/"><style data-emotion="css 282isq-SmallTitle">.css-282isq-SmallTitle{padding-top:7px;font-size:inherit;color:#05cd82;cursor:pointer;-webkit-transition:color 0.5s ease-in;transition:color 0.5s ease-in;}.css-282isq-SmallTitle .link-text{color:#4B5058;opacity:1;-webkit-transition:opacity 0.5s ease-in;transition:opacity 0.5s ease-in;}.css-282isq-SmallTitle i{margin-right:10px;}@media (max-width: 38.125em){.css-282isq-SmallTitle{display:none;}}</style><h1 class="css-282isq-SmallTitle e1obetcm4"><span class="link-text"><style data-emotion="css 1anhml5-IconWrapper">.css-1anhml5-IconWrapper{position:relative;display:inline-block;line-height:16px;color:inherit;}.css-1anhml5-IconWrapper>svg{vertical-align:top;}.css-1anhml5-IconWrapper>svg{fill:currentColor;}</style><i class="css-1anhml5-IconWrapper e12rwrnm0" height="16" title="MESH KOREA | VROONG"><svg width="242" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i>테크 블로그</span></h1></a><div style="flex:1"></div><style data-emotion="css 22578y-RecruitLinks">.css-22578y-RecruitLinks{font-size:1rem;text-align:right;color:#0971ce;}.css-22578y-RecruitLinks >a{display:inline-block;min-width:36px;height:36px;padding-top:6px;text-align:center;line-height:24px;border-radius:18px;-webkit-transition:color 0.3s,background 0.5s;transition:color 0.3s,background 0.5s;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#fff;-webkit-text-decoration:none;text-decoration:none;background:#0971ce;}@media (max-width: 38.125em){.css-22578y-RecruitLinks >a{color:#5B5E62;margin:4px 0;border-radius:5px;}.css-22578y-RecruitLinks >a:hover,.css-22578y-RecruitLinks >a:focus{color:#4B5058;background:#E2E4EB;}}</style><div class="css-22578y-RecruitLinks e1obetcm2"><a href="https://github.com/meshkorea" target="_blank"><style data-emotion="css g8nddb-IconWrapper">.css-g8nddb-IconWrapper{position:relative;display:inline-block;line-height:24px;color:inherit;}.css-g8nddb-IconWrapper>svg{vertical-align:top;}.css-g8nddb-IconWrapper>svg{fill:currentColor;}</style><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,0A12,12,0,0,0,8.21,23.39c.6.11.82-.26.82-.58s0-1,0-2c-3.34.72-4-1.61-4-1.61A3.21,3.21,0,0,0,3.64,17.4c-1.09-.74.08-.73.08-.73a2.55,2.55,0,0,1,1.84,1.24,2.56,2.56,0,0,0,3.49,1,2.59,2.59,0,0,1,.76-1.61C7.15,17,4.34,16,4.34,11.37A4.63,4.63,0,0,1,5.58,8.15,4.28,4.28,0,0,1,5.7,5s1-.33,3.3,1.23a11.18,11.18,0,0,1,6,0C17.3,4.65,18.3,5,18.3,5a4.28,4.28,0,0,1,.12,3.17,4.63,4.63,0,0,1,1.23,3.22c0,4.61-2.8,5.63-5.47,5.92A2.88,2.88,0,0,1,15,19.52c0,1.6,0,2.89,0,3.29s.21.69.82.58A12,12,0,0,0,12,0Z"></path></svg></i></a><style data-emotion="css 17ctmwo-RecruitLink">.css-17ctmwo-RecruitLink{margin-left:12px;padding-top:5px!important;padding-left:1.25rem;padding-right:1.25rem;font-weight:600;border:1px solid #0971ce;}@media (max-width: 38.125em){.css-17ctmwo-RecruitLink{margin-left:0.6rem;margin-right:-0.625rem;padding-left:0.625rem;padding-right:0.625rem;line-height:26px;font-weight:400;color:#5B5E62;border:none;}}</style><a href="https://www.meshkorea.net/kr/career/" target="_blank" class="css-17ctmwo-RecruitLink e1obetcm1">지금 지원하러 가기</a></div></div></div><style data-emotion="css 1492abv-StyledHeader">.css-1492abv-StyledHeader{position:fixed;top:-125px;left:0;right:0;z-index:100;height:215px;padding:110px 0 0;color:#4B5058;border-bottom:1px solid #E2E4EB;background-color:#EFF0F5;}@media (max-width: 38.125em){.css-1492abv-StyledHeader{top:-51px;height:96px;padding-top:58px;-webkit-transition:height 0.3s;transition:height 0.3s;}}</style><header class="css-1492abv-StyledHeader e1obetcm9"><style data-emotion="css 2028mn-StyledContainer">.css-2028mn-StyledContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;}.css-2028mn-StyledContainer::before,.css-2028mn-StyledContainer::after{content:"";display:table;}.css-2028mn-StyledContainer::after{clear:both;}@media (max-width: 38.125em){.css-2028mn-StyledContainer{padding-left:16px;padding-right:16px;}}</style><div class="css-2028mn-StyledContainer e1ig3f2t0"><style data-emotion="css 1htaa58-LogoContainer">.css-1htaa58-LogoContainer{white-space:nowrap;overflow:hidden;}@media (min-width: 38.125em){.css-1htaa58-LogoContainer{display:none;}}</style><div class="css-1htaa58-LogoContainer e1obetcm8"><style data-emotion="css 93x8qt-HomepageLink">.css-93x8qt-HomepageLink{color:inherit;}.css-93x8qt-HomepageLink:hover,.css-93x8qt-HomepageLink:focus{-webkit-text-decoration:none;text-decoration:none;}</style><a class="css-93x8qt-HomepageLink e1obetcm0" href="/"><style data-emotion="css l9mnzg-Logo">.css-l9mnzg-Logo{width:133px;height:24px;}@media (max-width: 38.125em){.css-l9mnzg-Logo{display:inline-block;width:26px;height:30px;overflow:hidden;color:#05cd82;}}</style><div class="css-l9mnzg-Logo e1obetcm7"><style data-emotion="css vi10os-IconWrapper">.css-vi10os-IconWrapper{position:relative;display:inline-block;line-height:18px;color:inherit;}.css-vi10os-IconWrapper>svg{vertical-align:top;}.css-vi10os-IconWrapper>svg{fill:currentColor;}</style><i class="css-vi10os-IconWrapper e12rwrnm0" height="18"><svg width="271.53" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 271.53 18"><path d="M199.71,6.65a2.59,2.59,0,1,0,0-5.17H187V16.76h5.17V10.31l6.45,6.45h3.66V13.1l-6.45-6.45Z" fill="#05cd82"></path><path d="M210.81.65a8.47,8.47,0,1,0,8.52,8.47A8.5,8.5,0,0,0,210.81.65Zm0,12.09a3.52,3.52,0,0,1-3.41-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,210.81,12.74Z" fill="#05cd82"></path><polygon points="177.23 9.8 173.81 1.48 167.89 1.48 174.8 16.76 179.5 16.76 186.58 1.48 180.66 1.48 177.23 9.8" fill="#05cd82"></polygon><path d="M228.52.65A8.47,8.47,0,1,0,237,9.12,8.5,8.5,0,0,0,228.52.65Zm0,12.09a3.52,3.52,0,0,1-3.42-3.62,3.42,3.42,0,1,1,6.83,0A3.52,3.52,0,0,1,228.52,12.74Z" fill="#05cd82"></path><path d="M271.12,7.62H263V11h3.37a3.23,3.23,0,0,1-3,1.72,3.5,3.5,0,0,1-2.58-1.09,3.59,3.59,0,0,1-1.06-2.6,3.65,3.65,0,0,1,1-2.59,3.26,3.26,0,0,1,2.46-1.08,3.31,3.31,0,0,1,1.68.45,3.18,3.18,0,0,1,.77.58l4.18-2.68a8.46,8.46,0,0,0-6.62-3.1,8.08,8.08,0,0,0-6,2.51,8.19,8.19,0,0,0-2.47,6,8.49,8.49,0,0,0,8.51,8.47,8.24,8.24,0,0,0,8-8.47A8.21,8.21,0,0,0,271.12,7.62Z" fill="#05cd82"></path><polygon points="248.69 8.8 242.96 1.48 237.94 1.48 237.94 16.76 243.12 16.76 243.12 9.44 248.85 16.76 253.86 16.76 253.86 1.48 248.69 1.48 248.69 8.8" fill="#05cd82"></polygon><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z" fill="#0071ce"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05" fill="#0071ce"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33" fill="#0071ce"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z" fill="#0071ce"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05" fill="#0071ce"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z" fill="#0071ce"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z" fill="#0071ce"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z" fill="#0071ce"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53" fill="#0071ce"></polygon><rect x="152.04" y="1.53" width="1.14" height="15.22" fill="#3e3a39"></rect></svg></i></div><style data-emotion="css yek61y-Title">.css-yek61y-Title{font-size:3rem;margin:6px 0 0;font-weight:700;line-height:1.2;letter-spacing:-0.015em;}@media (max-width: 38.125em){.css-yek61y-Title{display:inline-block;margin:0 0 0 14px;font-size:1.125rem;line-height:30px;vertical-align:top;}}@media (max-width: 23.125em){.css-yek61y-Title{font-size:0.875rem;}}</style><h1 class="css-yek61y-Title e1obetcm6">테크 블로그</h1></a></div></div></header><style data-emotion="css 1gp6gx1-StyledLayoutMain">.css-1gp6gx1-StyledLayoutMain{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-flex:1;-ms-flex:1;flex:1;padding-top:90px;}@media (max-width: 38.125em){.css-1gp6gx1-StyledLayoutMain{padding-top:97px;}}</style><main class="css-1gp6gx1-StyledLayoutMain ewf609k0"><style data-emotion="css 1scz8kd-StyledPage">.css-1scz8kd-StyledPage{display:block;-webkit-flex:1;-ms-flex:1;flex:1;position:relative;padding:0;margin-bottom:3rem;}</style><div class="css-1scz8kd-StyledPage e9n6qsq0"><style data-emotion="css 1ex7ar2-Wrapper">.css-1ex7ar2-Wrapper{height:360px;font-size:1.125em;color:#fff;text-shadow:0 2px 4px rgba(0, 0, 0, 0.5);background-color:#7A7F86;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/2910df7a2629b21d2e0a15d5011ee245/d8255/title.jpg);}</style><div style="background-position:50% 50%" class="css-1ex7ar2-Wrapper e140x8tc2"><style data-emotion="css fqnm68-PostTitleContainer">.css-fqnm68-PostTitleContainer{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-fqnm68-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-fqnm68-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-fqnm68-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-fqnm68-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-fqnm68-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><style data-emotion="css bb5jcx-StyledContainer-PostTitleContainer">.css-bb5jcx-StyledContainer-PostTitleContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column-reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse;-webkit-box-pack:start;-ms-flex-pack:start;-webkit-justify-content:flex-start;justify-content:flex-start;height:100%;padding:0 90px 20px;}.css-bb5jcx-StyledContainer-PostTitleContainer::before,.css-bb5jcx-StyledContainer-PostTitleContainer::after{content:"";display:table;}.css-bb5jcx-StyledContainer-PostTitleContainer::after{clear:both;}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}.css-bb5jcx-StyledContainer-PostTitleContainer >div span{margin-right:0.4em;cursor:pointer;opacity:0.75;-webkit-transition:opacity 0.5s;transition:opacity 0.5s;}.css-bb5jcx-StyledContainer-PostTitleContainer >div span:hover{opacity:1;}@media (min-width: 38.125em) and (max-width: 48em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:60px;padding-right:60px;}}@media (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (min-width: 30em) and (max-width: 38.125em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:56px;padding-right:56px;}}@media (max-width: 30em){.css-bb5jcx-StyledContainer-PostTitleContainer{padding-left:16px;padding-right:16px;}}</style><div class="e140x8tc1 css-bb5jcx-StyledContainer-PostTitleContainer e1ig3f2t0"><style data-emotion="css 1g33qqm-PostTitle">.css-1g33qqm-PostTitle{font-size:2.5rem;margin:0;word-break:keep-all;}@media (max-width: 48em){.css-1g33qqm-PostTitle{font-size:2rem;}}</style><h1 class="css-1g33qqm-PostTitle e140x8tc0">모바일 기기 데이터 수집 서버 개선기 2부 : 성능개선</h1><div><style data-emotion="css 1muk9kd-StyledLink">.css-1muk9kd-StyledLink{display:inline-block;word-break:break-all;color:inherit;-webkit-transition:text-shadow 0.3s;transition:text-shadow 0.3s;}.css-1muk9kd-StyledLink:not(:last-of-type){margin-right:0.5em;}</style><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/Dev Notes">#<!-- -->Dev Notes</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/API Gateway">#<!-- -->API Gateway</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/AWS Lambda">#<!-- -->AWS Lambda</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/Kubernetes">#<!-- -->Kubernetes</a><a class="css-1muk9kd-StyledLink e1esqkvg0" href="/tags/AWS Cost Optimization">#<!-- -->AWS Cost Optimization</a></div></div></div><style data-emotion="css sz93qs-PostContainer">.css-sz93qs-PostContainer{position:relative;}</style><style data-emotion="css nokxz1-StyledContainer-PostContainer">.css-nokxz1-StyledContainer-PostContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;position:relative;}.css-nokxz1-StyledContainer-PostContainer::before,.css-nokxz1-StyledContainer-PostContainer::after{content:"";display:table;}.css-nokxz1-StyledContainer-PostContainer::after{clear:both;}@media (max-width: 38.125em){.css-nokxz1-StyledContainer-PostContainer{padding-left:16px;padding-right:16px;}}</style><div class="edaxc5g8 css-nokxz1-StyledContainer-PostContainer e1ig3f2t0"><style data-emotion="css m5nmoe-ShareSheet">.css-m5nmoe-ShareSheet{position:absolute;top:40px;right:50%;font-size:0.75rem;font-weight:500;text-align:right;color:#90959B;-webkit-transform:translateX(550px);-moz-transform:translateX(550px);-ms-transform:translateX(550px);transform:translateX(550px);}.css-m5nmoe-ShareSheet a,.css-m5nmoe-ShareSheet .SocialMediaShareButton{position:relative;display:block;margin-left:auto;margin-bottom:0.625rem;width:24px;color:#B9BDC1;cursor:pointer;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-m5nmoe-ShareSheet a:hover,.css-m5nmoe-ShareSheet .SocialMediaShareButton:hover{color:#90959B;}.css-m5nmoe-ShareSheet a:focus,.css-m5nmoe-ShareSheet .SocialMediaShareButton:focus{outline:0;}.css-m5nmoe-ShareSheet a:hover::before{position:absolute;top:0.5rem;right:26px;width:0;height:0;content:attr(title);color:rgba(0, 0, 0, 0);overflow:hidden;border-left:4px solid rgba(0, 0, 0, 0.5);border-top:4px solid transparent;border-bottom:4px solid transparent;}.css-m5nmoe-ShareSheet a:hover::after{position:absolute;top:0.125rem;right:30px;content:attr(title);padding:0 10px;font-size:1.167em;white-space:nowrap;color:#fff;border-radius:5px;background:rgba(0, 0, 0, 0.5);}@media (max-width: 75em){.css-m5nmoe-ShareSheet{display:none;}}</style><aside class="css-m5nmoe-ShareSheet edaxc5g7"><style data-emotion="css 766jc8-ShareSheetTitles">.css-766jc8-ShareSheetTitles{margin:1rem 0 5px;font-size:1em;font-weight:inherit;}.css-766jc8-ShareSheetTitles:first-of-type{margin-top:0;}</style><h5 class="css-766jc8-ShareSheetTitles edaxc5g6">Share</h5><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--facebook"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.68,0H1.32A1.32,1.32,0,0,0,0,1.32V22.67A1.33,1.33,0,0,0,1.32,24H12.83V14.72H9.7V11.08h3.13V8.41c0-3.1,1.89-4.79,4.66-4.79.93,0,1.86,0,2.79.14V7H18.37c-1.5,0-1.8.72-1.8,1.77v2.31h3.6l-.47,3.63H16.55V24h6.13A1.33,1.33,0,0,0,24,22.67h0V1.32A1.32,1.32,0,0,0,22.68,0Z"></path></svg></i></div><div role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--twitter"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.89,21A12.84,12.84,0,0,0,20.82,8.07c0-.2,0-.39,0-.59a9.18,9.18,0,0,0,2.26-2.35,9.08,9.08,0,0,1-2.61.71,4.54,4.54,0,0,0,2-2.51,9.05,9.05,0,0,1-2.88,1.1,4.55,4.55,0,0,0-7.86,3.11,5.1,5.1,0,0,0,.11,1A12.9,12.9,0,0,1,2.47,3.83,4.54,4.54,0,0,0,3.87,9.9a4.59,4.59,0,0,1-2-.57v.06a4.54,4.54,0,0,0,3.64,4.45,4.7,4.7,0,0,1-1.2.16,4.8,4.8,0,0,1-.85-.08,4.54,4.54,0,0,0,4.24,3.15A9.09,9.09,0,0,1,2,19,9.51,9.51,0,0,1,.93,19a12.82,12.82,0,0,0,7,2"></path></svg></i></div></aside><style data-emotion="css 1sykmk4-AuthorInfo-PostAuthorInfo">.css-1sykmk4-AuthorInfo-PostAuthorInfo{margin-top:10px;margin-top:40px;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::before,.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{content:"";display:table;}.css-1sykmk4-AuthorInfo-PostAuthorInfo::after{clear:both;}@media (min-width: 30em) and (max-width: 48em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:40px;}}@media (max-width: 30em){.css-1sykmk4-AuthorInfo-PostAuthorInfo{padding-left:0;}}</style><aside class="css-1sykmk4-AuthorInfo-PostAuthorInfo edaxc5g3"><style data-emotion="css kbgl97-AuthorAvatar-PostAuthorAvatar">.css-kbgl97-AuthorAvatar-PostAuthorAvatar{float:left;margin:0;width:3rem;height:3rem;border-radius:1.5rem;background-color:#EFF0F5;-webkit-background-position:50% 50%;background-position:50% 50%;-webkit-background-size:cover;background-size:cover;background-image:url(/static/a322c74bf9f015db896b9105632772b4/a2408/changkyu.kim.png);}@media (max-width: 48em){.css-kbgl97-AuthorAvatar-PostAuthorAvatar{float:none;margin-bottom:0.75rem;width:2.25rem;height:2.25rem;}}</style><figure src="/static/a322c74bf9f015db896b9105632772b4/a2408/changkyu.kim.png" class="css-kbgl97-AuthorAvatar-PostAuthorAvatar edaxc5g4"></figure><style data-emotion="css 1wratvv-AuthorName-PostAuthorName">.css-1wratvv-AuthorName-PostAuthorName{display:block;margin:4px 0 0 60px;font-weight:600;line-height:1.3;color:#4B5058;margin-top:2px;margin-left:70px;font-size:1.125rem;}@media (max-width: 48em){.css-1wratvv-AuthorName-PostAuthorName{margin-left:0;}}</style><strong class="css-1wratvv-AuthorName-PostAuthorName edaxc5g2">김창규</strong><style data-emotion="css 5vph4m-AuthorDesc-PostAuthorDesc">.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;}@media (max-width: 48em){.css-5vph4m-AuthorDesc-PostAuthorDesc{margin-left:0;}}</style><aside class="css-5vph4m-AuthorDesc-PostAuthorDesc edaxc5g1">서비스개발본부 플랫폼실에서 DevOps를 담당하고 있습니다.</aside><style data-emotion="css sja78i-AuthorDesc-PostAuthorDesc-PostDate">.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:60px;font-size:0.875rem;color:#90959B;margin-left:70px;margin-top:1.125rem;margin-bottom:1.5rem;}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-left:0;}}@media (max-width: 48em){.css-sja78i-AuthorDesc-PostAuthorDesc-PostDate{margin-top:0;}}</style><aside class="css-sja78i-AuthorDesc-PostAuthorDesc-PostDate edaxc5g0">2021-08-20</aside></aside><style data-emotion="css 1xa252c-PostWrapper">.css-1xa252c-PostWrapper{font-size:1.25rem;}@media (max-width: 48em){.css-1xa252c-PostWrapper{margin-left:0;}}@media (max-width: 38.125em){.css-1xa252c-PostWrapper{font-size:1.125rem;}}@media (max-width: 30em){.css-1xa252c-PostWrapper{font-size:1rem;}}</style><article id="article" class="css-1xa252c-PostWrapper edaxc5g9"><style data-emotion="css nlx8yd-TOCWrapper">.css-nlx8yd-TOCWrapper{color:#B9BDC1;-webkit-transition:color 0.5s;transition:color 0.5s;}.css-nlx8yd-TOCWrapper:hover{color:#7A7F86;}.css-nlx8yd-TOCWrapper >i{position:absolute;top:auto;margin-top:0.15em;width:30px;line-height:1.5rem;cursor:pointer;}.css-nlx8yd-TOCWrapper >i .short{-webkit-transition:width 0.5s;transition:width 0.5s;}.css-nlx8yd-TOCWrapper >i:hover .short{width:18px!important;}@media (max-width: 38.125em){.css-nlx8yd-TOCWrapper{display:none;}.css-nlx8yd-TOCWrapper >i{display:block;top:44px;left:0;margin-top:0;width:56px;height:50px;z-index:1100;padding:10px 36px 10px 16px;}}</style><nav class="css-nlx8yd-TOCWrapper e12xq6cv1"><i class="css-g8nddb-IconWrapper e12rwrnm0" height="24"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="17" width="13" height="2" rx="1" ry="1"></rect><rect class="short" x="3" y="5" width="13" height="2" rx="1" ry="1"></rect></svg></i><style data-emotion="css 1nabgxc-TOCList">.css-1nabgxc-TOCList{position:absolute;top:auto;margin-top:-10px;z-index:50;margin-left:30px;width:0;height:0;font-size:1rem;}.css-1nabgxc-TOCList ul{margin:0;padding:0;list-style:none;list-style-image:none;}.css-1nabgxc-TOCList ul p{margin:0;}.css-1nabgxc-TOCList ul a{display:block;margin-left:-0.5rem;margin-right:-0.5rem;padding:0.3rem 0.5rem;border-radius:0.5rem;-webkit-transition:background-color 0.5s;transition:background-color 0.5s;}.css-1nabgxc-TOCList ul a:hover{background-color:#EFF0F5;}.css-1nabgxc-TOCList ul:not(:first-of-type){padding-left:1rem;}.css-1nabgxc-TOCList >ul{visibility:hidden;opacity:0;-webkit-transition:visibility 0s 0.5s,opacity 0.5s;transition:visibility 0s 0.5s,opacity 0.5s;width:320px;max-height:360px;overflow-y:auto;padding:0.5rem 1rem;background:#fff;border-radius:10px;box-shadow:0px 2px 4px rgba(0, 0, 0, 0.5);}@media (max-width: 38.125em){.css-1nabgxc-TOCList{top:89px;left:0;right:0;margin-top:0;margin-left:0;width:100%;}.css-1nabgxc-TOCList >ul{width:100%;box-shadow:none;border-radius:0;border-bottom:1px solid #E2E4EB;}}</style><div class="css-1nabgxc-TOCList e12xq6cv0"><ul>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#thread-pool-limit-%EC%A6%9D%EA%B0%80">Thread Pool Limit 증가</a></li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#jvm-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%A6%9D%EC%84%A4">JVM 메모리 증설</a></li>
+<li>
+<p><a href="/20210820-dev-notes-006-mobile-data-collector-02/#aws-firehose-%EC%84%B1%EB%8A%A5-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EA%B0%9C%EC%84%A0">AWS Firehose 성능 분석 및 개선</a></p>
+<ul>
+<li>
+<ul>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%EA%B0%80%EC%84%A4-%EA%B2%80%EC%A6%9D">가설 검증</a></li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%EC%A1%B0%EC%B9%98">조치</a></li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%EA%B2%B0%EA%B3%BC">결과</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#reactor-scheduler-%EB%B3%91%EB%AA%A9%ED%98%84%EC%83%81-%EB%B6%84%EC%84%9D">Reactor Scheduler 병목현상 분석</a></li>
+<li>
+<p><a href="/20210820-dev-notes-006-mobile-data-collector-02/#computing-intensive-api-%EB%B6%84%EB%A6%AC">Computing Intensive API 분리</a></p>
+<ul>
+<li>
+<ul>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%ED%95%B4%EA%B2%B0">해결</a></li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%EA%B2%B0%EA%B3%BC-1">결과</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="/20210820-dev-notes-006-mobile-data-collector-02/#%EB%A7%88%EC%B9%98%EB%A9%B0">마치며</a></li>
+</ul></div></nav><style data-emotion="css 2u5l10-Article">.css-2u5l10-Article{padding:0 70px;}.css-2u5l10-Article >*{margin:1.5em 0;}.css-2u5l10-Article .image-wrapper{margin-left:-70px;margin-right:-70px;text-align:center;}.css-2u5l10-Article .image-caption{margin-top:0.75em;font-size:0.833em;text-align:center;color:#7A7F86;}.css-2u5l10-Article >p{line-height:1.75;}.css-2u5l10-Article li>p,.css-2u5l10-Article li>ul{margin-bottom:0;}.css-2u5l10-Article pre,.css-2u5l10-Article code,.css-2u5l10-Article kbd,.css-2u5l10-Article samp{padding:0.125em 0.3125em;white-space:pre-wrap;font-size:0.889rem;background:#F7F8FC;border-radius:3px;}.css-2u5l10-Article p>code,.css-2u5l10-Article li>code{vertical-align:1px;word-break:break-word;}.css-2u5l10-Article pre{padding-top:0.5em;padding-bottom:0.5em;}.css-2u5l10-Article pre code{background:none;padding:0;}.css-2u5l10-Article a:hover,.css-2u5l10-Article a:active{-webkit-text-decoration:underline;text-decoration:underline;}.css-2u5l10-Article a.anchor{margin-left:-1.5rem;padding-right:0.5rem;line-height:1.1;color:#90959B;}.css-2u5l10-Article a.anchor >svg{fill:#90959B;}.css-2u5l10-Article .embedVideo-iframe{border:0;}@media (min-width: 30em) and (max-width: 48em){.css-2u5l10-Article{padding-left:40px;padding-right:40px;}.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-60px!important;margin-right:-60px!important;}}@media (min-width: 30em) and (max-width: 38.125em){.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-56px!important;margin-right:-56px!important;}}@media (max-width: 30em){.css-2u5l10-Article{padding-left:0;padding-right:0;}.css-2u5l10-Article .gatsby-resp-iframe-wrapper,.css-2u5l10-Article .gatsby-resp-image-wrapper,.css-2u5l10-Article .image-wrapper{margin-left:-16px!important;margin-right:-16px!important;}}</style><article class="css-2u5l10-Article edaxc5g5"><p>안녕하세요, 플랫폼실 김창규입니다. 🙂</p>
+<p>지난 1부에서는 AWS서비스들을 이용하여 구축된 모바일 기기 데이터 수집서버가 가진 문제점을 분석하고, Spring WebFlux로 새롭게 개발하여, 비용절감과 성능향상의 효과를 거둔 이야기를 나눠 보았는데요.</p>
+<p>개선한 애플리케이션의 배포 이후 며칠 간 응답시간을 확인 해 보니, 전체의 1% 미만의 요청이 1초 이상으로 기록되고 있었고, 특정 API가 아닌 모든 API에서 종종 발생하고 있었습니다. 영향을 받은 API 중에는 HealthCheck API도 있어,  이로 인해 서버 중 한 대가 Pod health check에 실패해 재시작되는 상황이었지요.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 70.20408163265306%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnUlEQVQ4y+WSQQvCMAyF+///nm7nqd2Y4Nq6ruts0zxxqAeVKdiDYOCRQ8KXBy9iCAGJGZfia/+mxFp38ET5gKVReYFFboeFVj8PzB6K/rtQ5j+Md+BLLc0eJEqtMKW0ePW2/JHDlVEY3QDYI5KzSEM/i50F9wY8+SfwosN6HGHaGkFWsM0ORm6gZYXQ1qBmCzrscYoR3k+IRKA3OgOl41PhA38E6QAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="00"
+        title=""
+        src="/static/67c9f0db66d6f099b67067a72a2a8e17/2b72d/00.png"
+        srcset="/static/67c9f0db66d6f099b67067a72a2a8e17/232f7/00.png 245w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/9319d/00.png 490w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/2b72d/00.png 980w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/814a3/00.png 1470w,
+/static/67c9f0db66d6f099b67067a72a2a8e17/13e26/00.png 1630w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>전체 API에 대해 response time histogram</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 68.57142857142857%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAABFElEQVQ4y7WUzUrDQBSF561EENy78lVcScE38B26cOVCpKhQW1xEF9oKNlBdFG20EomW/oiITZyZzCeTNsWgmzR64DKXO8y55/4wYiIlBsAYTAGziI1BXI9H6FkgvVgE6VvRHg8zhEUU2lO0E4VxYYUp/oPw95IXTZAh/E469/9CYZHykx6qWQ8tIq0ZRuGPBLkVhlolAacfcD54mS/qQoQWweSDnftb1pwqx4GfxOz08w5KuKNB4pz2A5ZrFVbqB5S9TuZxngUX5W6HauCzflZn9eSQpVqFjauLaT9jnX/Kuw93bN+4lFpNSm6TzVaDLfeS/UePvZ7Hkd/DeX6i+/bK+2eE/UyshVISSYVUU1NKobXmCzaLQds1d7okAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="01"
+        title=""
+        src="/static/13f2183edf3e26ac4a6848c7b8bcb9a0/2b72d/01.png"
+        srcset="/static/13f2183edf3e26ac4a6848c7b8bcb9a0/232f7/01.png 245w,
+/static/13f2183edf3e26ac4a6848c7b8bcb9a0/9319d/01.png 490w,
+/static/13f2183edf3e26ac4a6848c7b8bcb9a0/2b72d/01.png 980w,
+/static/13f2183edf3e26ac4a6848c7b8bcb9a0/814a3/01.png 1470w,
+/static/13f2183edf3e26ac4a6848c7b8bcb9a0/baffc/01.png 1960w,
+/static/13f2183edf3e26ac4a6848c7b8bcb9a0/a9a0a/01.png 2182w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>API 응답시간이 100ms 가 초과하는 요청의 Histogram</p>
+<p>특정 API 가 아닌 모든 API에 영향을 미친다는것은, 특정 로직이 시스템 전반적으로 영향을 미친다는 뜻이었고, 이 원인을 찾기 위해 Deep Dive  보았습니다.</p>
+<p>이번 2부 에서는 이러한 API 성능개선을 위해 <strong>AWS Java SDK 의 ClientSide Metrics</strong>을 활용,  <strong>Firehose 성능 개선</strong>을 위한 재설계, <strong>Spring WebFlux</strong>를 이용한 개발 시 주의점을 다뤄 보겠습니다. 그 전에, 1부 내용을 다시 보고 싶으시면 아래 링크를 클릭하세요! 😉</p>
+<p> 📍 [1부 다시 보기] ☞ <a href="https://mesh.dev/20210419-dev-notes-005-mobile-data-collector-01/">[클릭]</a></p>
+<h1 id="thread-pool-limit-증가"><a href="#thread-pool-limit-%EC%A6%9D%EA%B0%80" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Thread Pool Limit 증가</h1>
+<p>먼저 WebFlux를 구동시키는 Reactor의 지표를 확인하기 위해 <a href="https://github.com/reactor/reactor-core/blob/master/docs/asciidoc/metrics.adoc">Micrometer에 Reactor Scheduler 메트릭을 활성화</a>하였습니다. Prometheus로 메트릭을 수집하고 Grafana를 통해 Dashboard를 구성하였는데요.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 96.32653061224491%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAATCAYAAACQjC21AAAACXBIWXMAAAsTAAALEwEAmpwYAAADcElEQVQ4y2WUS3MbVRCFtXVk2dJo3jNX835IM3pZlm3J8iMESGI7jklhdiyooop/wIZiAVXAIj+ANb/0g3vlsR2yONU19053nz59ZlqG5eKLADEIcT1BTzN40e58gp2dNjsv2tvn3c5n98/R6vYtDNvDcjxsV9A3bHZ3u+x2eip2e7o6t12fTqdHu91lb19jd69LR2K/94S9Li3dsJEsZSEJw3aJRylhkRDkMZbr4/oBnghJxznRKFXN47RQCOOMQZgQJRmeCGjppoPl+Ji2h9a3qVc1q5sjykXJ/HLG5u6E/T2DqEy4uD9lfDpW78sCspHMM9WEPrppPzE0LAdNs1h+vSCpU0QSIOKAi/s1Zx9WrG+PSaoUdyCQJDTdUmgmk9D65pahCBP8IMYfxERZRlLmJGWhEKYpk9WM4UFNnOdEeaaSZd7/IRu0NN1UoluOeIj+I0xb6heSpCPCuMDxBmq8hk2vbz4ylej1DVpy1GYpUgPZqWHQxK0kW1kkZOMoyUmykiQtCKJULUdq2mrYyYRGYIlomFIuhmiajel46l4uzTBdXBGQZiV5WZHmQ0QQMwhi1ajVFFA6GA6OEFx+t+Htj6/48vsLLNdT5zIeXy05frPEFQNMy3t0h2z2qKEcSy5FdvFFRDosOXy5VFhcHFLOasI0Ix2VLF8tmZ7O0KUjdBPNkFu20J9vWR40nSREkBBFBWGUY9nSIu6TTzUbo+9hmj6WJcjSCtsJaGv6U8FG8E8sYH0eZYI7GLB5d8nZ3UvWN+ecf3jF4WbOJkgxTZdu48NGQ1X4QUeRhPSNpw1Ldn4WcPf7Nfcf7/j2r1vef7zlp1/f88/qK6Z+hGnY24LGM2G9MCCpMobLEX3dfty+7fkMyojrX17zzR833P12xc2f1/zw8xV/L84pLR9dfxi5YSjHiquU6dmEel3T07bGTeqMel2pH8bBxRGbm0vWb885frNh/cWKd0cb6skBprSNTNgW3X4Z2WRIfTyhmI9w/EChOhozPpkSSm8e1pTzMeW8Jp+NGE4qFkVFHOeKWEs3LIphzaieKlTjGXlZU44mjGcH6lmZVyR4aUB+UhCOY6JpQjhLyOuEhRtiOy6G70oNbWYHh9STuUqUxeM0334JxUidpXmpPGoJj2icMCgipacYRkR5ROUFmKZD7z8N/wVWzQuTOhXheQAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="02"
+        title=""
+        src="/static/e79f48f48b4efc9767ab516c95511dc9/2b72d/02.png"
+        srcset="/static/e79f48f48b4efc9767ab516c95511dc9/232f7/02.png 245w,
+/static/e79f48f48b4efc9767ab516c95511dc9/9319d/02.png 490w,
+/static/e79f48f48b4efc9767ab516c95511dc9/2b72d/02.png 980w,
+/static/e79f48f48b4efc9767ab516c95511dc9/04b62/02.png 1261w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>Server Reactor Executor Monitoring</p>
+<p>먼저 Dashboard에서 눈에 띄는 점은 다음과 같았습니다.</p>
+<ul>
+<li>Threads per scheduler 그래프에서 Bounded Elastic용 Thread가 10개 이상 늘어나지 못해 평평한 그래프를 그리고 있음</li>
+<li>Task Execution Latency 가 1초 이상 Spike를 기록하고 있음</li>
+</ul>
+<p>이에 Thread Pool이 모자라 API 응답 지연이 되었을 것이라는 가설을 세우고, 먼저 ThreadPool이 10개 이상으로 늘어나지 않은 원인을 조사해 보았습니다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token comment">/**
+   * Default maximum size for the global {@link #boundedElastic()} {@link Scheduler}, initialized
+   * by system property {@code reactor.schedulers.defaultBoundedElasticSize} and falls back to 10 x number
+   * of processors available to the runtime on init.
+   *
+   * @see Runtime#availableProcessors()
+   * @see #boundedElastic()
+   */</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> DEFAULT_BOUNDED_ELASTIC_SIZE <span class="token operator">=</span>
+      Optional<span class="token punctuation">.</span><span class="token function">ofNullable</span><span class="token punctuation">(</span>System<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"reactor.schedulers.defaultBoundedElasticSize"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>Integer<span class="token operator">:</span><span class="token operator">:</span>parseInt<span class="token punctuation">)</span>
+          <span class="token punctuation">.</span><span class="token function">orElseGet</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token number">10</span> <span class="token operator">*</span> Runtime<span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">availableProcessors</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
+<p>BoundedElastic Scheduler에서는 최대 Thread 갯수를 설정 혹은 기본값으로 정하는데, 이때 기본값으로 Available Processor의 수 * 10 으로 기본값이 세팅되는데요. <strong>저희 사례의 경우 별도의 Size를 지정 하지 않았기 때문에 기본값으로 자동 설정, 최대 10개로 제한이 되었던 것</strong>이었습니다.</p>
+<p>그렇다면 Available Processor가 1이었다는 말인데, 구동환경은 8 Core 쿠버네티스 노드였거든요. 도대체 어떻게 된 것일까요? 🤔</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">...</span>
+<span class="token key atrule">resource</span><span class="token punctuation">:</span>
+  <span class="token key atrule">request</span><span class="token punctuation">:</span>
+    <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 300m
+    <span class="token key atrule">memory</span><span class="token punctuation">:</span> 1Gi
+  <span class="token key atrule">limit</span><span class="token punctuation">:</span>
+    <span class="token key atrule">memory</span><span class="token punctuation">:</span> 2Gi
+<span class="token punctuation">...</span></code></pre></div>
+<p>먼저 Pod에 설정된 Resource 할당에 CPU 정보를 보면 request에 0.3Core이고 limit은 설정하지 않아 Burstable로 설정하였습니다. 하지만 JVM에서 Container Support가 활성화되면 Pod의 Limit을 기준으로 Available Processor가 설정이 되는데, 만약 limit이 설정이 되어 있지 않아 Burstable로 설정이 되었다면 request의 CPU를 Available Processor로 사용하는 것으로 확인하였습니다.</p>
+<p>request는 0.3 Core로 설정이 되어 있고 Available Processor는 integer이어야 하기 때문에, 올림하여 1로 설정된 것을 찾을 수 있었습니다. 이에 그래프 상으로 보여졌던 Thread 부족을 방지하기 위하여 Limit CPU를 명시적으로 3으로 설정해보았는데요!</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">...</span>
+<span class="token key atrule">resource</span><span class="token punctuation">:</span>
+  <span class="token key atrule">request</span><span class="token punctuation">:</span>
+    <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token number">1</span>
+    <span class="token key atrule">memory</span><span class="token punctuation">:</span> 1Gi
+  <span class="token key atrule">limit</span><span class="token punctuation">:</span>
+    <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token number">3</span>
+    <span class="token key atrule">memory</span><span class="token punctuation">:</span> 2Gi
+<span class="token punctuation">...</span></code></pre></div>
+<p>적용하고 서버 배포 후 피크시간을 모니터링 한 결과는 어땠을까요?</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 89.79591836734696%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAAAsTAAALEwEAmpwYAAADzklEQVQ4y2WTyY8bZRDF+w/IxDPd7n2z23bv++q2PTOJRSaaSUgEHIKCAmIRF26IG0funMMZ/s8f6p5IHDi8r0olfVWqV+8JsqIjLRVEcfkISUZcKkiSzJUoISsaa287Q1QMFpKKKGssFf1/kFUDQdVNdGeDHdY4cYPlZ2j2Bn0VzDU7qDC3KZK1o/Btvh0VDNMkjDPSrCT5hDgt8LYBgqIauFmH151w8pp1e403nPH6Z6yqPW7RsOlu8A733PZbDtFTdNOmaQeG8US/P9ANB9pujx/Ejw29PCc+jkT7fo7B0BHuu8faOBAdBrb7npsm45umwTQdqqan7fdz47YfqdsBP4wRJg7Lw5HufKY6nRhf3tHfntg/f0Z7PlPf3HD7+RtOr+75bDjxMhrQdZtdEM9r+2FCEKW46y1TL0GUdTxd5rgRGTdLElPEUyUCc0mzuuI6ULhOXLKVgWWukE1/PoCimai6NWPKFc2Yo6AaDmvH4CGX+fWFTBvpXMomG9fgOtf54XrJGKlIioZheXjbAd10SLKCvKzJipo0r+aY5RWCNk0wbORdzP1XZ9yNx6WozhK4uFhSPD+iOmuuRAVNM0ktH8tdU1TNzOHEXVm1M5d12yOoqsk6zXj/8U9+/ucv+i/fsngqYvshr37/je///sjx/TueihKFm/BH+4HNyqcdRvafrjxdezzezFFYyhq7sqJ5/UD7cE9994JtmpP0A/3bNzSvHqjuXuBEMaVfMto5s9TWG4IwYbML5nzS4JQLE5HSUmVxccXFkwWqYuB6O2zHQ1xILJ5ccrmQmAZPDrE2O/wwZb0JSPNmhufHrLwAzbARpkfWDGTNxLRclqrxn51UA2XiWLcQJRVz7ZL2BVGdEVQJfhmTtgV9mJE1GZplI0yNVM0i83O6vONqqc4rKYpJG7RzPh1IM935Q1wVJFVJkKcEeUbeNFRJQVIUuJsdwlI32Dkhv7z6kc/2Zy4uJRTd5DQc+OnZBwzDmVfN6wHLtUj2BUlXELUZUZuTtDmdnxDGEYazQliqOlVW893dO879Lba9IgwjXt+95OvjF1RpRRykDIdbbMchaSrytiEqC+KyoOw72rwhyQt0y0UwbZeq6WaRlnVL3fQzJm0VdUNZNrPp117Ayt8S1DF+EbPLQ7Z5SFDEVNuQqIjQbRfBdtezfg7Hm1lL/f7IMB6pu2GuTS5YiDJXkoJu21RjT33Yk3cNed/SnQ6MdU8zDnh++OiUyeRRnBHGKVGSsQsinJX3CNebdeY4Hs7Ww/RttJWJ7lmPWJlsFQPbs7laKvwLkioTRlb4t0UAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="03"
+        title=""
+        src="/static/dbd28418e45b1311c838ef5c3c90728b/2b72d/03.png"
+        srcset="/static/dbd28418e45b1311c838ef5c3c90728b/232f7/03.png 245w,
+/static/dbd28418e45b1311c838ef5c3c90728b/9319d/03.png 490w,
+/static/dbd28418e45b1311c838ef5c3c90728b/2b72d/03.png 980w,
+/static/dbd28418e45b1311c838ef5c3c90728b/6a078/03.png 1240w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>설정 변경 전 후 Reactor Executor Monitoring (좌측 2개의 피크는 적용 전 오른쪽 피크가 적용 후)</p>
+<ul>
+<li>ThreadPool은 최대 30개 까지 사용 할 수 있고, 비교적 여유가 있는 것으로 보임</li>
+<li>전체적인 Latency는 감소하였음</li>
+<li>단, 해결되리라 예상했던 Task Execution Latency 는 여전히 Spike를 기록하고 있음</li>
+</ul>
+<p>위 사례를 통해 다음과 같이 결론을 정리해볼 수 있었습니다.</p>
+<p>👉 Thread 부족이 Task Latency를 발생시키는 주요 원인은 아니다.</p>
+<p>👉 하지만 전체적인 처리 지연을 발생시키고 있어, ThreadPool수를 늘려 전체적인 지연을 감소시켰다.</p>
+<h1 id="jvm-메모리-증설"><a href="#jvm-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%A6%9D%EC%84%A4" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>JVM 메모리 증설</h1>
+<p>이어서 APM으로 메모리와 GC를 확인해보았는데요. Pod Memory가 Limit에 근접하게 가득 찼고, Mark &#x26; Sweep 이 지속적으로 발생하고 있어, 아래와 같은 가설을 설정해 보았습니다.</p>
+<ul>
+<li>가설 : 메모리 부족에 의해서 GC가 발생 →  이러한 GC가 Reactor Scheduler에 영향을 주었을 것</li>
+</ul>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 99.59183673469389%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAC00lEQVQ4y52U3Y4jNRCF8/5PwSsg7vaCGwb2BsQFy2g1YZlkMkkmk6TTbbv87/6Q3UkmiwYJsHTkU66o0sd1yjOlFMMwYLRGa912EUHEEGMgp0T6l/AhMLPWIdbinCPWRM5c1vgfUUph5tQJr3tyEMZoKV5TgvkK41dcrvEb14zJTQVf+gGvd/jDGn/qSN4SrSGIJllpCGJuuCZW7oQoZsq5GjtClbxSgtJb7OGZYuWsdeT/rHpds9z+xWJdJKZCiJGYMyF4vLN47wje4Z2cYfBWX+PgLE56YjhLflLCQlsGs0epHeq4p3/Zoo1BUkZCRPuAxIiNCeMDJkSk8ro3XnORGCOzpRK+9ArVr/F6Qz4dCLsNxbur/LGUt87X6zhfSeXjDa8umY3OQnAknxjL1P5qnJgyOUXGlCg5kWOkNF/Ws0hpSFM+Bsh5krxVhiq70yf6YYfqjwz7V/SpQ1uHqhDBOI92DmUEJXbKiWUQQVuLOD9J/tJrfj8qun5LMCti/4rfrgn7XfvcybDjm3nHkXI5H6f4wltBby0VzkdCm5REzJGUQ+t0jBXVY44YLCmGNpITdy1XO5xTaMVng3V01jGIodfDFSetGKzQS70ORV/zojkZ02S22NRYt98ZZ6cvvO80n7sTcprjjk+4p0fC4ZVymdHxb5Irf0fyeJEc2hhZgnOtY63V1SYlQ04Tbnm+5TdxKZNkbRRWH7Bqjx32jYvaY4Y9Tnc402HVse1Xrju8OWH1saGeexnalM3mvbDvlrj9A3rxB6/HR9bdA6+bDTIIOcfWnJRCw9Sk0N6/eJ6O2zdxtlKOgx2RDJd5KLdv3Dvv3j+tZuz5n9/yy/03fHz4jvvl9yzWP/F58YH58gOr9R3z5x9Zbe5Ybj7yuL7jefMD65efKVHOzXgbv1aw9L+x2f3Kp80DSZ5IekGxK3LlZkm2K6Ke9hon80Syz82DvFPwL4mXEkkwBudHAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="04"
+        title=""
+        src="/static/4fa86b6b3abd72598ac71493fb401b06/2b72d/04.png"
+        srcset="/static/4fa86b6b3abd72598ac71493fb401b06/232f7/04.png 245w,
+/static/4fa86b6b3abd72598ac71493fb401b06/9319d/04.png 490w,
+/static/4fa86b6b3abd72598ac71493fb401b06/2b72d/04.png 980w,
+/static/4fa86b6b3abd72598ac71493fb401b06/27179/04.png 1180w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>NewRelic으로 측정한 JVM Metric</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 51.42857142857144%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB2UlEQVQoz33RO2/TUBiAYY+p01x8iX1s5/iaxLekbdIkJaWtKgFCUFQadUAqEgNDQQgGdnYm6MTvfVGcQFsEDI/e7+jo6AyfIlyJaTnopk1bM2m2DFS1Ra3WYKvWqLo61+stVLVZ9a5GU/ut2dJRLFvgOC6u5+FHAb08IR+njOYFo3nJcFYwnBYU45x+2SPJEuI0XncQE/Uiwl5IPIjo+hIliGPSYUacJQx2BgznJeOTXWaPJsweT6pOTvfYPRoxejCkmOYU+znl6pP9nHyckY0zymlOkAQovgxJZEjo+YSujy8k0vLomi5dc91A+EROgG93CYQkcORt7/BdieJ3A7IwYRBEpGFMFiUUvT6jPK0M0wFlv0+e9MjjpLq/J4zX78KEfhChWMJDWy1E79A2LDTTwrAFpuOsCUHHcTGFU939afXmLkUzrGrL/2M7XYQnMW2Hju3+nVjVQTE6At2waWkmrbZJo2FQr2uoW7+02VZ16qpezf9Ua9PY1lE8GSBDHxlKojQim6TsHY9YPJ9ysjzg+OKA08sFp5eH1Xz0cs7DFzMOz6Zrm/n4Yk45z1F2FrssPz3j/MNTLj+fcfVlyduvr3h38/rW942b+95vev3tio8/3nB+/YSfcCIfl3bYTy8AAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="05"
+        title=""
+        src="/static/fa9280f1fd27cd3ef958479d4b63554f/2b72d/05.png"
+        srcset="/static/fa9280f1fd27cd3ef958479d4b63554f/232f7/05.png 245w,
+/static/fa9280f1fd27cd3ef958479d4b63554f/9319d/05.png 490w,
+/static/fa9280f1fd27cd3ef958479d4b63554f/2b72d/05.png 980w,
+/static/fa9280f1fd27cd3ef958479d4b63554f/814a3/05.png 1470w,
+/static/fa9280f1fd27cd3ef958479d4b63554f/baffc/05.png 1960w,
+/static/fa9280f1fd27cd3ef958479d4b63554f/6ff08/05.png 2485w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>Pod의 CPU/Memory Metric</p>
+<p>Memory 부족이 성능에 영향을 미쳤을 가능성을 배제하기 위해 Pod의 memory request/limit 을 기존 1Gi / 3Gi 에서 <strong>3Gi/6Gi 로 3배 증가</strong> 시켰습니다. JVM 은 Container Support 의 MaxRAMPercentage 옵션이 80%로 지정이 되어 있기 때문에 Pod의 Memory에 비례하여 HeapMemory도 자연스럽게 메모리가 증설됩니다.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/sh</span>
+
+<span class="token function">exec</span> java <span class="token variable">${JAVA_OPTS}</span> -Djava.security.egd<span class="token operator">=</span>file:/dev/./urandom \
+  -javaagent:/home/agenttrace/newrelic/newrelic.jar \
+  -XX:MaxRAMPercentage<span class="token operator">=</span>80.0 \
+  -jar <span class="token string">"<span class="token variable">${HOME}</span>/app.jar"</span> <span class="token string">"<span class="token variable">$@</span>"</span></code></pre></div>
+<p>Memory를 세 배로 늘린 뒤, 하루 동안 모니터링 해본 결과는 어땠을까요?</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 812px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 140%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAcCAYAAABh2p9gAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEVElEQVRIx5WV23IctxVF+2/9FfmEvPg9H5B3P6VStvMs2Ylk0ZbIEYfUiDOc6RvutwawXOgZkQ5TZTtdtesc9AUN7LPPRuecQwhBCOEJMcYVKSWWZflDtPdyzhhj6Ky1GGPXgZRyndD7M2rl/7q893RSKawzGKuI0UPN1AYKpWZiWYi5IRFLIRaeUS8oGSg47+iKVTAfQZzATNRoyOKR0u9Ypj16PqL1iFED2itM0BgvV2gnL896injEDY90u3FmmAbc/IDq95j+RPIepzV+nsnGkLQmGMOiBElLvJhYjGRxBi9GwjSSncNISfdOenZyIMpfsMcN9vaGmheWnFc0GnPJK/GllBVpWSi1kcKat/fa5RqHyTu8tTifMM6TXxBdX+Rfxq1gL4u2FkVIiZEzyUiCUSxWUZwhtah6qpuotmGExULxUNwlnlH0QHYaLQVdk4sNEZMSMmZEzMwxI5fM6AOjNhzHkeMwoKTAKolREms01jm0nDkJgYgLszZ0bwbBd/uRV6eJ6fEd4/41pv/A9O4/nN7+gLy+wmqNjRETE8IHeqmQxiK15jTNWO+pteKspRMxcXSB0Xm8lwQvqCVQg6d4S3Vtm+XPCTsEuraFKAVBzDgp8VJSU6LGALU8V2AN9VzdWs95KWskLxA9zmg6bw1L6+GUcCljUkX6BRXSugUX01r59veSl/MElwlXALZxqxWzUnSbUXA1Sj4Kw3E6oKZ7jHpgOu3Z32053W44bK7ph4FZSKZ5RowDUsxrkYb+xCAVJhe0sXQfTeDHUfHvyTKIz/j5A05t8Md73HZD3G3xuy05padtN4f5ssJlydQLx855umjNqju8JTn/u6TXeuGML6qu/8VxbMIehORhmtlLtWrOWcNJaXaz4Dj3TOK0Nr+UPcmMq8CLHVnMxTDUgFMDk+w5TT3dUUjulOXOeA7Gr3o7uMBGOa6l4+Aig48IH5lCQoTE4AJzK1pa6F3gTntubeRuVnRvR8X3h4nNNKD3r1D9W+L9e+Sb14g3r1iMWg3AO7dO0EzCOUtuPOZMc/wYwrr94BydCZHZefTq0oYQ3Fl/pfxpQT+bQ6DTTczN54zCK0nQiho95bcIZ7T7Nf5v3kAKq4d2NbWBpiYHi6dmR1kMRAPJQjDU9nxRLE6QvSAHeY6/yUtoxjHRve9nfjocGY4fOOyueNy8p9/esH34wPXuivvTDZ/uPvHp9gFlNM3u+nFAKInUimEamZrIjWYWgm6rPRupifqeILaEx8/E4wOTPnASn5jsHjEIVG+eXDbnZxte+/nC9Wqw0VmiMRhfGH9f1+uH9ckwuIj8Oa6nXliWdfA43/D65u/YFP6wmqmt8rKqLy34tMLx4Vvuf/6a3Zu/cHz9FXdXf2X4/A/M2tOf8a55pDrDjhixZXf9N4b9P1+042VCN73DHv7FDw+3fLPdsZ8PJL0nuAFnpvXwb9r0rdejxagTiztRsz0fWi9W+CtkO3X+lNkizAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="06"
+        title=""
+        src="/static/ab3c443127727a3ba403476cc9ae92e4/de514/06.png"
+        srcset="/static/ab3c443127727a3ba403476cc9ae92e4/232f7/06.png 245w,
+/static/ab3c443127727a3ba403476cc9ae92e4/9319d/06.png 490w,
+/static/ab3c443127727a3ba403476cc9ae92e4/de514/06.png 812w"
+        sizes="(max-width: 812px) 100vw, 812px"
+      />
+    </span>
+  </span>
+  </p>
+<p>변경 이후 측정한 JVM Metric</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 98.77551020408163%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAADaklEQVQ4y22U22/cRBTG/UiaXV/Wl7nYXttjr7272U232woi0cBDokCVqkgFqigCFLq7qZCQKG3Spg99QAL+AZ4gXBQu5c/80Bw7Szfqw6czc76f53JmxkacKFiOh7bloG2uqtW2YXd8uD6rc29glqxpI2AcRsAEGBPwXAYuJIlxCc51FAijLpJUUf91hi+Zuh+wOhqcSURxiNGtPpjPwAIGwTmEEOCM1+IcUkoMpxUCTzMcggtidOQBh6fzXMLYO3gPRy8/xsn5HPdmexhPR1CZQppkSLsZ9j/fwdHLT3B48hFOf51j/4sdjCbDJRPLBLc/eAfv3tmiHRg3tm5iunUTg80hBpMh8kEPaZEjTlOKvY0SvVGJarMPVRUox1XN5IqYbpaht1EhKwsqnSFkAtsJsLZuYu1arWsti6RzrbYDy/Hx1lrtUVz/nyGu+Y7pQ8kShTxO0EsyFN1V5XGKQV7i+nCEXqLeyGjpfBzGdQ1H5QCTtMBmklO8oXorup4WGHcVJlmBzW5O8XV/onqY5iVU2K0HTNMMw6rEnQfvYzzqI6cZFXqpQpEoVHmB0bCPjX6FvfvbGFRlvTJaccNkOTJ9tUQII6/6iLIUaT9HmCXwmYTPw1osRCAjhCqBTBJiRBzD53KFYzICpy0LGDJKYVku1tctehmm1YFpd2Ba9cvouAFcj5HXatkwTYc84qwOMRRNpz7ldDABlzEpykqExQa4iBDnA8hihDDOkJVDJMMpRFKQF2lP9andLccIqR1DyFCvMIHrc1KgtxAIWpFue4FAx2PkMRGtcNq7zPsNR09PN7RJQBNruI66VpcfX/Wu5mlAr1mR4wZULy2nkW7bHQ+24y29q8wl53R8yDCCkaqSttA2neWBWLZLA1mOS9vhstsUvj4InaeJGum+ztMpCxlB/8J05DJEoJfvcjimD9v0IWWMVOWQUUTShdc/gUtfy3WCemK95dkPD/Di32Oc/b3A878W+PqnzzD78VPcne/g3qNd6p/9syC9eHWMZxdzHH13n/y9w23c3n8bB6d3sXu4TQMbD78/wOnFMb75+SEen8/w5Lc5nv6+wOmfj0i6r/Pfns/w+JcZtZ/+scDJxTFJ+2evvsKHX+7WA8apgowTuu1042VMV2GpJkcvoWF0XtddR+KbnIxi/AdF5zcgncbc5gAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="07"
+        title=""
+        src="/static/80cec4a8909c84c13d2ac654818c6da6/2b72d/07.png"
+        srcset="/static/80cec4a8909c84c13d2ac654818c6da6/232f7/07.png 245w,
+/static/80cec4a8909c84c13d2ac654818c6da6/9319d/07.png 490w,
+/static/80cec4a8909c84c13d2ac654818c6da6/2b72d/07.png 980w,
+/static/80cec4a8909c84c13d2ac654818c6da6/74f55/07.png 1245w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>변경이후 JVM Metric</p>
+<p>메모리를 증설한 뒤 JVM Heap은 증설된 만큼 많은 메모리를 사용하였고, 반대로 Mark&#x26;Sweep GC가 소폭 줄어들었습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 88.9795918367347%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAAAsTAAALEwEAmpwYAAADwklEQVQ4yz2UR4/cRhSE+QNkbZhAcpibaZjjcDicnR2tBCWnheEALGT5Yh902JsN+2b45pN/82ewJejwUM0+vC6+qnrKcq1ztVhzvVBZLDWeXi25Wq5YrFQuFyvWuoEXxFiekPfXyzVrzcDxAlwR4nj+57O+sVA0w8LyPAzHRduYFFmBb2eouoVjxfhOznK9wTZCQrdkrZmYlktZd1RN9wl78rLBtF2UOIk5HlvGseF8N/D25TMyd0fk1OTeICuW5x2lN+IYWwzLpev39MOBbvcRm26QTJU0iXlxHrm7HbibBl5N9+z2r8lFTt89Zzh8Q+qmtM2Zw+me0E0kk91+Yn+4YdhPDONRfrsiQAmCgF1Xshsq2rol9WviMCSJYqIgIom2VHlJlqTEYUQgArSNRRinxElOkhYSgyiRs1WWK5O1FrJSQwzdYuobquqMKzKq+szh8CVZsWc/vmK/f4Ptbj+L4vmRRNv18fwQ3bBRNpbAdAsc0bLZGHz39Wt+evgTVTd58/YX3v/6j1T8xcsHfnz4HcMS2K6QM5znN2Pd9gzjJJkq67VO0PeIuubiyQVDccP01TuePvkCf7ilu3/PxdMLRDtRvPme68UK2/OlunOjWelZ4bn5/NuKEyf88N+/3D1+wFmZ/PXqkePPj6imy/Dwgem3P9Atj/rbdzx7/BszSBAiZJxOTDdnWTO722fPKaoGxXAFUdsT1A2eiMmDAj9vcKMMZ65tgeVvsYMEO87RnYC1usEPYrZpQRgn0twzO8v2ZlE0Li8XXF0uZWJ028F2BKbtsZgTdL2UeHW9YrXU8P0tQZThhwl52bHNKqK0JIxzqb4ym3SlGbJm9dSNyUrdyJpTsf50v1jqeHlIde6I60xWWCcUbcmYVpRjizo3nBvpmo2uWcy5tmyXpaqjaSa6arH81HzOuR0Iin1LUpXEZU5U5BRNw67qyZpaOkOxXI9TeyRxMhwRkGc5C1XDtQSW5qJuDDa6JZeHHQvyfU22q0h3JXGXU3Yl47YkzlNJSPFEwGmYaNKGPK9pqxYRBKRRyjZICMOIPCnw/QjbFxR9S961pHXFtiqp+56x21O03ccZzgoleUVW1qRFRVrUFFX7GWezOiLEFREii4jblKhKCasEv9ySFCn9/HibydEoUZwyHW+Zbm5l2A/TSQa+340cT2eZ2Yt5R16vsQOfdhppxj3V0JP3LcM0cTue2N/eSGcos0WyoiLLK5KsIC9q6SnH9T8uT9eXWbUdHycWGKGFLkw2vokeWJiOQahuMAJLPvw/Ib4S523wXEUAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="08"
+        title=""
+        src="/static/43b83ed2e698720a61ab7b488ee9bba6/2b72d/08.png"
+        srcset="/static/43b83ed2e698720a61ab7b488ee9bba6/232f7/08.png 245w,
+/static/43b83ed2e698720a61ab7b488ee9bba6/9319d/08.png 490w,
+/static/43b83ed2e698720a61ab7b488ee9bba6/2b72d/08.png 980w,
+/static/43b83ed2e698720a61ab7b488ee9bba6/74f55/08.png 1245w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>적용 이후(중간이후) Reactor Executor Monitoring</p>
+<p>다음으로 Scheduler를 모니터링 해 보니 큰 변화가 있었습니다. Spike가 여전히 일어나긴 하지만, 그 빈도가 눈에 띄게 줄었습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 33.06122448979592%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAABjElEQVQoz0XRu27TYBjGcV9Cc7LjU2L7O9n+EidO7DoH0QqGDkgMSFXawogQF0CZ2Bi4AS74j+xIMLzTT8/zDK8TxIZwaYjTEj9MSYUiCGNmXowfKRZJQSZWgyWZJAgXuH6CH0nChWGZWcLomvODGKeuj1S2ZV02SFEgdT6AkgW9te0dt+09WluENEOhMevB6s2Bdv8GY1YIdc05WW559/kbH15/UXZntMoH7IOirHj4+p2PP35juxNKGaQuiJeCfHvg4csrTz//sHv7frBMaJzidOJweeTw6Rl7PFKW6wHm8ZL8eKR7eqR7uWBPp8FkP5Zk2Ps7uqcL3cszq/MZayvSvnA+91FRiu96yJXBbtakScZoMiNwA6SXEvk+0hpWm4o0zRhPXKb93YyZjsZX21YkSYazb1rq7Z5MKPJ6za5tkFIjlKFpbqmrPZlU5Nv/pnRBvWsobUWSiX+mdY4TRkukMgilSbVk6rrcjMbMPJ8wWqDM9VGpksw8l9FogusFRHGCyUtUb1oyc6/2F9m/z6yji9X2AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="09"
+        title=""
+        src="/static/d246170dd109a04532197af4c3107680/2b72d/09.png"
+        srcset="/static/d246170dd109a04532197af4c3107680/232f7/09.png 245w,
+/static/d246170dd109a04532197af4c3107680/9319d/09.png 490w,
+/static/d246170dd109a04532197af4c3107680/2b72d/09.png 980w,
+/static/d246170dd109a04532197af4c3107680/814a3/09.png 1470w,
+/static/d246170dd109a04532197af4c3107680/88b03/09.png 1920w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>환경에 따른 Scheduler Metric 비교</p>
+<p>더 확실한 비교를 위해 이전 설정을 적용했던 날과 동일한 시간대를 각각 비교해 보았는데요, 메모리를 3배 늘린 이후  Spike 횟수가 확연히 줄어든 것이 보이시나요? 👀</p>
+<p>이어서 메모리와 Task Execution Latency와 JVM GC 간 상관관계를 파악해 보았습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 24.89795918367347%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsTAAALEwEAmpwYAAABCElEQVQY0y2Q226DMBBESdVcIQEbjLGxsYHclLTqQ///206F6cPRrEaj0e5mh7ygqCT5RZCXglKqdb4IzkJyOpd87vYpc65k0otoqBq9eqJOLLks25AtBcoO1MZRd47heWX8fuDvM/F9p7GO/TGnMW7F+qR6GFC9x04jdpoQqiPbfJBVdYsNE50PtNYz3G+4ecaESD9OKOPYH04YH+njTOdjyvbjjHYD3RAwYURqs24olU5G2wdaN9DPE/PPM3H/fWPGyOGYo11IZYsq6zExJsb3cs0V0f5vmBcFlZScihJtLY+vF/PrhtANUisuUrDd7mhUjawbSiHxceTxftGHQN21iFaR///wD2c4fm7abZjCAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="10"
+        title=""
+        src="/static/f21ffd3d123500adc265efb9b79c347b/2b72d/10.png"
+        srcset="/static/f21ffd3d123500adc265efb9b79c347b/232f7/10.png 245w,
+/static/f21ffd3d123500adc265efb9b79c347b/9319d/10.png 490w,
+/static/f21ffd3d123500adc265efb9b79c347b/2b72d/10.png 980w,
+/static/f21ffd3d123500adc265efb9b79c347b/814a3/10.png 1470w,
+/static/f21ffd3d123500adc265efb9b79c347b/39a40/10.png 1874w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>메모리 증설 전후의 GC와 Task Latency비교</p>
+<p>확인 해 본 결과 GC의 원인은 증설 전후로 다른 것을 확인할 수 있었는데요,</p>
+<ul>
+<li>증설 이전 : Allocation Failure로 Major GC가 무수히 많이 발생</li>
+<li>증설 이후 : 여전히 Major GC가 발생, 하지만 Ergonomics로 힙이 가득 찰 때 쯤 자동으로 GC가 발생 +  GC Pause가 줄어 든 만큼 Task Latency Spike 횟수도 눈에 띄게 감소함</li>
+</ul>
+<h1 id="aws-firehose-성능-분석-및-개선"><a href="#aws-firehose-%EC%84%B1%EB%8A%A5-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EA%B0%9C%EC%84%A0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>AWS Firehose 성능 분석 및 개선</h1>
+<p>개발환경에서 부하 테스트를 진행했을 때 초반에는 성능이 잘 나오지만, 3분 이상 지속적으로 부하를 주었을 때 Response Time이 비약적으로 상승하는 것을 발견하였습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 63.26530612244898%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAAAsTAAALEwEAmpwYAAABgUlEQVQ4y6WT23KjMBBE9QmRAHMRiUE3g40FCHv//896Sxdikkrtw+ahS5ozPSpoBGm2AbW74GQV2K1H9htNPUg+CdDhDHbtPhvs3oNNPTLPEg/sngYT9w/AUu3nG6tACqtAFwm6SjArwhBdRJSTYLdopqsAsz3oJuPhwxl0jh7vZWOHj1mD+NflzoCvBny7gD8G8NmAzzrVSYsBtzr6dub7ydc+B7y7C0j7uKJxA/K7/FFZUqjtoWd/9pLwMVIGPp986g91h8qKILbndu2CJ0tR7D7P6lnEA+l4Bh07tIsAX+Lw29ihmHp8OBkUchzjobUVkE8V1rfhjOreo5kFuocCqVaNclGonQ6qVoXGRdY+NIpZBbVbZM0WffksQ792kRWLwvvTgLR/ruDPAZUzKFeD06rDvt4Mqi3WO9t56QyKRYf1s04+Us4amZWg0+uu+f2uf7Gds+l1d0nuA7ci3PKj8X8U/pRiVV9u/69060F8buUSdfK5hPXFdn7U995x/xdTLmperkcTGAAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="11"
+        title=""
+        src="/static/1761e079dfbf75fb9bb9c1e22aff7602/2b72d/11.png"
+        srcset="/static/1761e079dfbf75fb9bb9c1e22aff7602/232f7/11.png 245w,
+/static/1761e079dfbf75fb9bb9c1e22aff7602/9319d/11.png 490w,
+/static/1761e079dfbf75fb9bb9c1e22aff7602/2b72d/11.png 980w,
+/static/1761e079dfbf75fb9bb9c1e22aff7602/0a200/11.png 1434w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>개발환경에 trace 에 장시간 부하를 주었을때 성능 그래프</p>
+<p>해당 API는 Firehose와 Redis로 메시지를 보내는데, <a href="">Firehose의 Quota 제한</a>에 따르면 초당 최대 요청이 1,000개로 제한이 됩니다. 상용 데이터 기준 최대 초당 500 건 수준이었기 때문에, 큰 문제가 없다고 생각하여 Client요청이 들어올 때마다 Firehose 요청을 보내도록 만들어 두었습니다.</p>
+<p>하지만 앞에서 확인 Task execution latency 문제 등으로 요청이 밀려 순간적으로 1000TPS 가 넘을 수 있을것 같고, 이로 인해 Task Latency가 발생할수도 있다는 가설을 세우고 검증을 해보기로 하였습니다.</p>
+<h3 id="가설-검증"><a href="#%EA%B0%80%EC%84%A4-%EA%B2%80%EC%A6%9D" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>가설 검증</h3>
+<p>Firehose에서 제공하는 Monitoring에서는 성능 저하의 원인을 찾을 수 없어 <a href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/generating-sdk-metrics.html">AWS Java SDK v2의 메트릭 수집 기능</a>으로 Client Side Metric을 수집하여 분석하기로 하였습니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 23.6734693877551%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA0klEQVQY012QAW6DMAxFuf8p6SZYKSQEWBPbCbwKRsc0S0/+/rJs2ZWIYGZsXLFtJ/+89Y9RSkFVybmQzfBhYXkmqrJuWC5YzgdqdizYOfTu2+WLGnLUP8jJrsu6Ui3+gTwn4vObFCOmgmkim6Apcv9q8W4ga8IkkVIiJvlFRE+dKNmobrcPbp8NTdsyDAMhTIQQDsYx0DQNXdcxzzPTNJ/56rl3HY++p70/cONE5ZzDOU/ez1Vl/6mK8P5tjJG+749lb/ah795lWfDeU9c13o+8AMl8gxwC6s22AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="12"
+        title=""
+        src="/static/8dd690b1ff2f46c63b4def4c9f7dc35e/2b72d/12.png"
+        srcset="/static/8dd690b1ff2f46c63b4def4c9f7dc35e/232f7/12.png 245w,
+/static/8dd690b1ff2f46c63b4def4c9f7dc35e/9319d/12.png 490w,
+/static/8dd690b1ff2f46c63b4def4c9f7dc35e/2b72d/12.png 980w,
+/static/8dd690b1ff2f46c63b4def4c9f7dc35e/814a3/12.png 1470w,
+/static/8dd690b1ff2f46c63b4def4c9f7dc35e/baffc/12.png 1960w,
+/static/8dd690b1ff2f46c63b4def4c9f7dc35e/ebc3b/12.png 2302w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>PutRecord의 초당 요청수 (분당 요청 수를 60으로 나눔)</p>
+<p>먼저 Put Record의 초당 요청수를 확인하니 잠시나마 1,000TPS를 기록하였으나, 성능 지표에 따라 처리량이 떨어진 것을 볼 수 있었습니다. Firehose 최대 TPS에 한참 못미치는 수준이네요.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 29.795918367346935%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA80lEQVQY022R227EIAxE8///uC9pApsEAuFOMMwqdDeq2j4cjTxjG0sMKSXEGHGeJ2ptqLW+aT+ov7ShFELOuc9dMGGwm4DhMonou7ldA3RDVEC1oNAJ+vj09olQSrlJOaMQYUjBwxiFQ+84tEIIDjkGxOiRU8ChVCcGhxR9930IbyJCjLdejwxs2TBNX5hmBv58QmsNax2stR3GZkzThHVdYYzpnumZ67WQCnLX2KTGYT0GIQVmxmGsQ4wB3vs/cM7BOevKGMOyLHDO9UwIgXXb8Hg8sO8Kg1UKYtv6ua21f5FS9iUflFJ3dn3qtXgcx379C+evz4C12rD6AAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="13"
+        title=""
+        src="/static/ef91a339fb5a5eaa12e0d09cfe899056/2b72d/13.png"
+        srcset="/static/ef91a339fb5a5eaa12e0d09cfe899056/232f7/13.png 245w,
+/static/ef91a339fb5a5eaa12e0d09cfe899056/9319d/13.png 490w,
+/static/ef91a339fb5a5eaa12e0d09cfe899056/2b72d/13.png 980w,
+/static/ef91a339fb5a5eaa12e0d09cfe899056/814a3/13.png 1470w,
+/static/ef91a339fb5a5eaa12e0d09cfe899056/baffc/13.png 1960w,
+/static/ef91a339fb5a5eaa12e0d09cfe899056/ef229/13.png 2317w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>실행 중인 동시 요청수와 최대 동시 요청 수, 대기 횟수</p>
+<p>다음으로는 Concurrency를 체크했습니다. SDK의 default max concurrency는 50으로 세팅이 되어 있고, TPS가 떨어졌을 때 Pending Concurrency Acquire가 높게 기록이 되어 있었습니다. Max Concurrency에 막혀 요청을 보내지 못했어요. 한마디로 병목현상이 발생했다는 뜻인데요.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 22.857142857142858%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAvklEQVQY022OWYrDMBBEdf9DTmCiSPNhx9ZiqxdFNbgxSWZpeLyiuhFyRARmAcZ48T7/dRgYY0BVISLop5dU4Gz96HioGF0Z/XDXM79xdipi2J2+smiHK+uMklfsjbATg0Rhv6YGYgaxGHxkIusqKWoT1MbYSLCxmuve4Pz1E1fvcQsR8zShlPKTnJFz+tVncy0FOSVM8x3zfcG8JDjvPZY1oW4baq1/Hsw5I4RgxBifpJTs/nCMX7iFgI/LBd+dMINLzBLm/QAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="14"
+        title=""
+        src="/static/ee4b30abd3b07c6a19df245bfc6aa5ee/2b72d/14.png"
+        srcset="/static/ee4b30abd3b07c6a19df245bfc6aa5ee/232f7/14.png 245w,
+/static/ee4b30abd3b07c6a19df245bfc6aa5ee/9319d/14.png 490w,
+/static/ee4b30abd3b07c6a19df245bfc6aa5ee/2b72d/14.png 980w,
+/static/ee4b30abd3b07c6a19df245bfc6aa5ee/814a3/14.png 1470w,
+/static/ee4b30abd3b07c6a19df245bfc6aa5ee/baffc/14.png 1960w,
+/static/ee4b30abd3b07c6a19df245bfc6aa5ee/11511/14.png 2289w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>PutRecord Response Time</p>
+<p>이어서 Call Response Time을 확인해보니 평균 60ms 수준에 최대 8,000ms 까지 소요되고 있었습니다. VPC Endpoint를 사용한 것은 아니나, 동일한 AWS 네트워크 내에서 진행 된 테스트였기 때문에 20ms 수준의 빠른 response time을 기대했거든요. 하지만 부하가 없을 때 빠른 20ms 수준으로 기록하던 Response time은, Quota와 상관 없이 부하가 증가 했을 때 Response time이 증가하고 있었습니다.</p>
+<p>산술적으로 계산했을 때 최대 Concurrency가 50일 때 1,000TPS 가 나오려면, 50ms의 Resposne Time으로 한순간도 쉬지 않고 요청을 보내야 가능합니다. 부하가 증가했을 때 Firehose 자체 Response time이 50ms 이상으로 증가했기 때문에, 오히려 Firehose Quota에 미치지 못하는 성능을 기록하였습니다.</p>
+<h3 id="조치"><a href="#%EC%A1%B0%EC%B9%98" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>조치</h3>
+<p>Firehose의 PutRecord 대신 PutRecordBatch 를 이용하여, Web Transaction과 별도의 백그라운드에서 여러 Record를 모아 한 번에 발송하도록 어플리케이션을 수정하였습니다.</p>
+<p>웹 핸들러는 요청이 들어오면 백그라운드의 Queue에 Record를 쌓고, 백그라운드 Job은 아래의 로직으로 Batch 요청을 실행하도록 수정하였습니다.</p>
+<ol>
+<li>interval에 한번씩 Queue 를 체크한다. (default 100ms)</li>
+<li>Queue에 1개이상의 1개 이상의 Record가 있으면 배치작업을 시작한다.</li>
+<li>Queue에 들어있는 Records를 설정된 batch size만큼 (default 300개) 분리하여 n 개의 PutRecordBatchRequest를 생성한다.</li>
+<li>n개의 BatchRequest를 실행한다.</li>
+<li>최대 maxConcurrency만큼 작업이 실행되며, concurrency &#x3C; maxConcurrency 일 때 1~5의 과정을 반복한다.</li>
+</ol>
+<p>Webflux에서 주기적인 Job을 실행 시키기 위해 Flux interval을 사용하여 간단히 구현하였습니다.</p>
+<div class="gatsby-highlight" data-language="kotlin"><pre class="language-kotlin"><code class="language-kotlin"><span class="token comment">// 어플리케이션이 시작 될 때 job을 시작한다.</span>
+<span class="token keyword">val</span> job <span class="token operator">=</span> Flux<span class="token punctuation">.</span><span class="token function">interval</span><span class="token punctuation">(</span>initialDelay<span class="token punctuation">,</span> interval<span class="token punctuation">)</span> <span class="token comment">// interval 마다 tick을 발생한다</span>
+              <span class="token punctuation">.</span><span class="token function">onBackpressureDrop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 이후의 파이프가 busy 인 경우, tick을 무시한다.</span>
+              <span class="token punctuation">.</span><span class="token function">publishOn</span><span class="token punctuation">(</span>scheduler<span class="token punctuation">)</span>
+              <span class="token punctuation">.</span><span class="token function">filter</span> <span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">hasMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">}</span>
+              <span class="token punctuation">.</span><span class="token function">flatMap</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">putRecordBatch</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> maxConcurrency<span class="token punctuation">)</span>
+job<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre></div>
+<h3 id="결과"><a href="#%EA%B2%B0%EA%B3%BC" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>결과</h3>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 71.42857142857143%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAACsklEQVQ4y22T2U8TURTGb6cLZWtnbWegLJ3OdLrNTFsqW5TEd8OTom8EDJjwIBFQm6AxmvioiZHlDRWSQlmiQsHoixHi3/WZuVOHYnz45dw555vv3nPPDOF7FaRvjECxs5AKaYh5HWJBh5jTIFkGeDMFQgiE/gSMiVEoxRxipkG1HpYBwU7DFwiA3LpzG0fnP7Fer2Ft32V9fxfvajvYPNrHq8331HDy3l18vviFjYM9rB/sYvOwjo3DOtbqNap7s72Fzu4IyOTUFI5/X6D27Qw7Zw2P7cYJ9n58x9sPW57hl4tz7Jw28PHkKz41jml02D49wcZuDV2RCMjQ9XEsvFzF9MoiZqvLmKkuYba6hJmnjzC3+hhTC3PUcPjmBBZfv8D96jLmV59g/pmLo3nwvIrplYcIt3eABPhuhDN9YNQ4SFIEUSWQZBNn3S+AEB+CYhTtmT74qa6lTomBDIggDAPSERcgVDLgbA1CMQ3e1j2cZy6nUsNORYJ4LQuuqP9fV0jB5/e7hn3jNuJFA/GSAbmcQbyUgVzKQBnKQsi7hh2KCGUkD7mp+YtSdnWSpV8aysMFCHQ3DZzVxNTA2Tqi2SQ17OqNITFm0Rpr/oOlIZpXXcOwxEEq6+AsFUIxdQWxpIHNDXgnlIYNmucd7Naogc0PNg1jPGKjefAlA0LJgFjO0CiUDYiVLNjCZctSJQu+qEMaMjxiDpUMBEtzDTtlET0jJm2PL6Wv4JiyucuWe8YsdxB0KE2KLt5QnJa5choRS0XUVBG1Ui7O2k4hkhv0TshVDFdnp65S1BAxky136Hw2Zsql4MKbGh1UtMVQLBtenc2r9Dqcdxyts/YF/CA+hkGgrQ1MMIguNgolkYAky/CHQvC3hWje+VN8jJ/mfMEAulkWciIBIR5HMBwGEwpSnI3/APZDteNTBUGFAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="15"
+        title=""
+        src="/static/c9a2bffe55fd5f50c13891c58ab04bb3/2b72d/15.png"
+        srcset="/static/c9a2bffe55fd5f50c13891c58ab04bb3/232f7/15.png 245w,
+/static/c9a2bffe55fd5f50c13891c58ab04bb3/9319d/15.png 490w,
+/static/c9a2bffe55fd5f50c13891c58ab04bb3/2b72d/15.png 980w,
+/static/c9a2bffe55fd5f50c13891c58ab04bb3/814a3/15.png 1470w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>동일한 컴퓨팅 리소스로 부하 테스트 결과</p>
+<p>지난 테스트에서 동접 50명으로 진행했을 때에도 Response Time에 따라 심각한 성능 저하를 보이던 API가 동접이 2배 이상으로 늘어났음에도 100ms 이내의 성능을 보였습니다. 초 당 처리량이 1,200~1,500을 기록하여 Firehose Quota Limit보다 높은 TPS를 기록하고 있었는데요!</p>
+<p>지난번과 달리 테스트에서는 CPU Limit의 100%를 사용하였는데, 기존에 설정한 3 Core CPU Limit을 늘리면 더욱 높은 TPS를 처리 할 수 있을 것으로 예상됩니다.</p>
+<h1 id="reactor-scheduler-병목현상-분석"><a href="#reactor-scheduler-%EB%B3%91%EB%AA%A9%ED%98%84%EC%83%81-%EB%B6%84%EC%84%9D" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reactor Scheduler 병목현상 분석</h1>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 50.204081632653065%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVQoz31Sy5KEMAj0/790fOQJCboXtpoQdeewByqIQHcDS++iRKx4ayXdj6DbflhMRJS5aanV3t67tt6VW9PW3OdmRtz0PC9dRE7NuWhMWUupWippxusWY9Z12zXEZHFYSnkY6mKyWvxH0+W6fgaaIcqNCHSw5tatMVlMLM9yvOZhCEXnYAgkGJhO9MkS6J910xCcoauZeWEyDNHGtHSRm/5sAENhNsnJG8YRe8lM3gjfx2x4XpfJoddwzW9DFpIAVonv0VgO8Z/X/nfRBZvBdhFAQ/g2MyQSmw90sEXO/I/lwZ9KAGoNxSV/y7klY4afdTT9T/IRtBL52TjCXER+MUB834MVP6yqWbETepbJ82wwK9g4Ez+b1+HeZ/N1KuzzZJ8lzuYX8cv+lb7Z+qoAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="16"
+        title=""
+        src="/static/7110fb626c0b60019d0fb10a80543d08/2b72d/16.png"
+        srcset="/static/7110fb626c0b60019d0fb10a80543d08/232f7/16.png 245w,
+/static/7110fb626c0b60019d0fb10a80543d08/9319d/16.png 490w,
+/static/7110fb626c0b60019d0fb10a80543d08/2b72d/16.png 980w,
+/static/7110fb626c0b60019d0fb10a80543d08/21758/16.png 1036w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>health check api에 실패하여 pod의 liveness probe가 실패하고 있다</p>
+<p>Firehose를 Batch로 처리하도록 수정한 이후에도 Health Check에 종종 실패가 발생하였습니다. 하지만, Scheduler 지표를 보았을 때에는 Blocking되는게 없어서 상세 분석을 해보기로 하였습니다.</p>
+<p>Reactor에서 생성하는 Scheduler는 여러 종류가 있고, 기본 제공되는 Singleton을 사용하거나 별도의 Scheduler를 생성하여 사용 할 수 있습니다. Schedulers 에서 생성되는 scheduler는 <code class="language-text">Schedulers.enableMetrics()</code> 으로 Micrometer를 통해 메트릭을 활성화 할 수 있는데요. (위 Scheduler  관련 그래프들이 이 설정으로 측정되었습니다.)</p>
+<p>http health check가 간헐적으로 timeout이 발생함에도 수집된 metric에서는 특이사항을 찾을 수 없었습니다. 그러나 여러 정보를 확인하는 과정에서 Thread Dump를 통해 <code class="language-text">reactor-netty</code> 라는 Thread가 존재하고, 이 Thread에서 Reactor Task가 실행됨에도 metric에서는 확인할 수 없었다는 점을 발견했습니다.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">$ <span class="token function">cat</span> threaddump.json <span class="token operator">|</span> jq -c <span class="token string">".threads[].threadName"</span> <span class="token operator">|</span> <span class="token function">sort</span>
+
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+
+<span class="token string">"aws-java-sdk-NettyEventLoop-1-5"</span>
+<span class="token string">"boundedElastic-1463"</span>
+<span class="token string">"boundedElastic-1475"</span>
+<span class="token string">"boundedElastic-1477"</span>
+<span class="token string">"boundedElastic-1479"</span>
+<span class="token string">"boundedElastic-1480"</span>
+<span class="token string">"boundedElastic-1481"</span>
+<span class="token string">"boundedElastic-1482"</span>
+<span class="token string">"boundedElastic-1484"</span>
+<span class="token string">"boundedElastic-evictor-1"</span>
+<span class="token string">"boundedElastic-evictor-2"</span>
+<span class="token string">"boundedElastic-evictor-3"</span>
+<span class="token string">"boundedElastic-evictor-4"</span>
+<span class="token string">"boundedElastic-evictor-5"</span>
+<span class="token string">"boundedElastic-evictor-6"</span>
+<span class="token string">"boundedElastic-evictor-7"</span>
+<span class="token string">"boundedElastic-evictor-8"</span>
+<span class="token string">"idle-connection-reaper"</span>
+<span class="token string">"lettuce-epollEventLoop-12-1"</span>
+<span class="token string">"lettuce-epollEventLoop-13-1"</span>
+<span class="token string">"lettuce-epollEventLoop-14-1"</span>
+<span class="token string">"lettuce-eventExecutorLoop-3-1"</span>
+<span class="token string">"lettuce-eventExecutorLoop-5-1"</span>
+<span class="token string">"lettuce-eventExecutorLoop-7-1"</span>
+<span class="token string">"lettuce-eventExecutorLoop-9-1"</span>
+<span class="token string">"lettuce-timer-4-1"</span>
+<span class="token string">"lettuce-timer-6-1"</span>
+<span class="token string">"lettuce-timer-8-1"</span>
+<span class="token string">"parallel-1"</span>
+<span class="token string">"parallel-2"</span>
+<span class="token string">"parallel-3"</span>
+**<span class="token string">"reactor-http-epoll-1"</span>
+<span class="token string">"reactor-http-epoll-2"</span>
+<span class="token string">"reactor-http-epoll-3"</span>
+<span class="token string">"reactor-http-epoll-4"</span>**
+<span class="token string">"sdk-ScheduledExecutor-2-0"</span>
+<span class="token punctuation">..</span>.</code></pre></div>
+<p> <code class="language-text">Schedulers.enableMetrics()</code> 으로 활성화 할 수 있는 Scheduler는 Schedulers에서 생성된 객체에만 해당됩니다. 하지만 TCP를 열어 HTTP요청을 받아서 Reactor에 이벤트를 발생시켜주는 <code class="language-text">reactor-netty</code> 는 Schedulers를 통해 생성된 객체가 아닌, 해당 패키지 내에서 존재하는 schedulers 구현체를 직접 생성하여 사용합니다. 따라서 <code class="language-text">enableMetrics()</code> 으로 metric이 활성화 되지 않아 확인할 수 없었습니다.</p>
+<p>위의 이유로<code class="language-text">reactor-netty</code> 내 어떤 Task에서 지연이 발생하는지  확실하게 알 수 없어, 복잡한 작업을 하는 Service들을 모두 publishOn을 이용하여  bounded elastic scheduler 으로 작업을 이동시켰고 병목작업은 모두 bounded elastic 으로 옮겨 health check가 실패하지 않도록 의도하였습니다.</p>
+<div class="gatsby-highlight" data-language="kotlin"><pre class="language-kotlin"><code class="language-kotlin"><span class="token keyword">fun</span> <span class="token function">handleActionRecords</span><span class="token punctuation">(</span>request<span class="token operator">:</span> ServerRequest<span class="token punctuation">)</span><span class="token operator">:</span> Mono<span class="token operator">&lt;</span>ServerResponse<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> request<span class="token punctuation">.</span><span class="token function">bodyToMono</span><span class="token punctuation">(</span>String<span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">.</span>java<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">publishOn</span><span class="token punctuation">(</span>Schedulers<span class="token punctuation">.</span><span class="token function">boundedElastic</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">flatMap</span> <span class="token punctuation">{</span>
+                <span class="token keyword">val</span> result <span class="token operator">=</span> AgentActionSerializeHelper<span class="token punctuation">.</span><span class="token function">readFromString</span><span class="token punctuation">(</span>it<span class="token punctuation">)</span>
+                legacyAPIService<span class="token punctuation">.</span><span class="token function">recordAgentActionData</span><span class="token punctuation">(</span>JavaConversions<span class="token punctuation">.</span><span class="token function">seqAsJavaList</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">}</span>
+            <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bodyValue</span><span class="token punctuation">(</span><span class="token function">APIOkView</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>위와 같이 무거운 작업들을 모두 이전을 했으나, 여전히 서비스 피크시간대에 health check API가 timeout이 발생하였고, Liveness Probe가 실패하여 서버가 재시작되었습니다. 원인을 찾고자 로컬에서 health chec가 처리 될 때 어떤 Scheduler를 사용하는지 확인해 보았는데요.</p>
+<p><img src="%E1%84%86%E1%85%A9%E1%84%87%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%80%E1%85%B5%E1%84%80%E1%85%B5%20%E1%84%83%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%90%E1%85%A5%20%E1%84%89%E1%85%AE%E1%84%8C%E1%85%B5%E1%86%B8%20%E1%84%89%E1%85%A5%E1%84%87%E1%85%A5%20%E1%84%80%E1%85%A2%E1%84%89%E1%85%A5%E1%86%AB%E1%84%80%E1%85%B5%202%E1%84%87%E1%85%AE%20%E1%84%89%E1%85%A5%E1%86%BC%E1%84%82%E1%85%B3%E1%86%BC%E1%84%80%206d5ad63d4b0044a891f87ecbec5413d3/Untitled%2017.png" alt="%E1%84%86%E1%85%A9%E1%84%87%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%AF%20%E1%84%80%E1%85%B5%E1%84%80%E1%85%B5%20%E1%84%83%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%90%E1%85%A5%20%E1%84%89%E1%85%AE%E1%84%8C%E1%85%B5%E1%86%B8%20%E1%84%89%E1%85%A5%E1%84%87%E1%85%A5%20%E1%84%80%E1%85%A2%E1%84%89%E1%85%A5%E1%86%AB%E1%84%80%E1%85%B5%202%E1%84%87%E1%85%AE%20%E1%84%89%E1%85%A5%E1%86%BC%E1%84%82%E1%85%B3%E1%86%BC%E1%84%80%206d5ad63d4b0044a891f87ecbec5413d3/Untitled%2017.png"></p>
+<p>분명히 publishOn / subscribeOn 을 사용하지 않았기 때문에 reactor-netty 에서 빠르게 처리가 되어야 할 health check API 가 boundedElastic Thread에서 작동 중인 것을 발견하였습니다. 다른  API들은 publishOn / subscribeOn을 쓰지 않았을 때  모두 reactor-netty가 나오는데 health check만 boundedElastic에서 작동하고 있었습니다.</p>
+<div class="gatsby-highlight" data-language="java"><pre class="language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Mono<span class="token generics function"><span class="token punctuation">&lt;</span>WebSession<span class="token punctuation">></span></span> <span class="token function">createWebSession</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">// Opportunity to clean expired sessions</span>
+  Instant now <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>clock<span class="token punctuation">.</span><span class="token function">instant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>expiredSessionChecker<span class="token punctuation">.</span><span class="token function">checkIfNecessary</span><span class="token punctuation">(</span>now<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> Mono<span class="token punctuation">.</span><span class="token generics function"><span class="token punctuation">&lt;</span>WebSession<span class="token punctuation">></span></span><span class="token function">fromSupplier</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token keyword">new</span> <span class="token class-name">InMemoryWebSession</span><span class="token punctuation">(</span>now<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">subscribeOn</span><span class="token punctuation">(</span>Schedulers<span class="token punctuation">.</span><span class="token function">boundedElastic</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>boundedElastic이 어디서 사용하는 지 추적해 보았더니, Spring Security에서 기본값으로 활성화 된 InMemorySessionStore 에서 reactor를 boundedElastic으로 변경하여 그 이후의 pipeline에서도 모두 boundedElastic을 사용하게 된 것을 알 수 있었습니다.</p>
+<div class="gatsby-highlight" data-language="kotlin"><pre class="language-kotlin"><code class="language-kotlin"><span class="token annotation builtin">@Bean</span>
+<span class="token keyword">fun</span> <span class="token function">springSecurityWebFilterChain</span><span class="token punctuation">(</span>http<span class="token operator">:</span> ServerHttpSecurity<span class="token punctuation">,</span> authFilter<span class="token operator">:</span> ApiKeyAuthWebFilter<span class="token punctuation">)</span><span class="token operator">:</span> SecurityWebFilterChain <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token function">csrf</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">disable</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">addFilterBefore</span><span class="token punctuation">(</span>authFilter<span class="token punctuation">,</span> SecurityWebFiltersOrder<span class="token punctuation">.</span>AUTHENTICATION<span class="token punctuation">)</span>
+            <span class="token comment">// ... 중략</span>
+            <span class="token punctuation">.</span><span class="token function">and</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">requestCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">disable</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// Session 비활성화</span>
+            <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre></div>
+<p>데이터 수집 서버의 특성상 요청 하나하나가 Stateless하기 때문에 필요없는 Session기능을 비활성화 하여, health check가 reactor-netty 쓰레드에서 시작되고, 끝날 수 있도록 수정하였습니다.</p>
+<p>그런데 한 가지 의문이 있습니다. 모든 요청에 Session Store 의 로직을 실행할 텐데, 왜 다른 API 는boundedElastic에서 처리가 되지 않고  reactor-netty에서 실행되었을까요? 🤔</p>
+<p>테스트를 위해 샘플코드를 작성하여 Thread를 비교해보니 답은 <code class="language-text">bodyToMono</code> 에 있었습니다. reactor-netty에서 http를 받고, sessionStore에서 boundedElastic으로 변경한 것은 모든 API가 동일했습니다. 하지만, 다른 API들은 body를 비동기로 읽어오는 <code class="language-text">bodyToMono</code> 를 실행하였고, 그로 인해 boundedElastic에서 다시 reactor-netty로 이동하여, body를 읽었던 것이었습니다. 위에서 확인했던 thread name은 body를 읽어 온 이후에 확인을 했기 때문에 다시 reactor-netty로 표시되었습니다.</p>
+<div class="gatsby-highlight" data-language="kotlin"><pre class="language-kotlin"><code class="language-kotlin"><span class="token keyword">fun</span> <span class="token function">handleRequestWithBody</span><span class="token punctuation">(</span>request<span class="token operator">:</span> ServerRequest<span class="token punctuation">)</span><span class="token operator">:</span> Mono<span class="token operator">&lt;</span>ServerResponse<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token comment">// boundedEastic에서 실행 됨</span>
+    <span class="token keyword">return</span> request<span class="token punctuation">.</span><span class="token function">bodyToMono</span><span class="token punctuation">(</span>String<span class="token operator">::</span><span class="token keyword">class</span><span class="token punctuation">.</span>java<span class="token punctuation">)</span>
+              <span class="token punctuation">.</span><span class="token function">doOnNext</span> <span class="token punctuation">{</span> <span class="token function">println</span><span class="token punctuation">(</span>it<span class="token punctuation">)</span> <span class="token comment">/* reactor-netty에서 실행 됨 */</span> <span class="token punctuation">}</span>
+              <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">fun</span> <span class="token function">handleRequestWithoutBody</span><span class="token punctuation">(</span>request<span class="token operator">:</span> ServerRequest<span class="token punctuation">)</span><span class="token operator">:</span> Mono<span class="token operator">&lt;</span>ServerResponse<span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token comment">// boundedEastic에서 실행 됨</span>
+    <span class="token keyword">return</span> ServerResponse<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+              <span class="token punctuation">.</span><span class="token function">doOnNext</span> <span class="token punctuation">{</span> <span class="token function">println</span><span class="token punctuation">(</span>it<span class="token punctuation">)</span> <span class="token comment">/* boundedEastic에서 실행 됨 */</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre></div>
+<h1 id="computing-intensive-api-분리"><a href="#computing-intensive-api-%EB%B6%84%EB%A6%AC" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Computing Intensive API 분리</h1>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 26.93877551020408%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA3klEQVQY03WMSW7EMAwE/YgZL5JlWZu12kGQ/7+tAmkOOeVQIJtg17QKxWve/mVeJVKdg3kVvJeN9yLG/smC17J9mDemTR0sQrIpxSp3FrFzJoe+LDpYzmRRTnP4kyOYgW8BVz06GPRl8Pcn994kulBKxHEMYce1gC0eU/zYe6mLdewYru+If/7u6SeNW/8dwk0qdq0Ru6JnXwOuy0ogtIC5LDY6THRjxq/I9URs9LjsSd950HvTrk5yfcjlJnVyo7RnkEol15tcGqXelPHXqPdDiAnrL0LMhJRHlkrzC5mwiw1LbiwxAAAAAElFTkSuQmCC'); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="18"
+        title=""
+        src="/static/777bd6a831491940b2d8cb6acca66756/2b72d/18.png"
+        srcset="/static/777bd6a831491940b2d8cb6acca66756/232f7/18.png 245w,
+/static/777bd6a831491940b2d8cb6acca66756/9319d/18.png 490w,
+/static/777bd6a831491940b2d8cb6acca66756/2b72d/18.png 980w,
+/static/777bd6a831491940b2d8cb6acca66756/eb4a2/18.png 1249w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>health check를 제외한 모든 로직을 boundedElastic Scheduler로 옮기고 나니, reactor-netty 스케쥴러에  숨어 있던  Blocking 증상이 나타났는데요. 특이한 점은 Latency가 2초에 딱 맞춰져 있다는 것이었습니다.</p>
+<p>가장 먼저 의심스러웠던 Agent Action API를 훑어 보았는데요. 다른 API들은 단순 변환작업으로 직접 구현했지만, Agent Action API에서는 아주 복잡한 로직을 통해 지표를 계산하는 로직이 존재하는 터라 이를 다시 구현하는 것은 힘들다고 판단, 기존 Scala로 구현되어 있던 로직을 그대로 이식했었기 때문입니다. 그런데 이 Scala 코드를 다시 한 번 훑어보니, 정확히 2초 동안 Latency가 발생하는 원인을 찾을 수 있었어요.</p>
+<div class="gatsby-highlight" data-language="scala"><pre class="language-scala"><code class="language-scala"><span class="token keyword">protected</span> <span class="token keyword">def</span> calculateMetrics<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token operator">:</span> RunSheet <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token keyword">val</span> deadline <span class="token operator">=</span> <span class="token number">2.0</span><span class="token punctuation">.</span>seconds<span class="token punctuation">.</span>fromNow <span class="token comment">// 2초동안 무한루프를 돌며 알고리즘을 실행한다.</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>deadline<span class="token punctuation">.</span>hasTimeLeft<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">val</span> candidate <span class="token operator">=</span> calculateSomething<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>candidate<span class="token punctuation">.</span>isBetterThan<span class="token punctuation">(</span>currentBest<span class="token punctuation">)</span><span class="token punctuation">)</span> currentBest <span class="token operator">=</span> candidate
+    <span class="token punctuation">}</span>
+    currentBest
+  <span class="token punctuation">}</span></code></pre></div>
+<p>위의 로직은 2초 간 무한 루프를 돌면서 Random에 기반한 답을 찾고 더 좋은 답을 찾아 나가는 알고리즘인데요, 무한루프를 돌기 때문에 i/o wait이나 sleep상태가 대부분인 blocking task와 달리 running 상태로 CPU를 사용하는 셈입니다.</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 34.69387755102041%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA5klEQVQoz42PTW7DIBQGfa/EwRBj/sGGOGmjSu39LzFVabt2FrN6n0bzBpNuzGnH1g9U3Bl14nLAz0aYwmQK0lekW1G+okJjWGujbBUXItpYRiEZp1dQfW9CJuZCfnzSnl8MPhVS2VjbTiwbZ6E4C3mMnFGL5Wo8iwu4+iTVO0Nea5ftj3fub09sSJwu06HwJGQXGZ9I64bNtYcNPmXyVlnrDW1cf+WlQqEQama6apQ2aJ8JqTCU2mj3By6mfnxNJhnVwuITsw24mFlC/i8slK11tPW/4+lA9ld4XSyzcRgX0C7iY+Ybk8z9mQo1oYUAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="19"
+        title=""
+        src="/static/e7152b194e0c7cbed95b6a4f061fd4e0/2b72d/19.png"
+        srcset="/static/e7152b194e0c7cbed95b6a4f061fd4e0/232f7/19.png 245w,
+/static/e7152b194e0c7cbed95b6a4f061fd4e0/9319d/19.png 490w,
+/static/e7152b194e0c7cbed95b6a4f061fd4e0/2b72d/19.png 980w,
+/static/e7152b194e0c7cbed95b6a4f061fd4e0/c5236/19.png 1255w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>피크시간의 heap dump 분석</p>
+<p>피크 시간에 Memory GC가 빈번히 발생할 때 Heap Dump를 만들어 분석해 보았습니다. Actions API에서 사용한 Scala의 Vector객체와 RunSheet 객체가 객체가 많은 메모리를 점유하고 있는 것이 보이시나요? Major GC가 빈번하게 발생하는 이유는 바로 이 때 생성된 클래스들이 많은 메모리를 점유해서인데요.</p>
+<p>하위 호환성을 지키기 위해 이식한 Scala 로직이 CPU와 메모리 전부를 포함, 다른 API에도 영향을 미쳤습니다. 상용환경에서 전체 호출 수가 크지 않고, 비즈니스에 큰 영향을 미치지 않는 API라서 안일하게 적용했던 것이 큰 패인이었던 것이죠. 😥</p>
+<h3 id="해결"><a href="#%ED%95%B4%EA%B2%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>해결</h3>
+<p>데이터 수집 서버는 Kubernetes의 Nginx Ingress로 트래픽이 들어오기 때문에, 서비스에 중요한 trace API의 안정성을 위해 당장 통제 할 수 없는 로직인 actions API를 격리하였습니다.</p>
+<p>먼저 동일하지만, 이름만 다른 deployment와 service 를 구성하고 Nginx ingress로 actions API 만 새로운 격리 서비스를 호출 할 수 있도록 ingress를 설정합니다. actions API에서는 병목으로 인한 오류가 반복되겠지만, 비지니스적으로 중요한 다른 서비스 API에 영향을 미치지 않도록 할 수 있는 가장 쉽고 빠른 방법입니다.</p>
+<div class="gatsby-highlight" data-language="yaml"><pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nginx.ingress.kubernetes.io/rewrite-target</span><span class="token punctuation">:</span> /data/agents/actions
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> agenttrace<span class="token punctuation">-</span>actions<span class="token punctuation">-</span>alias
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">rules</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> test.vroong.com
+      <span class="token key atrule">http</span><span class="token punctuation">:</span>
+        <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+              <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> agenttrace<span class="token punctuation">-</span>actions<span class="token punctuation">-</span>alias
+              <span class="token key atrule">servicePort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /test/data/agents/actions
+<span class="token punctuation">---</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nginx.ingress.kubernetes.io/rewrite-target</span><span class="token punctuation">:</span> /$1
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> agenttrace
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">rules</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> test.vroong.com
+      <span class="token key atrule">http</span><span class="token punctuation">:</span>
+        <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+              <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> agenttrace
+              <span class="token key atrule">servicePort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /test/(.*)
+            <span class="token key atrule">pathType</span><span class="token punctuation">:</span> ImplementationSpecific</code></pre></div>
+<p>위 설정처럼 두개의 Ingress를 설정하면 Nginx Ingress의 <a href="https://kubernetes.github.io/ingress-nginx/user-guide/ingress-path-matching/#path-priority">path 우선순위</a>에 따라 Actions alias부터 우선 라우팅되고 이외의 요청은 기존 서비스로 라우팅됩니다.</p>
+<h3 id="결과-1"><a href="#%EA%B2%B0%EA%B3%BC-1" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>결과</h3>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 26.93877551020408%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAYAAABFA8wzAAAACXBIWXMAAAsTAAALEwEAmpwYAAABEklEQVQY0y2Q22qEMBiEvV12rWaNiUajxsTTugdKH6FQKLRXff9n+cqGvRj4mH/4GSZJRUEuNVmhooSqEGX1Yh1vp0yQ5oJcqleujH56VqRCRj39w+mN5KwqyqZDGktpLKq1VH2Pajvs7KkHF8NhcSyXCe89yzVwvc/sj4l1D2z7zPvHBW0qElW32HGiGTy67TH9SN25yJXtIz+bNV2H857ejQyjY9s39vvGtM74OTCvM0JKElkZdNuhGous2/ikGR3GOcJjw4ZAXpRov3D7+WP7/Gb7+sUsO4XpKa2LqtxEVmoSUQikUmSiQNUGOzh679FNQ6EVuZQcjifyUmHmDT14wv3GuK7YMcQycWulORxT/gEF6YSPASvHugAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="20"
+        title=""
+        src="/static/82b14c1b89ac3c73bdadd7458cbe98ed/2b72d/20.png"
+        srcset="/static/82b14c1b89ac3c73bdadd7458cbe98ed/232f7/20.png 245w,
+/static/82b14c1b89ac3c73bdadd7458cbe98ed/9319d/20.png 490w,
+/static/82b14c1b89ac3c73bdadd7458cbe98ed/2b72d/20.png 980w,
+/static/82b14c1b89ac3c73bdadd7458cbe98ed/814a3/20.png 1470w,
+/static/82b14c1b89ac3c73bdadd7458cbe98ed/840ac/20.png 1752w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>분리 전후 task execution latency와 gc pause 비교</p>
+<p>분리 이후 모든 Task Execution Latency가 사라졌고, 동시에 Major GC pause도 거의 사라졌네요! (y축을 보면 단위가 달라진게 보이시죠?)</p>
+<p>
+  <span
+    class="gatsby-resp-image-wrapper"
+    style="position: relative; display: block; margin-left: -70px; margin-right: -70px; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;"
+  >
+    <span
+      class="gatsby-resp-image-background-image"
+      style="padding-bottom: 35.10204081632653%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAiUlEQVQoz6WRQQ4CMQhFe/+bmXgNFy50YadMgcI3YI0uZjUleWl/Q14gLfdXxdYIjQgigih3P025Pjeo4yNalKXw8qjoZoAbbFGWwlslyBgws1OM7306CrUGVcVqxXaiihLTiRl0YuY/fDLz+Os7YpijNNrRmfOHuwh2DjiJ3OeZmSX7+IB4j03fOR4pZMtCtMkAAAAASUVORK5CYII='); background-size: cover; display: block;"
+    >
+      <img
+        class="gatsby-resp-image-image"
+        style="width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;"
+        alt="21"
+        title=""
+        src="/static/81088628a7f7c4ba1097c5e799a91d82/2b72d/21.png"
+        srcset="/static/81088628a7f7c4ba1097c5e799a91d82/232f7/21.png 245w,
+/static/81088628a7f7c4ba1097c5e799a91d82/9319d/21.png 490w,
+/static/81088628a7f7c4ba1097c5e799a91d82/2b72d/21.png 980w,
+/static/81088628a7f7c4ba1097c5e799a91d82/e8eb5/21.png 1355w"
+        sizes="(max-width: 980px) 100vw, 980px"
+      />
+    </span>
+  </span>
+  </p>
+<p>trace API의 response time histogram과 throughput 그래프</p>
+<p>비즈니스에 중요한 API인 trace 의 응답속도도 개선이 되었습니다. 이전엔 action에 의해 response time이 2초 이상이 많이 기록이 되었으나, 분리 이후 50ms 이내로 안정적인 response time을 기록하였습니다.</p>
+<h1 id="마치며"><a href="#%EB%A7%88%EC%B9%98%EB%A9%B0" aria-hidden="true" class="anchor"><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>마치며</h1>
+<p>성능을 개선하기 위해 찾아낸 원인과 해결방법을 다시 한번 정리하면, 다음과 같습니다.</p>
+<ul>
+<li><strong>(원인 1) Firehose의 성능저하</strong></li>
+</ul>
+<p>✔ Firehose는 피크시간 PutRecord 요청이 많아졌을 때 응답시간이 길어지는 문제가 있어 API 성능에 악영향을 주었습니다. 이를 비동기로 여러 요청을 모아 PutRecordBatch 요청으로 변경하였고, Firehose의 응답시간에 상관 없이 안정적인 API 성능을 확보할 수 있었습니다.</p>
+<ul>
+<li><strong>(원인 2)</strong> <strong>레거시 코드에서 그대로 이식한 코드</strong></li>
+</ul>
+<p>✔ 레거시 코드에는 알고리즘을 수행하는 코드가 있는데, 이 코드의 CPU점유로 인해 다른 API 응답시간이 길어진데다가 메모리 점유로 잦은 Major GC를 유발하였습니다. 해결을 위해 이 API 호출을 별도의 서버로 격리, 비즈니스에 큰 영향을 주는 API에 영향을 미치지 않도록 하였는데요. 당장은 하위 호환성을 위해 그대로 코드를 도입했지만, 추후 이 API 자체를 제거하는 방향을 검토하고 있습니다.</p>
+<p>위의 원인을 파악하는 과정에서 여러 모니터링 도구를 사용하였는데요.</p>
+<p>먼저, APM과 NginX AccessLog로 기본적인 API 의 응답속도, Throughput 등을 측정하였습니다. Webflux는 APM에서 제공하는 기본 설정으로는 어느 구간에서 병목현상이 발생하는지 파악이 어려워, 추가적인 메타데이터를 추가 하는 작업이 필요했습니다.</p>
+<p>Scheduler와 JVM내부 메트릭을 확인하고자 Reactor에서 제공하는 Micrometer 메트릭을 활성화하였고, Prometheus로 메트릭을 추출하여 Grafana를 통해 모니터링했습니다. metric으로 Scheduler별로 Task처리량과 지연을 확인 할 수 있었고, JVM Metric으로 GC 종류와 사유를 상세히 확인 할 수 있었습니다.</p>
+<p>처음에는 Scheduler 모니터링이 제대로 이뤄지지 않았지만, reactor-netty의 구동방식을 이해하고 모니터링이 필요한 task들은 별도의 boundedElastic 이 아니더라도 Schedulers에서 생성된 공용/전용 스케쥴러를 통해 모니터링을 진행하였고요.</p>
+<p>추가 가설을 검증하고자 JVM Thread Dump와 Heap Dump를 활용, 상용환경에서 문제가 발생할 때의 상황을 들여다 볼 수 있었습니다.</p>
+<p>이번 성능 개선 경험을 통해 내/외부 모니터링 시스템을 잘 구축해야 좋은 어플리케이션을 구축 할 수 있다는 점을 크게 느낄 수 있었습니다. 또한 AWS서비스라고 무한 신뢰하는 것보다, 모니터링을 구축하여 요구 성능을 발현하는지 실제 점검의 필요성도 체감했고요.</p>
+<p>이상으로 성능 저하의 원인이 복합적이고 복잡하여 원인을 찾아 해결까지 많은 우여곡절을 겪었던 개발일기였습니다. 이 글이 많은 분들께 도움이 되길 바랍니다. 긴 글 읽어주셔서 감사합니다. 😀</p></article></article></div></div></main><style data-emotion="css 2jxy3p-Wrapper">.css-2jxy3p-Wrapper{padding-bottom:1.187rem;}</style><footer class="css-2jxy3p-Wrapper e1tbim063"><style data-emotion="css u2k6lz-FooterContainer">.css-u2k6lz-FooterContainer{border-top:1px solid #E2E4EB;padding-top:2.187rem;}</style><style data-emotion="css 1al4zm4-StyledContainer-FooterContainer">.css-1al4zm4-StyledContainer-FooterContainer{margin-left:auto;margin-right:auto;width:auto;max-width:71.25rem;padding:0 20px;border-top:1px solid #E2E4EB;padding-top:2.187rem;}.css-1al4zm4-StyledContainer-FooterContainer::before,.css-1al4zm4-StyledContainer-FooterContainer::after{content:"";display:table;}.css-1al4zm4-StyledContainer-FooterContainer::after{clear:both;}@media (max-width: 38.125em){.css-1al4zm4-StyledContainer-FooterContainer{padding-left:16px;padding-right:16px;}}</style><div class="e1tbim062 css-1al4zm4-StyledContainer-FooterContainer e1ig3f2t0"><style data-emotion="css 1gbez60-CompanyLogo">.css-1gbez60-CompanyLogo{float:left;width:160px;}@media (max-width: 48em){.css-1gbez60-CompanyLogo{float:none;width:auto;}}</style><div class="css-1gbez60-CompanyLogo e1tbim061"><style data-emotion="css 1636f4y-IconWrapper">.css-1636f4y-IconWrapper{position:relative;display:inline-block;line-height:16px;color:#0971ce;}.css-1636f4y-IconWrapper>svg{vertical-align:top;}.css-1636f4y-IconWrapper>svg{fill:#0971ce;}</style><i class="css-1636f4y-IconWrapper e12rwrnm0" height="16" color="#0971ce"><svg width="121.15" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136.29 18"><path d="M106.37,6.3c0-3.17-2.19-4.77-5.45-4.77H94.58V16.67h3.19v-5.6h2.47l3.26,5.6h3.61l-3.65-6A4.29,4.29,0,0,0,106.37,6.3ZM101,8.36H97.75V4.42H101c1.38,0,2.34.59,2.34,2S102.37,8.36,101,8.36Z"></path><polygon points="20.72 10.05 26.95 10.05 26.95 7.11 20.72 7.11 20.72 4.5 28.2 4.5 28.2 1.53 17.69 1.53 17.69 16.67 28.52 16.67 28.52 13.71 20.72 13.71 20.72 10.05"></polygon><polygon points="53.94 7.33 47.73 7.33 47.73 1.53 44.71 1.53 44.71 16.67 47.73 16.67 47.73 10.31 53.94 10.31 53.94 16.67 56.97 16.67 56.97 1.53 53.94 1.53 53.94 7.33"></polygon><path d="M85.36,1.17c-4,0-6.81,3-6.81,8S81.3,17,85.32,17s6.78-3,6.78-7.94S89.36,1.17,85.36,1.17Zm0,12.8c-2.15,0-3.65-1.78-3.65-4.89s1.43-4.85,3.58-4.85S88.94,6,88.94,9.12,87.51,14,85.36,14Z"></path><polygon points="112.64 10.05 118.87 10.05 118.87 7.11 112.64 7.11 112.64 4.5 120.12 4.5 120.12 1.53 109.61 1.53 109.61 16.67 120.45 16.67 120.45 13.71 112.64 13.71 112.64 10.05"></polygon><path d="M130.53,1.53h-2.94L121.8,16.67H125l1.19-3.37h5.54L133,16.67h3.33Zm-3.26,8.89,1-2.75c.31-.88.61-1.79.76-2.35.15.56.45,1.47.76,2.35l1,2.75Z"></path><path d="M7.35,8.18,3.2,1.53H.25V16.67h3V10.6c0-1.25,0-2.42,0-3.51l0,0C4,8.14,4.55,9.25,5.25,10.31L7,13h.54l1.76-2.7c.69-1.06,1.43-2.17,2.08-3.24l0,0c0,1.09,0,2.26,0,3.51v6.07h3V1.53H11.5Z"></path><path d="M37.13,7.5c-2.36-.55-3-1.15-3-2.09,0-.66.54-1.34,2.13-1.34A4.56,4.56,0,0,1,39.65,5.6L41.8,3.52a7.14,7.14,0,0,0-5.43-2.35C33.43,1.17,31,2.83,31,5.54c0,2.94,1.92,4.11,4.67,4.75S39,11.53,39,12.49c0,1.13-.83,1.62-2.6,1.62a4.8,4.8,0,0,1-3.81-1.71l-2.15,1.92A6.91,6.91,0,0,0,36.26,17c4.06,0,5.85-1.91,5.85-4.74C42.11,9,39.49,8.05,37.13,7.5Z"></path><polygon points="78.14 1.53 74.1 1.53 69.07 7.89 69.07 1.53 66.04 1.53 66.04 16.65 69.07 16.65 69.07 9.82 74.48 16.65 74.48 16.65 78.49 16.65 72.23 8.74 78.14 1.53"></polygon></svg></i></div><style data-emotion="css dtdcvy-CompanyDesc">.css-dtdcvy-CompanyDesc{margin-left:160px;}@media (max-width: 48em){.css-dtdcvy-CompanyDesc{margin-left:0;margin-top:1.5rem;}}@media (max-width: 38.125em){.css-dtdcvy-CompanyDesc{font-size:0.875rem;}}</style><div class="css-dtdcvy-CompanyDesc e1tbim060"><p>프리미엄 배달대행 부릉을 운영하는 메쉬코리아는 투명하고 유연하게 라이더를 연결하는 물류플랫폼을 지향합니다.<br/>물류플랫폼을 함께 만들어갈 능력있는 사람들과 함께할 사람들을 찾습니다.</p><p><a href="https://www.meshkorea.net/kr/career/" target="_blank">지금 지원하러 가기 <i class="css-1anhml5-IconWrapper e12rwrnm0" height="16"><svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M12,8a1,1,0,0,1-.29.71l-5,5a1,1,0,0,1-1.42-1.42L9.59,8,5.29,3.71A1,1,0,0,1,6.71,2.29l5,5A1,1,0,0,1,12,8Z"></path></svg></i></a></p></div></div></footer></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script>
+  
+  function gaOptout(){document.cookie=disableStr+'=true; expires=Thu, 31 Dec 2099 23:59:59 UTC;path=/',window[disableStr]=!0}var gaProperty='UA-71371143-19',disableStr='ga-disable-'+gaProperty;document.cookie.indexOf(disableStr+'=true')>-1&&(window[disableStr]=!0);
+  if(!(navigator.doNotTrack == "1" || window.doNotTrack == "1")) {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  }
+  if (typeof ga === "function") {
+    ga('create', 'UA-71371143-19', 'auto', {});
+      ga('set', 'anonymizeIp', true);
+      }
+      </script><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/20210820-dev-notes-006-mobile-data-collector-02/";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-dfda8d059abd9d0298c4.js"],"app":["/app-6d6a5027655005a92ce4.js"],"component---src-pages-404-tsx":["/component---src-pages-404-tsx-a784631a3269b148b831.js"],"component---src-pages-index-tsx":["/component---src-pages-index-tsx-2030ab2a53582eb4acec.js"],"component---src-templates-pages-tsx":["/component---src-templates-pages-tsx-faf52131eb81a2acc5f6.js"],"component---src-templates-post-tsx":["/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js"],"component---src-templates-tags-tsx":["/component---src-templates-tags-tsx-f9a749b633c17bb4de81.js"]};/*]]>*/</script><script src="/polyfill-dfda8d059abd9d0298c4.js" nomodule=""></script><script src="/component---src-templates-post-tsx-826d2b9ff3a07b601cb2.js" async=""></script><script src="/commons-137533670d01b5c35386.js" async=""></script><script src="/e0525e89-155dc6265164ef0cd881.js" async=""></script><script src="/styles-e9d24b1846c7d6eb9685.js" async=""></script><script src="/app-6d6a5027655005a92ce4.js" async=""></script><script src="/framework-da68acf1b9295dbf7273.js" async=""></script><script src="/webpack-runtime-f8d2cfb60cb2b8fa895f.js" async=""></script></body></html>
