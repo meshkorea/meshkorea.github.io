@@ -24,15 +24,15 @@ spark의 직관적인 API 덕분에 salting의 실제 구현 방식을 쉽게 �
 
 서울에서 전국 달리기 대회를 개최했습니다. 총 190 여명의 선수가 참가했으며, 다음과 같은 선수 데이터가 만들어 졌습니다.
 
-![Table 1](table1.PNG)
+![Table 1](table1.png)
 
 아무래도 서울에서 개최된 경기이다보니, 서울 근처에서 가장 많이들 참가하였습니다. 지역별 참가자 수는 다음과 같습니다.
 
-![Table 2](table2.PNG)
+![Table 2](table2.png)
 
 모종의 데이터 분석을 위해, 여기에 각 지역의 평균 연령 데이터를 Join한다고 가정해 봅시다.
 
-![Table 3](table3.PNG)
+![Table 3](table3.png)
 
 ### 일반 Join
 
@@ -47,7 +47,7 @@ joined_1 = runner.join(city, on='city', how='left')
 대부분의 spark 파티션(partition)이 5개 이하의 데이터만 처리하는 동안에, 두 개 파티션이 대부분이 데이터를
 처리하게 됩니다. spark UI를 통해 데이터 분산 처리 내역을 다음과 같이 확인할 수 있습니다.
 
-![일반 JOIN 동작 과정](join1.PNG)
+![일반 JOIN 동작 과정](join1.png)
 
 이렇게 되는 이유는 선수들이 서울과 경기도에 몰려 있고 `city`를 key로 JOIN 할 경우 서울이나 경기도를
 처리하는 JOIN 파티션에 이 데이터들이 전부 몰려가기 때문입니다.
@@ -90,15 +90,15 @@ joined_2 = runner_2.join(city_2, on=['city', 'salt'], how='left')
 
 소금 열이 추가된 선수 데이터 `runner_2`는 다음과 같은 형태입니다.
 
-![Table 4](table4.PNG)
+![Table 4](table4.png)
 
 소금 열이 추가된 지역데이터 `city_2` 는 다음과 같은 형태입니다. 각 행이 10개씩 복제되어 데이터 크기가 10배로 커졌습니다.
 
-![Table 5](table5.PNG)
+![Table 5](table5.png)
 
 spark UI를 통해 JOIN 과정을 살펴보면, 데이터 쏠림이 상당히 완화된 것을 확인할 수 있습니다.
 
-![일반 JOIN 동작 과정](join2.PNG)
+![일반 JOIN 동작 과정](join2.png)
 
 salting을 한마디로 말하면, 새로운 join key를 추가하여 데이터를 더 잘개 쪼개주는 것입니다.
 그 새로운 join key가 소위 소금(`salt`)이며, 데이터를 얼마나 잘게 더 쪼갤지를 결정하는 것이
@@ -176,7 +176,7 @@ joined_3 = runner_3.join(city_3, on=['city', 'salt'], how='left')
 
 최종 join 결과에서 각 지역마다 적절한 `salt_size` 가 사용된 것을 확인할 수 있습니다.
 
-![Table 6](table6.PNG)
+![Table 6](table6.png)
 
 이 코드에서 두 가지만 추가로 언급하겠습니다.
 
